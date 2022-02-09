@@ -1,11 +1,15 @@
-include_directories(${Qt5Widgets_INCLUDE_DIRS}
-                ${Qt5Sql_INCLUDE_DIRS}
-                ${Qt5Core_INCLUDE_DIRS}
-                ${Qt5Help_INCLUDE_DIRS}
-                ${OPENSSL_INCLUDE_DIR}
-                ${PROJECT_BINARY_DIR}
-                ${PROJECT_SOURCE_DIR}
-)
+include_directories(SYSTEM
+                    ${Qt5Widgets_INCLUDE_DIRS}
+                    ${Qt5Sql_INCLUDE_DIRS}
+                    ${Qt5Core_INCLUDE_DIRS}
+                    ${Qt5Help_INCLUDE_DIRS}
+                    ${OPENSSL_INCLUDE_DIR}
+                    )
+
+include_directories(${PROJECT_BINARY_DIR}
+                    ${PROJECT_SOURCE_DIR}
+                    )
+
 add_library(widgets STATIC
 CertDetail.cpp		NewCrl.cpp		XcaApplication.h
 CertDetail.h		NewCrl.h		XcaDialog.cpp
