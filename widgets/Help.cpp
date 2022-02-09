@@ -11,6 +11,7 @@
 #include <QDebug>
 #include <QDialog>
 #include <QHelpEngine>
+#include <QHelpLink>
 #include <QDialogButtonBox>
 
 Help::Help() : QWidget(NULL), helpengine(nullptr)
@@ -42,19 +43,19 @@ void Help::content()
 	display(QUrl("qthelp://org.sphinx.xca/doc/index.html"));
 }
 
-QMap<QString, QUrl> Help::url_by_ctx(const QString &ctx) const
+QList<QHelpLink> Help::url_by_ctx(const QString &ctx) const
 {
 	if (!helpengine)
-		return QMap<QString, QUrl>();
-	return helpengine->linksForIdentifier(QString("%1.%1").arg(ctx));
+        return QList<QHelpLink>();
+    return helpengine->documentsForIdentifier(QString("%1.%1").arg(ctx));
 }
 
 void Help::contexthelp(const QString &context)
 {
-	QMap<QString, QUrl> helpctx = url_by_ctx(context);
+    QList<QHelpLink> helpctx = url_by_ctx(context);
 
-	if (helpctx.count())
-		display(helpctx.constBegin().value());
+    if (!helpctx.empty())
+        display(helpctx.constBegin()->url);
 }
 
 void Help::contexthelp()
