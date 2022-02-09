@@ -15,6 +15,7 @@ include(GNUInstallDirs)
 ##### Git command to tweak the version and commit hash
 include(cmake/git_version.cmake)
 include(cmake/ccache.cmake)
+include(cmake/compiler_flags.cmake)
 
 ##### Build specifications
 
@@ -201,7 +202,7 @@ elseif(WIN32)
      ${CMAKE_BINARY_DIR}/misc/misc.wxs
      ${CMAKE_BINARY_DIR}/misc/dynamic.wxs
      )
-  string(APPEND CMAKE_CXX_FLAGS "-mwindows")
+  string(APPEND CMAKE_CXX_FLAGS " -mwindows")
 else()
   if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX /usr/local CACHE PATH

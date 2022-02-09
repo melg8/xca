@@ -46,3 +46,10 @@ XcaProgress.h		XcaWarningCore.cpp	XcaWarningCore.h
 PwDialogCore.cpp	PwDialogCore.h		digest.h
 digest.cpp		pki_export.cpp
 )
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+set_source_files_properties("core_autogen/mocs_compilation.cpp"
+                            PROPERTIES
+                            COMPILE_FLAGS
+                            "-Wno-useless-cast")
+endif ()
