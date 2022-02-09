@@ -22,7 +22,7 @@
 #include "XcaWarningCore.h"
 #include "PwDialogCore.h"
 
-#warning drop UI dependencies
+// TODO(melg8): drop UI dependencies.
 #include "ui_NewX509.h"
 #include "widgets/CertExtend.h"
 #include "widgets/RevocationList.h"

@@ -23,7 +23,7 @@
 #include "PwDialogCore.h"
 #include "XcaWarningCore.h"
 
-#warning split PwDialog into console and GUI
+// TODO(melg8): split PwDialog into console and GUI.
 #include "ui_SelectToken.h"
 #include <QPushButton>
 
