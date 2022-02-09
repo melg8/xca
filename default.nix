@@ -9,6 +9,7 @@ stdenv.mkDerivation rec {
   src = ./.;
 
   nativeBuildInputs = with pkgs; [
+    ccache
     cmake
     gcc
     gdb

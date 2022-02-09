@@ -14,6 +14,7 @@ include(GNUInstallDirs)
 
 ##### Git command to tweak the version and commit hash
 include(cmake/git_version.cmake)
+include(cmake/ccache.cmake)
 
 ##### Build specifications
 
