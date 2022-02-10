@@ -1046,7 +1046,6 @@ bool extList::search(const QRegExp &pattern)
 }
 QString extList::getHtml(const QString &sep) const
 {
-	x509v3ext e;
 	QStringList s;
 	foreach(const x509v3ext &e, *this)
 		s << e.getHtml();
@@ -1056,7 +1055,6 @@ QString extList::getHtml(const QString &sep) const
 
 QString extList::getConsole(const QString &indent) const
 {
-	x509v3ext e;
 	QStringList s;
 	foreach(const x509v3ext &e, *this)
 		s << e.getConsole(indent);

@@ -290,7 +290,6 @@ extList pki_x509req::getV3ext() const
 QString pki_x509req::getAttribute(int nid) const
 {
 	int n;
-	int count;
 	QStringList ret;
 
 	n = X509_REQ_get_attr_by_NID(request, nid, -1);
@@ -299,8 +298,8 @@ QString pki_x509req::getAttribute(int nid) const
 	X509_ATTRIBUTE *att = X509_REQ_get_attr(request, n);
 	if (!att)
 		return QString("");
-	count = X509_ATTRIBUTE_count(att);
-	for (int j = 0; j < count; j++)
+    int attribute_count = X509_ATTRIBUTE_count(att);
+    for (int j = 0; j < attribute_count; j++)
 		ret << asn1ToQString(X509_ATTRIBUTE_get0_type(att, j)->
 				             value.asn1_string);
 	return ret.join(", ");
@@ -309,7 +308,7 @@ QString pki_x509req::getAttribute(int nid) const
 int pki_x509req::issuedCerts() const
 {
 	XSqlQuery q;
-	int count = 0;
+    int issued_count = 0;
 
 	if (x509count != -1)
 		return x509count;
@@ -324,14 +323,14 @@ int pki_x509req::issuedCerts() const
 
 	foreach(pki_x509 *x, certs) {
 		if (x->compareRefKey(k))
-			count++;
+            issued_count++;
 
 		qDebug() << "Req:" << getIntName() << "Cert with hash"
-			 << x->getIntName() << count;
+             << x->getIntName() << issued_count;
 	}
 	delete k;
-	x509count = count;
-	return count;
+    x509count = issued_count;
+    return issued_count;
 }
 
 void pki_x509req::collect_properties(QMap<QString, QString> &prp) const

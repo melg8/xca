@@ -285,7 +285,7 @@ a1int pki_x509::hashInfo(const EVP_MD *md) const
 
 void pki_x509::load_token(pkcs11 &p11, CK_OBJECT_HANDLE object)
 {
-	QString desc;
+    QString description;
 
 	pk11_attr_ulong type(CKA_CERTIFICATE_TYPE);
 	p11.loadAttribute(type, object);
@@ -296,7 +296,7 @@ void pki_x509::load_token(pkcs11 &p11, CK_OBJECT_HANDLE object)
 	try {
 		pk11_attr_data label(CKA_LABEL);
 		p11.loadAttribute(label, object);
-		desc = label.getText();
+        description = label.getText();
 	} catch(errorEx &err) {
 		qDebug("No Cert Label: %s", err.getCString());
 		// IGNORE
@@ -306,22 +306,22 @@ void pki_x509::load_token(pkcs11 &p11, CK_OBJECT_HANDLE object)
 	QByteArray der = x509.getData();
 	d2i(der);
 
-	if (desc.isEmpty()) {
+    if (description.isEmpty()) {
 		try {
 			x509name xn;
 
 			pk11_attr_data subj(CKA_SUBJECT);
 			p11.loadAttribute(subj, object);
-			QByteArray der = subj.getData();
-			xn.d2i(der);
-			desc = xn.getMostPopular();
+            QByteArray subj_der = subj.getData();
+            xn.d2i(subj_der);
+            description = xn.getMostPopular();
 			pki_openssl_error();
 		} catch(errorEx &err) {
 			qDebug("No Cert Subject: %s", err.getCString());
 			// IGNORE
 		}
 	}
-	setIntName(desc);
+    setIntName(description);
 	pkiSource = token;
 	pki_openssl_error();
 }

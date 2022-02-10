@@ -22,10 +22,10 @@ pkcs11_lib::pkcs11_lib(const QString &f)
 {
 	CK_RV (*c_get_function_list)(CK_FUNCTION_LIST_PTR_PTR);
 	CK_RV rv;
-	file = name2File(f, &enabled);
+    file = name2File(f, &is_enabled);
 	p11 = NULL;
 
-	if (!enabled)
+    if (!is_enabled)
 		return;
 
 	try {
@@ -116,7 +116,7 @@ QString pkcs11_lib::driverInfo() const
 	CK_INFO info;
 	CK_RV rv;
 
-	if (!enabled)
+    if (!is_enabled)
 		return QObject::tr("Disabled");
 
 	if (!isLoaded()) {
@@ -172,9 +172,9 @@ pkcs11_lib *pkcs11_lib_list::add_lib(const QString &fname)
 		break;
 	}
 	if (idx == -1) {
-		pkcs11_lib *l = new pkcs11_lib(fname);
+        pkcs11_lib *lib = new pkcs11_lib(fname);
 		idx = libs.size();
-		libs << l;
+        libs << lib;
 	}
 	beginInsertRows(QModelIndex(), model_data.size(), model_data.size());
 	model_data << idx;

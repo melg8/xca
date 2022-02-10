@@ -362,9 +362,9 @@ void MainWindow::manageToken()
 		if (!p11.selectToken(&slot, this))
 			return;
 
-		ImportMulti *dlgi = new ImportMulti(this);
+        ImportMulti *import_dialog = new ImportMulti(this);
 
-		dlgi->tokenInfo(slot);
+        import_dialog->tokenInfo(slot);
 		QList<CK_OBJECT_HANDLE> objects;
 
 		QList<CK_MECHANISM_TYPE> ml = p11.mechanismList(slot);
@@ -382,7 +382,7 @@ void MainWindow::manageToken()
 			try {
 				card->load_token(p11, objects[j]);
 				card->setMech_list(ml);
-				dlgi->addItem(card);
+                import_dialog->addItem(card);
 			} catch (errorEx &err) {
 				XCA_ERROR(err);
 				delete card;
@@ -398,18 +398,18 @@ void MainWindow::manageToken()
 			cert = new pki_x509("");
 			try {
 				cert->load_token(p11, objects[j]);
-				dlgi->addItem(cert);
+                import_dialog->addItem(cert);
 			} catch (errorEx &err) {
 				XCA_ERROR(err);
 				delete cert;
 			}
 			cert = NULL;
 		}
-		if (dlgi->entries() == 0) {
+        if (import_dialog->entries() == 0) {
 			tkInfo ti = p11.tokenInfo();
 			XCA_INFO(tr("The token '%1' did not contain any keys or certificates").arg(ti.label()));
 		} else {
-			dlgi->execute(true);
+            import_dialog->execute(true);
 		}
 	} catch (errorEx &err) {
 		XCA_ERROR(err);

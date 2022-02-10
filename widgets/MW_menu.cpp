@@ -91,9 +91,9 @@ void MainWindow::init_menu()
 		qApp, SLOT(switchLanguage(QAction*)));
 
 	foreach(const QStringList &sl, getTranslators()) {
-		QAction *a = languageMenuEntry(sl);
-		langGroup->addAction(a);
-		languageMenu->addAction(a);
+        QAction *action = languageMenuEntry(sl);
+        langGroup->addAction(action);
+        languageMenu->addAction(action);
 	}
 	file = menuBar()->addMenu(tr("&File"));
 	file->addAction(tr("New DataBase"), this, SLOT(new_database()),

@@ -23,7 +23,7 @@ class pkcs11_lib : public QLibrary
     private:
 	CK_FUNCTION_LIST *p11;
 	QString file, load_error;
-	bool enabled;
+    bool is_enabled;
 
     public:
 	static QString name2File(const QString &name, bool *enabled = NULL);
@@ -46,7 +46,7 @@ class pkcs11_lib : public QLibrary
 	}
 	enum Qt::CheckState checked() const
 	{
-		return enabled ? Qt::Checked : Qt::Unchecked;
+        return is_enabled ? Qt::Checked : Qt::Unchecked;
 	}
 	bool isLib(const QString &name) const
 	{
@@ -58,11 +58,11 @@ class pkcs11_lib : public QLibrary
 	}
 	QString toData() const
 	{
-		return toData(enabled);
+        return toData(is_enabled);
 	}
 	QString pixmap() const
 	{
-		if (!enabled)
+        if (!is_enabled)
 			return QString();
                 return isLoaded() ? ":doneIco" : ":warnIco";
 	}

@@ -96,8 +96,6 @@ bool database_model::checkForOldDbFormat(const QString &dbfile) const
 database_model::database_model(const QString &name, const Passwd &pass)
 {
 	enum open_result result;
-	QSqlError err;
-
 	dbName = name;
 	dbTimer = 0;
 
@@ -465,7 +463,7 @@ static void pwhash_upgrade()
 	}
 }
 
-enum open_result database_model::initPass(const QString &dbName, const QString &passhash) const
+enum open_result database_model::initPass(const QString &db_name, const QString &passhash) const
 {
 	QString salt, pass;
 	enum open_result result = pw_cancel;
@@ -473,7 +471,7 @@ enum open_result database_model::initPass(const QString &dbName, const QString &
 	pass_info p(tr("New Password"), tr("Please enter a password, "
 			"that will be used to encrypt your private keys "
 			"in the database:\n%1").
-			arg(compressFilename(dbName)));
+            arg(compressFilename(db_name)));
 
 	pki_evp::passHash = passhash;
 	if (pki_evp::passHash.isEmpty()) {
@@ -491,7 +489,7 @@ enum open_result database_model::initPass(const QString &dbName, const QString &
 			if (result == pw_ok)
 				XCA_PASSWD_ERROR();
 			p.setTitle(tr("Password"));
-			p.setDescription(tr("Please enter the password for unlocking the database:\n%1").arg(compressFilename(dbName)));
+            p.setDescription(tr("Please enter the password for unlocking the database:\n%1").arg(compressFilename(db_name)));
 			result = PwDialogCore::execute(&p, &pki_evp::passwd,
 						false, true);
 			if (result != pw_ok) {

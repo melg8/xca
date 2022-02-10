@@ -509,7 +509,7 @@ pk11_attr_data pkcs11::generateKey(QString name, unsigned long mech,
 		break;
 	case CKM_DSA_KEY_PAIR_GEN: {
 		//DSA: Spec Page 191 (175) C_GenerateKey
-		CK_MECHANISM mechanism = {CKM_DSA_PARAMETER_GEN, NULL_PTR, 0};
+        CK_MECHANISM gen_mechanism = {CKM_DSA_PARAMETER_GEN, NULL_PTR, 0};
 
 		// nCipher Attributes
 		// as on 10/26/2015 - Thales' PKCS11 provider has
@@ -525,7 +525,7 @@ pk11_attr_data pkcs11::generateKey(QString name, unsigned long mech,
 			pk11_attr_bool(CKA_PRIVATE, false) <<
 			pk11_attr_ulong(CKA_PRIME_BITS, bits);
 		p11slot.isValid();
-		CALL_P11_C(p11slot.lib, C_GenerateKey, session, &mechanism,
+        CALL_P11_C(p11slot.lib, C_GenerateKey, session, &gen_mechanism,
 			dsa_param.getAttributes(), dsa_param.length(),
 			&dsa_param_obj);
 		if (rv != CKR_OK)

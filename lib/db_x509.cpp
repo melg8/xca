@@ -114,12 +114,11 @@ void db_x509::remFromCont(const QModelIndex &idx)
 	db_crl *crls = Database.model<db_crl>();
 	db_x509super::remFromCont(idx);
 	pki_base *pki = fromIndex(idx);
-	pki_x509 *child;
-	pki_base *new_parent;
+    pki_base *new_parent;
 	QList<pki_x509 *> childs;
 
 	while (pki->childCount()) {
-		child = dynamic_cast<pki_x509*>(pki->takeFirst());
+        pki_x509 *child = dynamic_cast<pki_x509*>(pki->takeFirst());
 		child->delSigner(dynamic_cast<pki_x509*>(pki));
 		new_parent = child->findIssuer();
 		insertChild(child);
@@ -727,38 +726,38 @@ void db_x509::certRenewal(QModelIndexList indexes)
 				signkey->isPubKey())
 			return;
 		bool renew_myself = signer == oldcert;
-		CertExtend *dlg = new CertExtend(NULL,
+        CertExtend *extend_dialog = new CertExtend(NULL,
 					renew_myself ? NULL : signer);
-		dlg->revoke->setEnabled(!renew_myself);
-		if (!dlg->exec()) {
-			delete dlg;
+        extend_dialog->revoke->setEnabled(!renew_myself);
+        if (!extend_dialog->exec()) {
+            delete extend_dialog;
 			return;
 		}
-		if (dlg->revoke->isChecked() && !renew_myself) {
+        if (extend_dialog->revoke->isChecked() && !renew_myself) {
 			Revocation *revoke = new Revocation(indexes);
 			doRevoke = revoke->exec();
 			r = revoke->getRevocation();
 			delete revoke;
 		}
-		doReplace = dlg->replace->isChecked();
+        doReplace = extend_dialog->replace->isChecked();
 		foreach(idx, indexes) {
 			oldcert = fromIndex<pki_x509>(idx);
 			if (!oldcert)
 				continue;
 			newcert = new pki_x509(oldcert);
 			newcert->pkiSource = renewed;
-			serial = dlg->keepSerial->isChecked() ?
+            serial = extend_dialog->keepSerial->isChecked() ?
 				oldcert->getSerial() : getUniqueSerial(signer);
 			newcert->setRevoked(x509rev());
 
 			// change date and serial
 			newcert->setSerial(serial);
-			newcert->setNotBefore(dlg->notBefore->getDate());
+            newcert->setNotBefore(extend_dialog->notBefore->getDate());
 			a1time a;
-			if (dlg->noWellDefinedExpDate->isChecked())
+            if (extend_dialog->noWellDefinedExpDate->isChecked())
 				a.setUndefined();
 			else
-				a = dlg->notAfter->getDate();
+                a = extend_dialog->notAfter->getDate();
 
 			newcert->setNotAfter(a);
 

@@ -71,30 +71,30 @@ QList<nameEdit> NewX509::setupExplicitInputs(NIDlist nid_list,
 	int n = 0, col = 0;
 
 	foreach(int nid, nid_list) {
-		DoubleClickLabel *label;
+        DoubleClickLabel *double_click_label;
 		QLineEdit *edit;
 		QString trans = dn_translations[nid];
 		QString ln = OBJ_nid2ln(nid), sn = OBJ_nid2sn(nid);
-		label = new DoubleClickLabel(parent);
+        double_click_label = new DoubleClickLabel(parent);
 		if (Settings["translate_dn"] && !trans.isEmpty()) {
-			label->setText(trans);
-			label->setToolTip(QString("[%1] %2").arg(sn, ln));
+            double_click_label->setText(trans);
+            double_click_label->setToolTip(QString("[%1] %2").arg(sn, ln));
 			if (sn == ln)
-				label->setToolTip(ln);
+                double_click_label->setToolTip(ln);
 		} else {
-			label->setText(ln);
-			label->setToolTip(QString("[%1] %2").arg(sn, trans));
+            double_click_label->setText(ln);
+            double_click_label->setToolTip(QString("[%1] %2").arg(sn, trans));
 			if (trans == sn)
-				label->setToolTip(trans);
+                double_click_label->setToolTip(trans);
 		}
-		label->setClickText(OBJ_nid2sn(nid));
-		connect(label, SIGNAL(doubleClicked(QString)),
+        double_click_label->setClickText(OBJ_nid2sn(nid));
+        connect(double_click_label, SIGNAL(doubleClicked(QString)),
                         MainWindow::getResolver(), SLOT(searchOid(QString)));
 		edit = new QLineEdit(parent);
 		setupLineEditByNid(nid, edit);
-		edits << nameEdit(nid, edit, label);
+        edits << nameEdit(nid, edit, double_click_label);
 
-		layout->addWidget(label, n, col);
+        layout->addWidget(double_click_label, n, col);
 		layout->addWidget(edit, n, col +1);
 		n++;
 		if (n > (nid_list.size()-1)/columns) {
@@ -107,7 +107,7 @@ QList<nameEdit> NewX509::setupExplicitInputs(NIDlist nid_list,
 	return edits;
 }
 
-NewX509::NewX509(QWidget *w) : QDialog(w ? w : mainwin)
+NewX509::NewX509(QWidget *parent) : QDialog(parent ? parent : mainwin)
 {
 	int i;
 	QStringList keys;
@@ -325,22 +325,22 @@ void NewX509::setupExtDNwidget(const QString &s, QLineEdit *l)
 
 void NewX509::setupLineEditByNid(int nid, QLineEdit *l)
 {
-	ASN1_STRING_TABLE *tab = ASN1_STRING_TABLE_get(nid);
+    ASN1_STRING_TABLE *table = ASN1_STRING_TABLE_get(nid);
 	QValidator *validator = NULL;
 	QStringList info;
 
 	info << QString("[%1]").arg(OBJ_nid2sn(nid));
 
-	if (tab) {
-		if (tab->minsize > 1)
-			info << tr("minimum size: %1").arg(tab->minsize);
-		if (tab->maxsize != -1)
-			info << tr("maximum size: %1").arg(tab->maxsize);
-		if (tab->mask == B_ASN1_PRINTABLESTRING) {
+    if (table) {
+        if (table->minsize > 1)
+            info << tr("minimum size: %1").arg(table->minsize);
+        if (table->maxsize != -1)
+            info << tr("maximum size: %1").arg(table->maxsize);
+        if (table->mask == B_ASN1_PRINTABLESTRING) {
 			info << tr("only a-z A-Z 0-9 '()+,-./:=?");
 			QRegExp rx("[a-zA-Z0-9'()+,-./:=?]+");
 			validator = new QRegExpValidator(rx, this);
-		} else if (tab->mask == B_ASN1_IA5STRING) {
+        } else if (table->mask == B_ASN1_IA5STRING) {
 			info << tr("only 7-bit clean characters");
 		}
 	}

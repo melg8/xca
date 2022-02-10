@@ -125,11 +125,11 @@ void CertDetail::setCert(pki_x509 *cert)
 			signature->setGreen();
 			signature->disableToolTip();
 		} else {
-			pki_x509 *issuer = cert->getSigner();
-			signature->setText(issuer->getIntName());
-			signature->setClickText(issuer->getSqlItemId().toString());
+            pki_x509 *signer = cert->getSigner();
+            signature->setText(signer->getIntName());
+            signature->setClickText(signer->getSqlItemId().toString());
 			signature->setGreen();
-			issuerSqlId = issuer->getSqlItemId();
+            issuerSqlId = signer->getSqlItemId();
 
 			connect(signature, SIGNAL(doubleClicked(QString)),
 				this, SLOT(showIssuer()));

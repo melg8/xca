@@ -371,12 +371,12 @@ QString pki_base::get_dump_filename(const QString &dir,
 				    const QString &ext) const
 {
 	QString ctr = "", fn;
-	int count = 0;
-	while (count++ < 1000) {
+    int index = 0;
+    while (index++ < 1000) {
 		fn = dir + "/" + getUnderlinedName() + ctr + ext;
 		if (!QFile::exists(fn))
 			return fn;
-		ctr = QString("_%1").arg(count);
+        ctr = QString("_%1").arg(index);
 	}
 	return fn;
 }
@@ -467,7 +467,7 @@ QStringList pki_base::icsVEVENT(const a1time &expires,
 	const QString &summary, const QString &description) const
 {
 	QString uniqueid = formatHash(Digest(i2d(), EVP_sha1()), "");
-	QString desc = icsValue(description + "\n----------\n" + comment);
+    QString full_description = icsValue(description + "\n----------\n" + comment);
 	QString alarm = Settings["ical_expiry"];
 	return QStringList() <<
 
@@ -478,11 +478,11 @@ QStringList pki_base::icsVEVENT(const a1time &expires,
 	QString("DTSTART:%1").arg(expires.toString("yyyyMMdd")) <<
 	"DURATION:P1D" <<
 	QString("SUMMARY:%1").arg(icsValue(summary)) <<
-	QString("DESCRIPTION:%1").arg(desc) <<
+    QString("DESCRIPTION:%1").arg(full_description) <<
 	"BEGIN:VALARM" <<
 	"ACTION:DISPLAY" <<
 	QString("SUMMARY:%1").arg(icsValue(summary)) <<
-	QString("DESCRIPTION:%1").arg(desc) <<
+    QString("DESCRIPTION:%1").arg(full_description) <<
 	QString("TRIGGER:-P%1").arg(alarm) <<
 	"END:VALARM" <<
 	"END:VEVENT";

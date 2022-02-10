@@ -236,30 +236,30 @@ QString arguments::help()
 
 int arguments::parse(int argc, char *argv[])
 {
-	int i, cnt = opts.count();
+    int cnt = opts.count();
 
 	/* Setup "struct option" */
 	if (!long_opts)
 		long_opts = new struct option[cnt+1];
 
 	Q_CHECK_PTR(long_opts);
-	for (i = 0; i < cnt; ++i)
+    for (int i = 0; i < cnt; ++i)
 		opts[i].fillOption(long_opts +i);
 	long_opts[cnt].name = NULL;
 	long_opts[cnt].flag = NULL;
 	opterr = 0;
 	/* Parse cmdline options argv */
 	while (true) {
-		int optind = 0;
-		result = getopt_long_only(argc, argv, ":", long_opts, &optind);
+        int opt_ind = 0;
+        result = getopt_long_only(argc, argv, ":", long_opts, &opt_ind);
 		if (result)
 			break;
-		const arg_option i = opts[optind];
+        const arg_option i = opts[opt_ind];
 		found_options[i.long_opt] = QString::fromUtf8(optarg);
 		if (i.need_db)
 			need_db = true;
 	}
-	for (i = optind; i < argc; ++i) {
+    for (int i = optind; i < argc; ++i) {
 		QString file = QString::fromUtf8(argv[i]);
 		if (!has("database") && file.endsWith(".xdb")) {
 			/* No database given, but here is an xdb file

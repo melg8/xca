@@ -35,7 +35,7 @@ class database_model: public QObject
 		void importOldDatabase(const QString &dbfile);
 		QString get_default_db() const;
 		QString checkPre2Xdatabase() const;
-		enum open_result initPass(const QString &dbName,
+        enum open_result initPass(const QString &db_name,
 				const QString &passhash) const;
 		void restart_timer();
 		static void openDatabase(const QString &descriptor,
