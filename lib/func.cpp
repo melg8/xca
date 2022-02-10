@@ -80,7 +80,7 @@ Passwd readPass()
 	qFatal("Password input not supported");
 #endif
 	while(1) {
-		char p = getch();
+        char p = static_cast<char>(getch());
 		if (p == '\n' || p == '\r')
 			break;
 		if (p == 0x7f)
