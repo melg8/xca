@@ -191,7 +191,7 @@ NewX509::NewX509(QWidget *w) : QDialog(w ? w : mainwin)
 
 	// init the X509 v3 context
 	X509V3_set_ctx(&ext_ctx, NULL , NULL, NULL, NULL, 0);
-	X509V3_set_ctx_nodb(&ext_ctx);
+    X509V3_set_ctx_nodb(&ext_ctx)
 
 	// Setup dnWidget
 	setupExplicitDN();
@@ -274,7 +274,7 @@ NewX509::NewX509(QWidget *w) : QDialog(w ? w : mainwin)
 		tabWidget->removeTab(4);
 
 	// Setup widget <-> Template mapping
-#define MAP_LE(name) templateLineEdits[#name] = name;
+#define MAP_LE(name) templateLineEdits[#name] = name
 	MAP_LE(subAltName);
 	MAP_LE(issAltName);
 	MAP_LE(crlDist);
@@ -289,7 +289,7 @@ NewX509::NewX509(QWidget *w) : QDialog(w ? w : mainwin)
 	MAP_LE(validN);
 	MAP_LE(basicPath);
 
-#define MAP_CB(name) templateCheckBoxes[#name] = name;
+#define MAP_CB(name) templateCheckBoxes[#name] = name
 	MAP_CB(bcCritical);
 	MAP_CB(kuCritical);
 	MAP_CB(ekuCritical);

@@ -117,7 +117,7 @@ QString XSqlQuery::table_prefix;
 
 int XSqlQuery::schemaVersion()
 {
-	qDebug() << "table_prefix:" << table_prefix;;
+    qDebug() << "table_prefix:" << table_prefix;
 	return QSqlDatabase::database().tables()
 			.contains(table_prefix + "settings") ?
 				Settings["schema"] : 0;

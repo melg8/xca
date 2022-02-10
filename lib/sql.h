@@ -55,7 +55,7 @@ class DbTransaction
 	throw errorEx(QObject::tr("Failed to start a database transaction")); }
 #define TransCommit() __trans.commit(__FILE__, __LINE__)
 #define TransRollback() __trans.rollback(__FILE__, __LINE__)
-#define TransDone(e) __trans.done(e, __FILE__, __LINE__);
+#define TransDone(e) __trans.done(e, __FILE__, __LINE__)
 #define AffectedItems(v) (DbTransaction::addItems(v))
 
 

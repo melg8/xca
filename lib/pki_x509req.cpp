@@ -62,7 +62,7 @@ void pki_x509req::markSigned(bool signe)
 {
 	XSqlQuery q;
 	Transaction;
-	TransThrow();
+    TransThrow()
 
 	SQL_PREPARE(q, "UPDATE requests SET signed=? WHERE item=?");
 	q.bindValue(0, signe ? 1 : 0);

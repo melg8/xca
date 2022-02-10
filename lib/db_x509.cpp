@@ -447,7 +447,7 @@ pki_x509 *db_x509::newCert(NewX509 *dlg)
 		}
 		intname = req->getIntName();
 	}
-	TransThrow();
+    TransThrow()
 
 	if (clientkey == NULL)
 		throw errorEx(tr("Invalid public key"));
@@ -917,7 +917,7 @@ void db_x509::updateCaProperties(pki_x509 *cert)
 {
 	XSqlQuery q;
 	Transaction;
-	TransThrow();
+    TransThrow()
 
 	SQL_PREPARE(q, "UPDATE authority SET crlDays=?, "
 			"template=? WHERE item=?");

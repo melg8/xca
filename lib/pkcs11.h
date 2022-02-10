@@ -18,8 +18,8 @@
 #include "func.h"
 
 void waitcursor(int start, int line);
-#define WAITCURSOR_START waitcursor(1, __LINE__);
-#define WAITCURSOR_END waitcursor(0, __LINE__);
+#define WAITCURSOR_START waitcursor(1, __LINE__)s
+#define WAITCURSOR_END waitcursor(0, __LINE__)
 
 extern char segv_data[1024];
 #define CALL_P11_C(l, func, ...) do { \
@@ -33,7 +33,7 @@ extern char segv_data[1024];
 	if (IS_GUI_APP) \
 		QApplication::restoreOverrideCursor(); \
 	ign_openssl_error(); \
-} while(0);
+} while(0)
 
 
 class tkInfo

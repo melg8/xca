@@ -477,7 +477,7 @@ const char *pk11errorString(unsigned long rv)
 
 void pk11error(const QString &func, int rv)
 {
-	WAITCURSOR_END
+    WAITCURSOR_END;
 	errorEx err(QObject::tr("PKCS#11 function '%1' failed: %2").arg(func).
 		arg(pk11errorString(rv)));
 	throw err;
@@ -485,7 +485,7 @@ void pk11error(const QString &func, int rv)
 
 void pk11error(const slotid &slot, const QString &func, int rv)
 {
-	WAITCURSOR_END
+    WAITCURSOR_END;
 	errorEx err(QObject::tr("PKCS#11 function '%1' failed: %2\nIn library %3\n%4").
 		arg(func).arg(pk11errorString(rv)).arg(slot.lib->filename()).
 		arg(slot.lib->driverInfo()));

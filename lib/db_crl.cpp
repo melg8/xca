@@ -134,7 +134,7 @@ pki_crl *db_crl::newCrl(const crljob &task)
 		x509v3ext e;
 		X509V3_CTX ext_ctx;
 		X509V3_set_ctx(&ext_ctx, cert->getCert(), NULL, NULL, NULL, 0);
-		X509V3_set_ctx_nodb(&ext_ctx);
+        X509V3_set_ctx_nodb(&ext_ctx)
 		XSqlQuery q;
 
 		crl = new pki_crl();

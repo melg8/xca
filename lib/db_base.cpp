@@ -537,7 +537,7 @@ void db_base::updateItem(pki_base *pki, const QString &name,
 		return;
 
 	Transaction;
-	TransThrow();
+    TransThrow()
 
 	SQL_PREPARE(q, "UPDATE items SET name=?, comment=? WHERE id=?");
 	q.bindValue(0, name);
