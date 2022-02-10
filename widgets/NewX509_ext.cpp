@@ -163,7 +163,7 @@ extList NewX509::getAdvanced()
 	CONF *conf;
 	extList elist;
 	long err_line=0;
-	STACK_OF(X509_EXTENSION) **sk, *sk_tmp = NULL;
+    STACK_OF(X509_EXTENSION) **sk = NULL, *sk_tmp = NULL;
 	const STACK_OF(X509_EXTENSION) *csk;
 	const char *ext_name = "default";
 	int ret, start;
