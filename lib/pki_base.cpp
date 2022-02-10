@@ -284,8 +284,7 @@ pki_base *pki_base::takeFirst()
 QString pki_base::pki_source_name() const
 {
 	switch (pkiSource) {
-		default:
-		case unknown: return tr("Unknown");
+        default: return tr("Unknown");
 		case imported: return tr("Imported");
 		case generated: return tr("Generated");
 		case transformed: return tr("Transformed");

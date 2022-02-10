@@ -86,8 +86,7 @@ static void myMessageOutput(QtMsgType type, const QMessageLogContext &,
 	case QtWarningMsg:  warn_msg = "WARNING";  severity = COL_LRED "Warning"; break;
 	case QtCriticalMsg: warn_msg = "CRITICAL"; severity = COL_RED "Critical"; break;
 	case QtFatalMsg:    warn_msg = "FATAL";    severity = COL_RED "Fatal"; break;
-	case QtInfoMsg:	    severity = COL_CYAN "Info"; break;
-	default:            severity = COL_CYAN "Default"; break;
+    case QtInfoMsg:	    severity = COL_CYAN "Info"; break;
 	}
 	console_write(stderr, QString(COL_YELL "%1%2 %3:" COL_RESET " %4\n")
 			.arg(el/1000, 4)
