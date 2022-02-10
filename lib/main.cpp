@@ -105,7 +105,7 @@ static void cmd_version(FILE *fp)
 				.arg(version_str(false)).toUtf8());
 }
 
-const char *xca_name = "xca";
+static const char *xca_name = "xca";
 [[noreturn]] static void cmd_help(int exitcode = EXIT_SUCCESS, const char *msg = NULL)
 {
 	FILE *fp = exitcode == EXIT_SUCCESS ? stdout : stderr;

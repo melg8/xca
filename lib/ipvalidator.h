@@ -28,9 +28,16 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-unsigned char buf[sizeof(struct in6_addr)];
+
+[[nodiscard]] static bool IsValidIp(const QString &input) noexcept {
+    unsigned char buf[sizeof(struct in6_addr)];
+    return inet_pton(AF_INET, CCHAR(input), buf) == 1 ||
+           inet_pton(AF_INET6, CCHAR(input), buf) == 1;
+}
 #else
-#define inet_pton(a,b,c) (1)
+[[nodiscard]] static bool IsValidIp(const QString &input) noexcept {
+    return true;
+}
 #endif
 
 class ipValidator : public QValidator
@@ -39,10 +46,8 @@ class ipValidator : public QValidator
 	QValidator::State validate(QString &input, int&) const
 	{
 		if (!QRegExp("[0-9a-fA-F:\\.]*").exactMatch(input))
-			return Invalid;
-		return inet_pton(AF_INET, CCHAR(input), buf) == 1 ||
-			inet_pton(AF_INET6, CCHAR(input), buf) == 1 ?
-				Acceptable : Intermediate;
+            return Invalid;
+        return IsValidIp(input) ? Acceptable : Intermediate;
 	}
 	void fixup(QString &input) const
 	{
