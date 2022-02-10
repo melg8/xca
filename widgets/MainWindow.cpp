@@ -72,7 +72,9 @@ void MainWindow::initResolver()
 MainWindow::MainWindow() : QMainWindow()
 {
 	dbindex = new QLabel();
-	dbindex->setFrameStyle(QFrame::Plain | QFrame::NoFrame);
+    const int frame_style = static_cast<int>(QFrame::Plain) |
+                            static_cast<int>(QFrame::NoFrame);
+    dbindex->setFrameStyle(frame_style);
 	dbindex->setMargin(6);
 
 	dn_translations_setup();
