@@ -38,3 +38,17 @@ MW_menu.cpp		X509SuperTreeView.cpp	v3ext.h
 MainWindow.cpp		X509SuperTreeView.h	validity.cpp
 MainWindow.h		XcaApplication.cpp	validity.h
 )
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+set_source_files_properties("widgets_autogen/mocs_compilation.cpp"
+                            PROPERTIES
+                            COMPILE_FLAGS
+                            "-Wno-useless-cast")
+endif ()
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    set_source_files_properties("widgets_autogen/mocs_compilation.cpp"
+                                PROPERTIES
+                                COMPILE_FLAGS
+                                "-Wno-extra-semi-stmt -Wno-redundant-parens")
+endif ()

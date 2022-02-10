@@ -53,3 +53,10 @@ set_source_files_properties("core_autogen/mocs_compilation.cpp"
                             COMPILE_FLAGS
                             "-Wno-useless-cast")
 endif ()
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    set_source_files_properties("core_autogen/mocs_compilation.cpp"
+                                PROPERTIES
+                                COMPILE_FLAGS
+                                "-Wno-extra-semi-stmt -Wno-redundant-parens")
+endif ()
