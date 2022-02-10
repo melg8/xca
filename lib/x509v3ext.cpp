@@ -380,10 +380,6 @@ QString x509v3ext::parse_critical() const
 	return QString(getCritical() ? "critical," : "");
 }
 
-#define TEXTS (\
-	B_ASN1_TIME | B_ASN1_DIRECTORYSTRING | B_ASN1_DISPLAYTEXT | \
-	B_ASN1_NUMERICSTRING | B_ASN1_T61STRING | B_ASN1_UNIVERSALSTRING)
-
 bool x509v3ext::parse_ia5(QString *single, QString *adv) const
 {
 	ASN1_STRING *str = (ASN1_STRING *)d2i();
