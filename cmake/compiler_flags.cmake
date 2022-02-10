@@ -105,5 +105,12 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     add_compiler_flags (-Wno-suggest-destructor-override)
     add_compiler_flags (-Qunused-arguments -fcolor-diagnostics)
     add_compiler_flags (-Wno-global-constructors)
+
+    if (NOT APPLE)
+        if (CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL 13.0 OR
+            CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 13.0)
+            add_compiler_flags (-Wno-reserved-identifier)
+        endif ()
+    endif ()
 endif ()
 
