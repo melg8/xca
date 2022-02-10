@@ -26,8 +26,8 @@ class PwDialogCore
 	static PwDialogUI_i *pwdialog;
 
    public:
-	static enum open_result execute(pass_info *p, Passwd *passwd,
-			bool write = false, bool abort = false);
+    static enum open_result execute(pass_info *p, Passwd *passwd,
+            bool write = false, bool abort = false);
 	static int pwCallback(char *buf, int size, int rwflag, void *userdata);
 	static void setGui(PwDialogUI_i *p);
 };

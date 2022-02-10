@@ -35,7 +35,7 @@
            inet_pton(AF_INET6, CCHAR(input), buf) == 1;
 }
 #else
-[[nodiscard]] static bool IsValidIp(const QString &input) noexcept {
+[[nodiscard]] static bool IsValidIp(const QString &) noexcept {
     return true;
 }
 #endif

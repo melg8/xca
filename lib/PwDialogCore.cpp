@@ -17,7 +17,7 @@
 PwDialogUI_i *PwDialogCore::pwdialog;
 
 enum open_result PwDialogCore::execute(pass_info *p, Passwd *passwd,
-					bool write, bool abort)
+                    bool , bool )
 {
 	if (pwdialog)
 		return pwdialog->execute(p, passwd);
