@@ -206,5 +206,5 @@ class pki_base : public QObject
 		}
 };
 
-Q_DECLARE_METATYPE(pki_base *);
+Q_DECLARE_METATYPE(pki_base *)
 #endif

@@ -54,7 +54,7 @@ namespace db {
 		ba = ba.mid(idx+1);
 		return ret;
 	}
-};
+}
 
 const QList<QString> pki_temp::tmpl_keys = {
 	"subAltName",

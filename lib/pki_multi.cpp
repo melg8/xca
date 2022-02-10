@@ -103,7 +103,7 @@ void pki_multi::fload(const QString &fname)
 	file.open_read();
 	ba = file.readAll();
 	fromPEMbyteArray(ba, fname);
-};
+}
 
 void pki_multi::fromPEMbyteArray(const QByteArray &_ba, const QString &name)
 {

@@ -390,7 +390,7 @@ QList<int> pki_key::possibleHashNids()
 			break;
 	}
 	return nids;
-};
+}
 
 bool pki_key::compare(const pki_base *ref) const
 {

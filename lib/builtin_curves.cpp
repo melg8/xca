@@ -24,7 +24,7 @@ static const QList<int> rfc5480_curve_nids()
 	NID_secp384r1,
 	NID_secp521r1,
 	};
-};
+}
 
 static const QList<int> x962_curve_nids()
 {
@@ -54,7 +54,7 @@ static const QList<int> x962_curve_nids()
 	NID_X9_62_c2pnb368w1,
 	NID_X9_62_c2tnb431r1
 	};
-};
+}
 
 static const QList<int> other_curve_nids()
 {
@@ -121,7 +121,7 @@ static const QList<int> other_curve_nids()
 	NID_brainpoolP512t1
 #endif
 	};
-};
+}
 
 builtin_curves::builtin_curves()
 {

@@ -165,5 +165,5 @@ class pki_x509 : public pki_x509super
 		QStringList icsVEVENT_ca() const;
 };
 
-Q_DECLARE_METATYPE(pki_x509 *);
+Q_DECLARE_METATYPE(pki_x509 *)
 #endif

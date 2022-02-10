@@ -50,7 +50,7 @@ const QList<QStringList> MainWindow::getTranslators() const
 		"Andika Triwidada", "andika", "gmail.com" },
 	QStringList{ "tr", tr("Turkish") },
 	};
-};
+}
 
 void MainWindow::about()
 {

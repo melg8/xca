@@ -82,5 +82,5 @@ class pki_x509req : public pki_x509super
 		void restoreSql(const QSqlRecord &rec);
 };
 
-Q_DECLARE_METATYPE(pki_x509req *);
+Q_DECLARE_METATYPE(pki_x509req *)
 #endif

@@ -81,7 +81,7 @@ class keyListItem
 	}
 };
 
-Q_DECLARE_METATYPE(keyListItem);
+Q_DECLARE_METATYPE(keyListItem)
 
 NewKey::NewKey(QWidget *parent, const QString &name)
 	:QDialog(parent ? parent : mainwin)
