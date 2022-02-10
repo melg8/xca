@@ -168,7 +168,7 @@ class pki_key: public pki_base
 	friend class pki_x509super;
 
 	public:
-		enum passType { ptCommon, ptPrivate, ptBogus, ptPin };
+        enum passType { ptCommon, ptPrivate, ptBogus, ptPin, ptInvalid };
 
 	protected:
 		enum passType ownPass;

@@ -625,8 +625,14 @@ void pki_evp::restoreSql(const QSqlRecord &rec)
 {
 	pki_key::restoreSql(rec);
 	isPub = rec.isNull(VIEW_private_ownpass);
-	if (!isPub)
-		ownPass =(enum passType)rec.value(VIEW_private_ownpass).toInt();
+    if (!isPub) {
+        const int value = rec.value(VIEW_private_ownpass).toInt();
+        if (value < 0 || value > 3) {
+            ownPass = passType::ptInvalid;
+        } else {
+            ownPass = static_cast<enum passType>(value);
+        }
+    }
 }
 
 QByteArray pki_evp::getEncKey() const

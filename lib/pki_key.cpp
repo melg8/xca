@@ -454,7 +454,7 @@ QString pki_key::BN2QString(const BIGNUM *bn) const
 QVariant pki_key::column_data(const dbheader *hd) const
 {
 	QStringList sl;
-	sl << tr("Common") << tr("Private") << tr("Bogus") << tr("PIN");
+    sl << tr("Common") << tr("Private") << tr("Bogus") << tr("PIN") << tr("Invalid");
 	switch (hd->id) {
 		case HD_key_type:
 			return QVariant(getTypeString());
@@ -465,9 +465,7 @@ QVariant pki_key::column_data(const dbheader *hd) const
 		case HD_key_passwd:
 			if (isPubKey())
 				return QVariant(tr("No password"));
-            if (ownPass > 3)
-				return QVariant("Holla die Waldfee");
-			return QVariant(sl[ownPass]);
+            return QVariant(sl[ownPass]);
 		case HD_key_curve:
 			QString r;
 #ifndef OPENSSL_NO_EC
