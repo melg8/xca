@@ -20,9 +20,6 @@
 
 const char *version_str(bool html)
 {
-	if (!COMMITHASH[0])
-		return html ? "<b>" VERSION "</b>" : VERSION;
-
 	return html ?
 		"<b>" VERSION "-dev</b><br/>commit: <b>" COMMITHASH "</b>" :
 		VERSION "-dev\ncommit: " COMMITHASH;
