@@ -292,7 +292,6 @@ QString pki_base::pki_source_name() const
 		case legacy_db: return tr("Legacy Database");
 		case renewed: return tr("Renewed");
 	}
-	return QString("???");
 }
 
 QVariant pki_base::column_data(const dbheader *hd) const

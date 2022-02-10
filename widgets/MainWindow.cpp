@@ -572,7 +572,6 @@ enum open_result MainWindow::init_database(const QString &name,
 	} catch (enum open_result r) {
 		return r;
 	}
-	return pw_ok;
 }
 
 enum open_result MainWindow::setup_open_database()

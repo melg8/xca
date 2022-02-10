@@ -233,7 +233,6 @@ void database_model::dump_database(const QString &dirname) const
 	QDir d(dirname);
 	if (!d.exists() && !d.mkdir(dirname)) {
 		throw errorEx(tr("Unable to create '%1': %2").arg(dirname));
-		return;
 	}
 
 	qDebug() << "Dumping to" << dirname;

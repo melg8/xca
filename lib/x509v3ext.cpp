@@ -960,7 +960,6 @@ bool x509v3ext::genConf(QString *single, QString *adv) const
 	default:
 		return parse_generic(single, adv);
 	}
-	return false;
 }
 
 QString x509v3ext::getHtml() const

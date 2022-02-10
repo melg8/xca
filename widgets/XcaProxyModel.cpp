@@ -75,6 +75,5 @@ QVariant XcaProxyModel::data(const QModelIndex &index, int role) const
 		default:
 			return QSortFilterProxyModel::data(index, role);
 	}
-	return QVariant();
 }
 
