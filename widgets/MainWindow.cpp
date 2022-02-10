@@ -760,7 +760,7 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
 			pastePem();
 			break;
 		}
-		/* FALLTHROUGH */
+        [[fallthrough]];
 	default:
 		QMainWindow::keyPressEvent(e);
 		return;

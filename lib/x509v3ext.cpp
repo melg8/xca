@@ -272,6 +272,7 @@ static QString ipv6_from_binary(const unsigned char *p)
 		case 5: // skip first 0
 			skip = 2;
 			ip += ":";
+            [[fallthrough]];
 		case 6: // skip next 0
 			break;
 		default: // no reduction
