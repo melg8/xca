@@ -689,14 +689,12 @@ void MainWindow::generateDHparamDone()
 
 void MainWindow::generateDHparam()
 {
-	bool ok;
-	int bits;
-
 	if (dhgen)
 		return;
 
-	bits = QInputDialog::getDouble(this, XCA_TITLE, tr("Diffie-Hellman parameters are needed for different applications, but not handled by XCA.\nPlease enter the DH parameter bits"),
-		1024, 1024, 4096, 0, &ok);
+    bool ok;
+    int bits = QInputDialog::getInt(this, XCA_TITLE, tr("Diffie-Hellman parameters are needed for different applications, but not handled by XCA.\nPlease enter the DH parameter bits"),
+        1024, 1024, 4096, 1, &ok);
 	if (!ok)
 		return;
 
