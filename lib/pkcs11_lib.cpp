@@ -475,7 +475,7 @@ const char *pk11errorString(unsigned long rv)
 	return "unknown PKCS11 error";
 }
 
-void pk11error(const QString &func, int rv)
+[[noreturn]] void pk11error(const QString &func, int rv)
 {
     WAITCURSOR_END;
 	errorEx err(QObject::tr("PKCS#11 function '%1' failed: %2").arg(func).
@@ -483,7 +483,7 @@ void pk11error(const QString &func, int rv)
 	throw err;
 }
 
-void pk11error(const slotid &slot, const QString &func, int rv)
+[[noreturn]] void pk11error(const slotid &slot, const QString &func, int rv)
 {
     WAITCURSOR_END;
 	errorEx err(QObject::tr("PKCS#11 function '%1' failed: %2\nIn library %3\n%4").

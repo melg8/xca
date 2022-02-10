@@ -49,7 +49,7 @@ static LONG CALLBACK w32_segfault(LPEXCEPTION_POINTERS e)
 		return EXCEPTION_CONTINUE_SEARCH;
 }
 #else
-static void segv_handler_gui(int)
+[[noreturn]] static void segv_handler_gui(int)
 {
 	if (segv_data[0])
 		XCA_WARN(QString(segv_data));
@@ -107,7 +107,7 @@ static void cmd_version(FILE *fp)
 }
 
 const char *xca_name = "xca";
-static void cmd_help(int exitcode = EXIT_SUCCESS, const char *msg = NULL)
+[[noreturn]] static void cmd_help(int exitcode = EXIT_SUCCESS, const char *msg = NULL)
 {
 	FILE *fp = exitcode == EXIT_SUCCESS ? stdout : stderr;
 	QString s;
