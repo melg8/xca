@@ -518,7 +518,7 @@ bool _ign_openssl_error(const QString &txt, const char *file, int line)
 {
 	// ignore openssl errors
 	QString errtxt;
-#if PRINT_IGNORED_ANYWAY
+#ifdef PRINT_IGNORED_ANYWAY
 	if (!txt.isEmpty() && ERR_peek_error())
 		qDebug() << txt;
 #else
@@ -528,7 +528,7 @@ bool _ign_openssl_error(const QString &txt, const char *file, int line)
 #endif
 	while (int i = ERR_get_error() ) {
 		errtxt = ERR_error_string(i, NULL);
-#if PRINT_IGNORED_ANYWAY
+#ifdef PRINT_IGNORED_ANYWAY
 		qDebug() << QString("IGNORED (%1:%2) : %3\n")
 				.arg(file).arg(line).arg(errtxt);
 #endif
