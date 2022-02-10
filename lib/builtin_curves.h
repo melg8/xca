@@ -31,7 +31,7 @@ class builtin_curve
 		order_size = s;
 		flags = f;
 		type = t;
-	};
+    }
 };
 
 class builtin_curves: public QList<builtin_curve>

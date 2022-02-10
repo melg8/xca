@@ -82,7 +82,7 @@ class pki_scard: public pki_key
 		}
 		pk11_attlist objectAttributes(bool priv) const;
 		pk11_attlist objectAttributesNoId(EVP_PKEY *pk, bool priv) const;
-		void setMech_list(QList<CK_MECHANISM_TYPE> ml) { mech_list = ml; };
+        void setMech_list(QList<CK_MECHANISM_TYPE> ml) { mech_list = ml; }
 		QList<int> possibleHashNids();
 		EVP_PKEY *load_pubkey(pkcs11 &p11, CK_OBJECT_HANDLE object) const;
 		void generate(const keyjob &task);

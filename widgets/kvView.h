@@ -25,7 +25,7 @@ public:
 		:QItemDelegate(parent)
 	{
 	}
-	virtual void addKey(QString &) {};
+    virtual void addKey(QString &) {}
 };
 
 class comboDelegate : public kvDelegate

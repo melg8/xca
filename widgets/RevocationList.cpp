@@ -17,7 +17,7 @@ enum revCol { Cnumber, Cserial, Cdate, Creason, CiDate, Cmax };
 class revListItem : public QTreeWidgetItem
 {
     public:
-	revListItem(QTreeWidget *w) : QTreeWidgetItem(w) { };
+    revListItem(QTreeWidget *w) : QTreeWidgetItem(w) { }
 	bool operator < (const QTreeWidgetItem &other) const
 	{
 		int col = treeWidget()->sortColumn();
