@@ -465,7 +465,7 @@ QVariant pki_key::column_data(const dbheader *hd) const
 		case HD_key_passwd:
 			if (isPubKey())
 				return QVariant(tr("No password"));
-			if (ownPass<0 || ownPass>3)
+            if (ownPass > 3)
 				return QVariant("Holla die Waldfee");
 			return QVariant(sl[ownPass]);
 		case HD_key_curve:
