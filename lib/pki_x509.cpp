@@ -760,7 +760,7 @@ bool pki_x509::checkDate()
 {
 	a1time n, b, a;
 
-	n = a1time::now(),
+    n = a1time::now();
 	b = getNotBefore();
 	a = getNotAfter();
 	pki_openssl_error();
