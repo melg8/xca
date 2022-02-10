@@ -12,6 +12,7 @@ stdenv.mkDerivation rec {
     ccache
     cmake
     gcc
+    clang_13
     gdb
     ninja
   ];
