@@ -14,7 +14,12 @@ class Passwd: public QByteArray
 {
     public:
 	void cleanse();
+
+    Passwd() = default;
 	~Passwd();
+    Passwd(const Passwd& lhs) = default;
+    Passwd& operator=(const Passwd& lhs) = default;
+
 	unsigned char *constUchar() const;
 	Passwd & operator= (const char *p)
 	{
