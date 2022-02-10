@@ -109,7 +109,7 @@ class NewX509: public QDialog, public Ui::NewX509
 		void subjectFromTemplate(pki_temp *temp);
 		void extensionsFromTemplate(pki_temp *temp);
 		pki_temp *currentTemplate();
-		void gotoTab(int tab);
+        void gotoTab(int tab_index);
 		void setupLineEditByNid(int nid, QLineEdit *l);
 		int validateExtensions(QString nconf, QString &result);
 		int do_validateExtensions();
@@ -140,7 +140,7 @@ class NewX509: public QDialog, public Ui::NewX509
 		void on_applyExtensions_clicked();
 		void on_adv_validate_clicked();
 		void on_usedKeysToo_toggled(bool checked);
-		void on_tabWidget_currentChanged(int idx);
+        void on_tabWidget_currentChanged(int tab_index);
 		void on_reqSubChange_clicked();
 		void accept();
 		void itemChanged(pki_base*);

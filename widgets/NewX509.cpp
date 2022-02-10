@@ -1112,9 +1112,9 @@ void NewX509::on_editAuthInfAcc_clicked()
 	editV3ext(authInfAcc, permut.join(","), NID_info_access);
 }
 
-void NewX509::on_tabWidget_currentChanged(int tab)
+void NewX509::on_tabWidget_currentChanged(int tab_index)
 {
-	QString tab_name = tabWidget->widget(tab)->objectName();
+    QString tab_name = tabWidget->widget(tab_index)->objectName();
 	if (tab_name == tabnames[5])
 		do_validateExtensions();
 	buttonBox->setProperty("help_ctx", QVariant(tab_name));
@@ -1144,10 +1144,10 @@ QString NewX509::mandatoryDnRemain()
 	return QString("'%1'").arg(remain.join("','"));
 }
 
-void NewX509::gotoTab(int tab)
+void NewX509::gotoTab(int tab_index)
 {
 	for (int i=0; i<tabWidget->count(); i++) {
-		if (tabWidget->tabText(i) == tabnames[tab]) {
+        if (tabWidget->tabText(i) == tabnames[tab_index]) {
 			tabWidget->setCurrentIndex(i);
 			break;
 		}

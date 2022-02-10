@@ -23,8 +23,8 @@ class RevocationList: public QDialog, public Ui::RevocationList
 		x509revList revList;
 		pki_x509 *issuer;
 	public:
-		static void setupRevocationView(QTreeWidget *certList,
-			const x509revList &revList, const pki_x509 *iss);
+        static void setupRevocationView(QTreeWidget *certsWidget,
+            const x509revList &revList, const pki_x509 *iss);
 		RevocationList(QWidget *w = nullptr);
 		void setRevList(const x509revList &rl, pki_x509 *issuer);
 		const x509revList &getRevList();

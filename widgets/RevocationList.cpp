@@ -64,33 +64,33 @@ static void addRevItem(QTreeWidget *certList, const x509rev &revit,
 	setup_revRevItem(current, revit, iss);
 }
 
-void RevocationList::setupRevocationView(QTreeWidget *certList,
+void RevocationList::setupRevocationView(QTreeWidget *certsWidget,
 			const x509revList &revList, const pki_x509 *iss)
 {
 	QStringList sl;
 	int cols, i;
 
-	certList->clear();
+    certsWidget->clear();
 
 	sl << tr("No.") << tr("Serial") << tr("Revocation") << tr("Reason") <<
 		tr("Invalidation");
 
 	cols = sl.size();
-	certList->setColumnCount(cols);
-	certList->setHeaderLabels(sl);
-	certList->setItemsExpandable(false);
-	certList->setRootIsDecorated(false);
-	certList->sortItems(Cnumber, Qt::AscendingOrder);
+    certsWidget->setColumnCount(cols);
+    certsWidget->setHeaderLabels(sl);
+    certsWidget->setItemsExpandable(false);
+    certsWidget->setRootIsDecorated(false);
+    certsWidget->sortItems(Cnumber, Qt::AscendingOrder);
 
 	i=1;
 	foreach(x509rev revit, revList) {
-		addRevItem(certList, revit, i++, iss);
+        addRevItem(certsWidget, revit, i++, iss);
 	}
 	for (i=0; i<cols; i++)
-		certList->resizeColumnToContents(i);
-	certList->setSortingEnabled(true);
-	certList->setSelectionBehavior(QAbstractItemView::SelectRows);
-	certList->setSelectionMode(QAbstractItemView::ExtendedSelection);
+        certsWidget->resizeColumnToContents(i);
+    certsWidget->setSortingEnabled(true);
+    certsWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
+    certsWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
 }
 
 RevocationList::RevocationList(QWidget *w) : QDialog(w ? w : mainwin)

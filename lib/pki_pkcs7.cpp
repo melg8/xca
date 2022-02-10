@@ -26,9 +26,9 @@ pki_pkcs7::~pki_pkcs7()
 		PKCS7_free(p7);
 }
 
-void pki_pkcs7::encryptFile(pki_x509 *crt, const QString &filename)
+void pki_pkcs7::encryptFile(pki_x509 *crt, const QString &name)
 {
-	XFile f(filename);
+    XFile f(name);
 	encryptBio(crt, BioByteArray(f.readAll()).ro());
 }
 
@@ -79,9 +79,9 @@ void pki_pkcs7::signBio(pki_x509 *crt, BIO *bio)
 	sk_X509_free(certstack);
 }
 
-void pki_pkcs7::signFile(pki_x509 *crt, const QString &filename)
+void pki_pkcs7::signFile(pki_x509 *crt, const QString &name)
 {
-	XFile f(filename);
+    XFile f(name);
 	f.open_read();
 	if (crt)
 		signBio(crt, BioByteArray(f.readAll()).ro());

@@ -47,7 +47,7 @@ static QString CurveComment(int nid)
 }
 #endif
 
-void KeyDetail::setupFingerprints(pki_key *key)
+void KeyDetail::setupFingerprints(pki_key *pKey)
 {
 	int pos = 0;
 	QWidget *widget = new QWidget(fingerprint);
@@ -62,14 +62,14 @@ void KeyDetail::setupFingerprints(pki_key *key)
 		"x509 SHA1" << "DER SHA256";
 
 	foreach(QString type, sl) {
-		qDebug() << type << key->fingerprint(type);
+        qDebug() << type << pKey->fingerprint(type);
 
 		QLabel *left = new QLabel(widget);
 		CopyLabel *right = new CopyLabel(widget);
 
 		left->setTextFormat(Qt::PlainText);
 		left->setText(type);
-		right->setText(key->fingerprint(type));
+        right->setText(pKey->fingerprint(type));
 
 		grid->addWidget(left, pos, 0);
 		grid->addWidget(right, pos, 1);
@@ -77,26 +77,26 @@ void KeyDetail::setupFingerprints(pki_key *key)
 	}
 }
 
-void KeyDetail::setKey(pki_key *key)
+void KeyDetail::setKey(pki_key *pKey)
 {
-	keySqlId = key->getSqlItemId();
-	keyDesc->setText(key->getIntName());
-	keyLength->setText(key->length());
+    keySqlId = pKey->getSqlItemId();
+    keyDesc->setText(pKey->getIntName());
+    keyLength->setText(pKey->length());
 
 	keyPrivEx->disableToolTip();
-	if (!key->isToken())
+    if (!pKey->isToken())
 		tabWidget->removeTab(1);
-	tlHeader->setText(tr("Details of the %1 key").arg(key->getTypeString()));
-	comment->setPlainText(key->getComment());
+    tlHeader->setText(tr("Details of the %1 key").arg(pKey->getTypeString()));
+    comment->setPlainText(pKey->getComment());
 
-	setupFingerprints(key);
+    setupFingerprints(pKey);
 
-	if (key->isPubKey()) {
+    if (pKey->isPubKey()) {
 		keyPrivEx->setText(tr("Not available"));
 		keyPrivEx->setRed();
-	} else if (key->isToken()) {
+    } else if (pKey->isToken()) {
 		image->setPixmap(QPixmap(":scardImg"));
-		pki_scard *card = static_cast<pki_scard *>(key);
+        pki_scard *card = static_cast<pki_scard *>(pKey);
 		cardLabel->setText(card->getCardLabel());
 		cardModel->setText(card->getModel());
 		cardManufacturer->setText(card->getManufacturer());
@@ -108,22 +108,22 @@ void KeyDetail::setKey(pki_key *key)
 		keyPrivEx->setText(tr("Available"));
 		keyPrivEx->setGreen();
 	}
-	switch (key->getKeyType()) {
+    switch (pKey->getKeyType()) {
 		case EVP_PKEY_RSA:
-			keyPubEx->setText(key->pubEx());
-			keyModulus->setText(key->modulus());
+            keyPubEx->setText(pKey->pubEx());
+            keyModulus->setText(pKey->modulus());
 			break;
 		case EVP_PKEY_DSA:
 			tlPubEx->setText(tr("Sub prime"));
 			tlModulus->setTitle(tr("Public key"));
 			tlPrivEx->setText(tr("Private key"));
-			keyPubEx->setText(key->subprime());
-			keyModulus->setText(key->pubkey());
+            keyPubEx->setText(pKey->subprime());
+            keyModulus->setText(pKey->pubkey());
 			break;
 #ifndef OPENSSL_NO_EC
 		case EVP_PKEY_EC:
 			int nid;
-			nid = key->ecParamNid();
+            nid = pKey->ecParamNid();
 			tlModulus->setTitle(tr("Public key"));
 			tlPrivEx->setText(tr("Private key"));
 			tlPubEx->setText(tr("Curve name"));
@@ -132,7 +132,7 @@ void KeyDetail::setKey(pki_key *key)
 				MainWindow::getResolver(),
 				SLOT(searchOid(QString)));
 			keyPubEx->setToolTip(CurveComment(nid));
-			keyModulus->setText(key->ecPubKey());
+            keyModulus->setText(pKey->ecPubKey());
 			break;
 #ifdef EVP_PKEY_ED25519
 		case EVP_PKEY_ED25519:
@@ -140,7 +140,7 @@ void KeyDetail::setKey(pki_key *key)
 			tlPrivEx->setText(tr("Private key"));
 			tlPubEx->setText(tr("Curve name"));
 			keyPubEx->setText("ed25519");
-			keyModulus->setText(key->ed25519PubKey().toHex());
+            keyModulus->setText(pKey->ed25519PubKey().toHex());
 			break;
 #endif
 #endif
@@ -155,23 +155,23 @@ void KeyDetail::itemChanged(pki_base *pki)
 		keyDesc->setText(pki->getIntName());
 }
 
-void KeyDetail::showKey(QWidget *parent, pki_key *key, bool ro)
+void KeyDetail::showKey(QWidget *parent, pki_key *pKey, bool ro)
 {
-	if (!key)
+    if (!pKey)
 		return;
 	KeyDetail *dlg = new KeyDetail(parent);
 	if (!dlg)
 		return;
-	dlg->setKey(key);
+    dlg->setKey(pKey);
 	dlg->keyDesc->setReadOnly(ro);
 	dlg->comment->setReadOnly(ro);
 	if (dlg->exec()) {
-		db_base *db = Database.modelForPki(key);
+        db_base *db = Database.modelForPki(pKey);
 		if (!db) {
-			key->setIntName(dlg->keyDesc->text());
-			key->setComment(dlg->comment->toPlainText());
+            pKey->setIntName(dlg->keyDesc->text());
+            pKey->setComment(dlg->comment->toPlainText());
 		} else {
-			db->updateItem(key, dlg->keyDesc->text(),
+            db->updateItem(pKey, dlg->keyDesc->text(),
 					dlg->comment->toPlainText());
 		}
 	}

@@ -31,9 +31,9 @@ class pki_pkcs7: public pki_multi
 		pki_pkcs7(const QString &name = QString());
 		virtual ~pki_pkcs7();
 
-		void signFile(pki_x509 *crt, const QString &filename);
+        void signFile(pki_x509 *crt, const QString &name);
 		void signCert(pki_x509 *crt, pki_x509 *contCert);
-		void encryptFile(pki_x509 *crt, const QString &filename);
+        void encryptFile(pki_x509 *crt, const QString &name);
 		void writeP7(XFile &file, bool PEM);
 		void fromPEM_BIO(BIO *bio, const QString &name);
 		void fromPEMbyteArray(const QByteArray &, const QString &);

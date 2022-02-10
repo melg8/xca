@@ -505,18 +505,18 @@ EVP_PKEY *pki_evp::decryptKey() const
 	return priv;
 }
 
-EVP_PKEY *pki_evp::priv2pub(EVP_PKEY* key)
+EVP_PKEY *pki_evp::priv2pub(EVP_PKEY* privateKey)
 {
 	int keylen;
 	unsigned char *p, *p1;
 	EVP_PKEY *pubkey;
 
-	keylen = i2d_PUBKEY(key, NULL);
+    keylen = i2d_PUBKEY(privateKey, NULL);
 	p1 = p = (unsigned char *)OPENSSL_malloc(keylen);
 	Q_CHECK_PTR(p);
 
 	/* convert rsa/dsa/ec to Pubkey */
-	keylen = i2d_PUBKEY(key, &p);
+    keylen = i2d_PUBKEY(privateKey, &p);
 	pki_openssl_error();
 	p = p1;
 	pubkey = d2i_PUBKEY(NULL, (const unsigned char**)&p, keylen);

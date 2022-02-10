@@ -53,7 +53,7 @@ class pki_evp: public pki_key
 		void encryptKey(const char *password = NULL);
 		void bogusEncryptKey();
 		EVP_PKEY *decryptKey() const;
-		EVP_PKEY *priv2pub(EVP_PKEY* key);
+        EVP_PKEY *priv2pub(EVP_PKEY* privateKey);
 		static QString removeTypeFromIntName(QString n);
 		void fromPEMbyteArray(const QByteArray &ba, const QString &name);
 		void fload(const QString &fname);
