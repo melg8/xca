@@ -459,7 +459,7 @@ void pki_temp::try_fload(XFile &file)
 	QByteArray ba = file.read(4096*1024);
 	try {
 		fromPEM_BIO(BioByteArray(ba).ro(), file.fileName());
-	} catch (errorEx &err) {
+    } catch (const errorEx &) {
 		fromExportData(ba);
 	}
 	pki_openssl_error();
