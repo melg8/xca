@@ -18,12 +18,12 @@
 
 namespace db {
 
-	QByteArray intToData(uint32_t val)
+    static QByteArray intToData(uint32_t val)
 	{
 		uint32_t v = xhtonl(val);
 		return QByteArray((char*)&v, sizeof(uint32_t));
 	}
-	uint32_t intFromData(QByteArray &ba)
+    static uint32_t intFromData(QByteArray &ba)
 	{
 		uint32_t ret;
 		if ((unsigned)(ba.count()) < sizeof(uint32_t)) {
@@ -33,7 +33,7 @@ namespace db {
 		ba = ba.mid(sizeof(uint32_t));
 		return xntohl(ret);
 	}
-	bool boolFromData(QByteArray &ba)
+    static bool boolFromData(QByteArray &ba)
 	{
 		unsigned char c;
 		if (ba.count() < 1)
@@ -43,7 +43,7 @@ namespace db {
 		ba = ba.mid(1);
 		return c ? true : false;
 	}
-	QString stringFromData(QByteArray &ba)
+    static QString stringFromData(QByteArray &ba)
 	{
 		int idx = ba.indexOf('\0');
 

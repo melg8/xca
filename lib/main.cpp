@@ -30,7 +30,6 @@
 #include <windows.h>
 #endif
 
-void migrateOldPaths();
 
 char segv_data[1024];
 MainWindow *mainwin = NULL;
@@ -58,7 +57,7 @@ static void segv_handler_gui(int)
 }
 #endif
 
-void myMessageOutput(QtMsgType type, const QMessageLogContext &,
+static void myMessageOutput(QtMsgType type, const QMessageLogContext &,
 			const QString &msg)
 {
 	static QElapsedTimer *t;

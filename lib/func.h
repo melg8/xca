@@ -89,4 +89,5 @@ QString appendXcaComment(QString current, QString msg);
 /* from version.cpp */
 const char *version_str(bool html);
 
+void migrateOldPaths();
 #endif

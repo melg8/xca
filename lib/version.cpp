@@ -8,6 +8,7 @@
  */
 
 #include "local.h"
+#include "func.h"
 
 #define VERSION XCA_VERSION
 
