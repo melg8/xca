@@ -61,7 +61,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 
     if (CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL 6.0 OR
         CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 6.0)
-        add_compiler_flags (-Wno-shift-overflow) # Value=2.
+        add_compiler_flags (-Wshift-overflow=2) # Value=2.
         add_compiler_flags (-Wnull-dereference)
         add_compiler_flags (-Wduplicated-cond)
     endif ()
