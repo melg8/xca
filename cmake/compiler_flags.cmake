@@ -44,7 +44,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     add_compiler_flags (-Wmissing-declarations)
     add_compiler_flags (-Woverloaded-virtual)
     add_compiler_flags (-Wunused-variable)
-    add_compiler_flags (-fno-var-tracking-assignments)
+    add_compiler_flags (-fvar-tracking-assignments)
 
     if (NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.6)
         add_compiler_flags (-Wnoexcept)
