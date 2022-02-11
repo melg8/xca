@@ -680,7 +680,7 @@ typedef unsigned long ck_mechanism_type_t;
 #define CKM_DSA_PARAMETER_GEN		(0x2000)
 #define CKM_DH_PKCS_PARAMETER_GEN	(0x2001)
 #define CKM_X9_42_DH_PARAMETER_GEN	(0x2002)
-#define CKM_VENDOR_DEFINED		((unsigned long) (1 << 31))
+#define CKM_VENDOR_DEFINED		((unsigned long) (1UL << 31))
 
 
 struct ck_mechanism
@@ -1187,7 +1187,7 @@ struct ck_c_initialize_args
 #define CKR_MUTEX_BAD				(0x1a0)
 #define CKR_MUTEX_NOT_LOCKED			(0x1a1)
 #define CKR_FUNCTION_REJECTED			(0x200)
-#define CKR_VENDOR_DEFINED			((unsigned long) (1 << 31))
+#define CKR_VENDOR_DEFINED			((unsigned long) (1UL << 31))
 
 
 
