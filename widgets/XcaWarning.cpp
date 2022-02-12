@@ -34,7 +34,7 @@ void xcaWarningBox::addButton(QMessageBox::StandardButton button,
 int xcaWarningGui::showBox(const QString &txt, QMessageBox::Icon icn,
 			QMessageBox::StandardButtons b)
 {
-	xcaWarningBox w(NULL, txt, icn);
+    xcaWarningBox w(nullptr, txt, icn);
 	w.setStandardButtons(b);
 	return w.exec();
 }
@@ -68,7 +68,7 @@ void xcaWarningGui::sqlerror(QSqlError err)
 
 void xcaWarningGui::error(const QString &msg)
 {
-	xcaWarningBox box(NULL, msg);
+    xcaWarningBox box(nullptr, msg);
 	box.addButton(QMessageBox::Apply, tr("Copy to Clipboard"));
 	box.addButton(QMessageBox::Ok);
 	if (box.exec() == QMessageBox::Apply) {
@@ -85,8 +85,8 @@ void xcaWarningGui::warningv3(const QString &msg, const extList &el)
 		QString("</h3><hr>") + el.getHtml("<br>");
 
 	QTextEdit *textbox = new QTextEdit(etext);
-	XcaDialog *d = new XcaDialog(NULL, x509, textbox,
-				QString(), QString());
+    XcaDialog *d = new XcaDialog(nullptr, x509, textbox,
+                QString(), QString());
 	d->aboutDialog(QPixmap(":certImg"));
 	d->exec();
 	delete d;

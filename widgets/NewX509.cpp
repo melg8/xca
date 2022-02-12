@@ -120,7 +120,7 @@ NewX509::NewX509(QWidget *parent) : QDialog(parent ? parent : mainwin)
 	mainwin->helpdlg->register_ctxhelp_button(this, "wizard");
 
 	/* temporary storage for creating temporary X509V3_CTX */
-	ctx_cert = NULL;
+    ctx_cert = nullptr;
 	pkiSource = generated;
 	foreach(int nid, distname_nid)
 		keys << QString(OBJ_nid2ln(nid));
@@ -157,7 +157,7 @@ NewX509::NewX509(QWidget *parent) : QDialog(parent ? parent : mainwin)
 	nsImg->setPixmap(QPixmap(":nsImg"));
 
 	// are there any useable private keys  ?
-	newKeyDone(NULL);
+    newKeyDone(nullptr);
 
 	// any PKCS#10 requests to be used ?
 	QList<pki_x509req *> requests = getAllRequests();
@@ -190,7 +190,7 @@ NewX509::NewX509(QWidget *parent) : QDialog(parent ? parent : mainwin)
 		ekeyUsage->addItem(OBJ_nid2ln(nid));
 
 	// init the X509 v3 context
-	X509V3_set_ctx(&ext_ctx, NULL , NULL, NULL, NULL, 0);
+    X509V3_set_ctx(&ext_ctx, nullptr , nullptr, nullptr, nullptr, 0);
     X509V3_set_ctx_nodb(&ext_ctx)
 
 	// Setup dnWidget
@@ -326,7 +326,7 @@ void NewX509::setupExtDNwidget(const QString &s, QLineEdit *l)
 void NewX509::setupLineEditByNid(int nid, QLineEdit *l)
 {
     ASN1_STRING_TABLE *table = ASN1_STRING_TABLE_get(nid);
-	QValidator *validator = NULL;
+    QValidator *validator = nullptr;
 	QStringList info;
 
 	info << QString("[%1]").arg(OBJ_nid2sn(nid));
@@ -446,7 +446,7 @@ pki_temp *NewX509::caTemplate(pki_x509 *ca) const
 {
 	QVariant sqlId = ca->getTemplateSqlId();
 	if (!sqlId.isValid())
-		return NULL;
+        return nullptr;
 	return Store.lookupPki<pki_temp>(sqlId);
 }
 
@@ -631,7 +631,7 @@ void NewX509::switchHashAlgo()
 	else if (fromReqCB->isChecked())
 		sig = getSelectedReq();
 	else
-		sig = NULL;
+        sig = nullptr;
 
 	key = sig ? sig->getRefKey() : getSelectedKey();
 
@@ -735,7 +735,7 @@ void NewX509::templateChanged(pki_temp *templ)
 pki_temp *NewX509::currentTemplate()
 {
 	if (!tempList->isEnabled())
-		return NULL;
+        return nullptr;
 	return tempList->currentPkiItem();
 }
 
@@ -881,8 +881,8 @@ void NewX509::on_applyTime_clicked()
 void NewX509::setupTmpCtx()
 {
 	pki_x509 *signcert;
-	pki_x509req *req = NULL;
-	pki_key *key = NULL;
+    pki_x509req *req = nullptr;
+    pki_key *key = nullptr;
 	a1int serial(1);
 	QString errtxt;
 
@@ -1257,8 +1257,8 @@ void NewX509::accept()
 				break;
 		}
 	}
-	pki_key *signkey = NULL;
-	pki_x509 *signer = NULL;
+    pki_key *signkey = nullptr;
+    pki_x509 *signer = nullptr;
 	if (foreignSignRB->isChecked()) {
 		signer = getSelectedSigner();
 		if (signer)

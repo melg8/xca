@@ -121,7 +121,7 @@ QSqlError pki_scard::deleteSqlData()
 EVP_PKEY *pki_scard::load_pubkey(pkcs11 &p11, CK_OBJECT_HANDLE object) const
 {
 	unsigned long keytype;
-	EVP_PKEY *pkey = NULL;
+    EVP_PKEY *pkey = nullptr;
 
 	pk11_attr_ulong type(CKA_KEY_TYPE);
 	p11.loadAttribute(type, object);
@@ -137,7 +137,7 @@ EVP_PKEY *pki_scard::load_pubkey(pkcs11 &p11, CK_OBJECT_HANDLE object) const
 		pk11_attr_data e(CKA_PUBLIC_EXPONENT);
 		p11.loadAttribute(e, object);
 
-		RSA_set0_key(rsa, n.getBignum(), e.getBignum(), NULL);
+        RSA_set0_key(rsa, n.getBignum(), e.getBignum(), nullptr);
 
 		pkey = EVP_PKEY_new();
 		EVP_PKEY_assign_RSA(pkey, rsa);
@@ -159,7 +159,7 @@ EVP_PKEY *pki_scard::load_pubkey(pkcs11 &p11, CK_OBJECT_HANDLE object) const
 		p11.loadAttribute(pub, object);
 
 		DSA_set0_pqg(dsa, p.getBignum(), q.getBignum(), g.getBignum());
-		DSA_set0_key(dsa, pub.getBignum(), NULL);
+        DSA_set0_key(dsa, pub.getBignum(), nullptr);
 
 		pkey = EVP_PKEY_new();
 		EVP_PKEY_assign_DSA(pkey, dsa);
@@ -191,10 +191,10 @@ EVP_PKEY *pki_scard::load_pubkey(pkcs11 &p11, CK_OBJECT_HANDLE object) const
 			d2i_bytearray(D2I_VOID(d2i_ASN1_OCTET_STRING), ba);
 		pki_openssl_error();
 
-		BIGNUM *bn = BN_bin2bn(os->data, os->length, NULL);
+        BIGNUM *bn = BN_bin2bn(os->data, os->length, nullptr);
 		pki_openssl_error();
 
-		EC_POINT *point = EC_POINT_bn2point(group, bn, NULL, NULL);
+        EC_POINT *point = EC_POINT_bn2point(group, bn, nullptr, nullptr);
 		BN_free(bn);
 		ASN1_OCTET_STRING_free(os);
 		pki_openssl_error();
@@ -271,7 +271,7 @@ pk11_attr_data pki_scard::getIdAttr() const
 	pk11_attr_data id(CKA_ID);
 	if (object_id.isEmpty())
 		return id;
-	BIGNUM *bn = NULL;
+    BIGNUM *bn = nullptr;
 	BN_hex2bn(&bn, CCHAR(object_id));
 	id.setBignum(bn, true);
 	return id;
@@ -294,11 +294,11 @@ pk11_attlist pki_scard::objectAttributesNoId(EVP_PKEY *pk, bool priv) const
 #ifndef OPENSSL_NO_EC
 	const EC_KEY *ec;
 #endif
-	const BIGNUM *n = NULL;
-	const BIGNUM *e = NULL;
-	const BIGNUM *p = NULL;
-	const BIGNUM *q = NULL;
-	const BIGNUM *g = NULL;
+    const BIGNUM *n = nullptr;
+    const BIGNUM *e = nullptr;
+    const BIGNUM *p = nullptr;
+    const BIGNUM *q = nullptr;
+    const BIGNUM *g = nullptr;
 
 	pk11_attlist attrs(pk11_attr_ulong(CKA_CLASS,
 			priv ? CKO_PRIVATE_KEY : CKO_PUBLIC_KEY));
@@ -306,7 +306,7 @@ pk11_attlist pki_scard::objectAttributesNoId(EVP_PKEY *pk, bool priv) const
 	switch (EVP_PKEY_type(EVP_PKEY_id(pk))) {
 	case EVP_PKEY_RSA:
 		rsa = EVP_PKEY_get0_RSA(pk);
-		RSA_get0_key(rsa, &n, &e, NULL);
+        RSA_get0_key(rsa, &n, &e, nullptr);
 		attrs << pk11_attr_ulong(CKA_KEY_TYPE, CKK_RSA) <<
 			pk11_attr_data(CKA_MODULUS, n) <<
 			pk11_attr_data(CKA_PUBLIC_EXPONENT, e);
@@ -405,14 +405,14 @@ void pki_scard::store_token(const slotid &slot, EVP_PKEY *pkey)
 	pk11_attlist pub_atts;
 	pk11_attlist priv_atts;
 	QList<CK_OBJECT_HANDLE> objects;
-	const BIGNUM *d = NULL;
-	const BIGNUM *p = NULL;
-	const BIGNUM *q = NULL;
-	const BIGNUM *dmp1 = NULL;
-	const BIGNUM *dmq1 = NULL;
-	const BIGNUM *iqmp = NULL;
-	const BIGNUM *priv_key = NULL;
-	const BIGNUM *pub_key = NULL;
+    const BIGNUM *d = nullptr;
+    const BIGNUM *p = nullptr;
+    const BIGNUM *q = nullptr;
+    const BIGNUM *dmp1 = nullptr;
+    const BIGNUM *dmq1 = nullptr;
+    const BIGNUM *iqmp = nullptr;
+    const BIGNUM *priv_key = nullptr;
+    const BIGNUM *pub_key = nullptr;
 
 	pub_atts = objectAttributesNoId(pkey, false);
 	priv_atts = objectAttributesNoId(pkey, true);
@@ -449,7 +449,7 @@ void pki_scard::store_token(const slotid &slot, EVP_PKEY *pkey)
 	switch (EVP_PKEY_type(EVP_PKEY_id(pkey))) {
 	case EVP_PKEY_RSA:
 		rsa = EVP_PKEY_get0_RSA(pkey);
-		RSA_get0_key(rsa, NULL, NULL, &d);
+        RSA_get0_key(rsa, nullptr, nullptr, &d);
 		RSA_get0_factors(rsa, &p, &q);
 		RSA_get0_crt_params(rsa, &dmp1, &dmq1, &iqmp);
 
@@ -479,7 +479,7 @@ void pki_scard::store_token(const slotid &slot, EVP_PKEY *pkey)
 		ec = EVP_PKEY_get0_EC_KEY(pkey);
 		point = EC_POINT_point2bn(EC_KEY_get0_group(ec),
 			EC_KEY_get0_public_key(ec),
-			EC_KEY_get_conv_form(ec), NULL, NULL);
+            EC_KEY_get_conv_form(ec), nullptr, nullptr);
 
 		pki_openssl_error();
 		size = BN_num_bytes(point);

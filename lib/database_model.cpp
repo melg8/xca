@@ -165,7 +165,7 @@ db_base *database_model::modelForPki(const pki_base *pki) const
 		return model<db_crl>();
 	if (dynamic_cast<const pki_temp*>(pki))
 		return model<db_temp>();
-	return NULL;
+    return nullptr;
 }
 
 pki_base *database_model::insert(pki_base *pki)
@@ -180,7 +180,7 @@ pki_base *database_model::insert(pki_base *pki)
 			insert(i);
 	}
 	delete pki;
-	return NULL;
+    return nullptr;
 }
 
 void database_model::restart_timer()

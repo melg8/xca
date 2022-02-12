@@ -86,7 +86,7 @@ class pki_lookup
 	{
 		quint64 id = v.toULongLong();
 		if (id == 0)
-			return NULL;
+            return nullptr;
 		T *pki = dynamic_cast<T*>(get(id));
 		if (pki)
 			return pki;
@@ -97,7 +97,7 @@ class pki_lookup
 				.arg(id).arg(typeid(p).name())
 				.arg("") //p ? p->getIntName() : "<NULL item>")
 				.arg(typeid(T*).name());
-		return NULL;
+        return nullptr;
 	}
 
 	template <class T>

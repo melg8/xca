@@ -35,7 +35,7 @@ void pki_evp::init()
 
 void pki_evp::setOwnPass(enum passType x)
 {
-	EVP_PKEY *pk=NULL, *pk_back = key;
+    EVP_PKEY *pk=nullptr, *pk_back = key;
 	enum passType oldOwnPass = ownPass;
 
 	if (ownPass == x || isPubKey())
@@ -43,7 +43,7 @@ void pki_evp::setOwnPass(enum passType x)
 
 	try {
 		pk = decryptKey();
-		if (pk == NULL)
+        if (pk == nullptr)
 			return;
 
 		key = pk;
@@ -105,8 +105,8 @@ void pki_evp::generate(const keyjob &task)
 	}
 	case EVP_PKEY_DSA: {
 		DSA *dsakey = DSA_new();
-		if (DSA_generate_parameters_ex(dsakey, task.size, NULL, 0,
-			 NULL, NULL, bar) && DSA_generate_key(dsakey))
+        if (DSA_generate_parameters_ex(dsakey, task.size, nullptr, 0,
+             nullptr, nullptr, bar) && DSA_generate_key(dsakey))
 				EVP_PKEY_assign_DSA(key, dsakey);
 		else
 			DSA_free(dsakey);
@@ -119,7 +119,7 @@ void pki_evp::generate(const keyjob &task)
 		if (!group)
 			break;
 		eckey = EC_KEY_new();
-		if (eckey == NULL) {
+        if (eckey == nullptr) {
 			EC_GROUP_free(group);
 			break;
 		}
@@ -137,8 +137,8 @@ void pki_evp::generate(const keyjob &task)
 	}
 #ifdef EVP_PKEY_ED25519
 	case EVP_PKEY_ED25519: {
-		EVP_PKEY *pkey = NULL;
-		EVP_PKEY_CTX *pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_ED25519, NULL);
+        EVP_PKEY *pkey = nullptr;
+        EVP_PKEY_CTX *pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_ED25519, nullptr);
 		EVP_PKEY_keygen_init(pctx);
 		EVP_PKEY_keygen(pctx, &pkey);
 		EVP_PKEY_CTX_free(pctx);
@@ -180,10 +180,10 @@ static bool EVP_PKEY_isPrivKey(EVP_PKEY *key)
 
 	switch (EVP_PKEY_type(keytype)) {
 		case EVP_PKEY_RSA:
-			RSA_get0_key(EVP_PKEY_get0_RSA(key), NULL, NULL, &b);
+            RSA_get0_key(EVP_PKEY_get0_RSA(key), nullptr, nullptr, &b);
 			return b ? true: false;
 		case EVP_PKEY_DSA:
-			DSA_get0_key(EVP_PKEY_get0_DSA(key), NULL, &b);
+            DSA_get0_key(EVP_PKEY_get0_DSA(key), nullptr, &b);
 			return b ? true: false;
 #ifndef OPENSSL_NO_EC
 		case EVP_PKEY_EC:
@@ -231,7 +231,7 @@ void pki_evp::fromPEMbyteArray(const QByteArray &ba, const QString &name)
 	pkey = load_ssh_ed25519_privatekey(ba, p);
 
 	while (!pkey) {
-		pkey = PEM_read_bio_PrivateKey(BioByteArray(ba).ro(), NULL,
+        pkey = PEM_read_bio_PrivateKey(BioByteArray(ba).ro(), nullptr,
 						PwDialogCore::pwCallback, &p);
 		if (openssl_pw_error())
 			XCA_PASSWD_ERROR();
@@ -242,7 +242,7 @@ void pki_evp::fromPEMbyteArray(const QByteArray &ba, const QString &name)
 	}
 	if (!pkey) {
 		pki_ign_openssl_error();
-        pkey = PEM_read_bio_PUBKEY(BioByteArray(ba).ro(), NULL, NULL, nullptr);
+        pkey = PEM_read_bio_PUBKEY(BioByteArray(ba).ro(), nullptr, nullptr, nullptr);
 	}
 	pki_openssl_error();
 	set_EVP_PKEY(pkey, name);
@@ -273,7 +273,7 @@ static void search_ec_oid(EVP_PKEY *pkey)
 	 * because of explicit parameters */
 	foreach(builtin_curve curve, builtinCurves) {
 		builtin = EC_GROUP_new_by_curve_name(curve.nid);
-		if (EC_GROUP_cmp(builtin, ec_group, NULL) == 0) {
+        if (EC_GROUP_cmp(builtin, ec_group, nullptr) == 0) {
             EC_GROUP_set_curve_name(const_cast<EC_GROUP *>(ec_group), curve.nid);
             EC_GROUP_set_asn1_flag(const_cast<EC_GROUP *>(ec_group), 1);
 			EC_GROUP_free(builtin);
@@ -311,23 +311,24 @@ void pki_evp::set_EVP_PKEY(EVP_PKEY *pkey, QString name)
 EVP_PKEY *pki_evp::load_ssh_ed25519_privatekey(const QByteArray &ba,
 						const pass_info &p)
 {
-	EVP_PKEY *pkey = NULL;
+    EVP_PKEY *pkey = nullptr;
 	unsigned char *pdata;
 	long plen;
 	QByteArray chunk, enc_algo, kdfname, kdf, pub, priv;
 
 	(void)p; // Will be used later for decryption
-	if (!PEM_bytes_read_bio(&pdata, &plen, NULL, PEM_STRING_OPENSSH_KEY,
-				BioByteArray(ba).ro(), NULL, NULL))
-		return NULL;
+    if (!PEM_bytes_read_bio(&pdata, &plen, nullptr, PEM_STRING_OPENSSH_KEY,
+                BioByteArray(ba).ro(), nullptr, nullptr)) {
+        return nullptr;
+    }
 
 	QByteArray content((const char*)pdata, plen);
-	OPENSSL_free(pdata);
+    OPENSSL_free(pdata);
 
 	if (!content.startsWith("openssh-key-v1") ||
 	     // also check trailing \0
 	     content.constData()[sizeof "openssh-key-v1" -1])
-		return NULL;
+        return nullptr;
 
 	content.remove(0, sizeof "openssh-key-v1");
 	// encryption: "none", "aes256-ctr"
@@ -338,19 +339,19 @@ EVP_PKEY *pki_evp::load_ssh_ed25519_privatekey(const QByteArray &ba,
 
 	if (enc_algo != "none" || kdfname != "none") {
 		qCritical("Encrypted SSH ED25519 keys not supported, yet");
-		return NULL;
+        return nullptr;
 	}
 	// check bytes 00 00 00 01
 	const char *d = content.constData();
 	if (d[0] || d[1] || d[2] || d[3] != 1)
-		return NULL;
+        return nullptr;
 	content.remove(0, 4);
 	// Handle first occurance of the public key
 	pub = ssh_key_next_chunk(&content);
 	ssh_key_check_chunk(&pub, "ssh-ed25519");
 	pub = ssh_key_next_chunk(&pub);
 	if (pub.count() != ED25519_KEYLEN)
-		return NULL;
+        return nullptr;
 
 	// Followed by the private key
 	priv = ssh_key_next_chunk(&content);
@@ -361,18 +362,18 @@ EVP_PKEY *pki_evp::load_ssh_ed25519_privatekey(const QByteArray &ba,
 	// The first pubkey must match the second occurance
 	// in front of the private one
 	if (pub != ssh_key_next_chunk(&priv))
-		return NULL;
+        return nullptr;
 	priv = ssh_key_next_chunk(&priv);
 	// The private key is concatenated by the public key in one chunk
 	if (priv.count() != 2 * ED25519_KEYLEN)
-		return NULL;
+        return nullptr;
 	// The last ED25519_KEYLEN bytes must match the public key
 	if (pub != priv.mid(ED25519_KEYLEN))
-		return NULL;
+        return nullptr;
 	// The first ED25519_KEYLEN octets are the private key
 #ifndef OPENSSL_NO_EC
 #ifdef EVP_PKEY_ED25519
-	pkey = EVP_PKEY_new_raw_private_key(EVP_PKEY_ED25519, NULL,
+    pkey = EVP_PKEY_new_raw_private_key(EVP_PKEY_ED25519, nullptr,
 		(const unsigned char *)priv.constData(), ED25519_KEYLEN);
 #endif
 #endif
@@ -394,7 +395,7 @@ void pki_evp::fload(const QString &fname)
 
 	do {
 		pkey = PEM_read_bio_PrivateKey(BioByteArray(ba).ro(),
-						NULL, cb, &p);
+                        nullptr, cb, &p);
 		if (openssl_pw_error())
 			XCA_PASSWD_ERROR();
 		if (p.getResult() != pw_ok)
@@ -405,18 +406,18 @@ void pki_evp::fload(const QString &fname)
 
 	if (!pkey) {
 		pki_ign_openssl_error();
-		pkey = d2i_PrivateKey_bio(BioByteArray(ba).ro(), NULL);
+        pkey = d2i_PrivateKey_bio(BioByteArray(ba).ro(), nullptr);
 	}
 	if (!pkey) {
 		pki_ign_openssl_error();
 		pkey = d2i_PKCS8PrivateKey_bio(BioByteArray(ba).ro(),
-						NULL, cb, &p);
+                        nullptr, cb, &p);
 	}
 	if (!pkey) {
 		PKCS8_PRIV_KEY_INFO *p8inf;
 		pki_ign_openssl_error();
 		p8inf = d2i_PKCS8_PRIV_KEY_INFO_bio(BioByteArray(ba).ro(),
-							NULL);
+                            nullptr);
 		if (p8inf) {
 			pkey = EVP_PKCS82PKEY(p8inf);
 			PKCS8_PRIV_KEY_INFO_free(p8inf);
@@ -432,11 +433,11 @@ void pki_evp::fload(const QString &fname)
 	}
 	if (!pkey) {
 		pki_ign_openssl_error();
-		pkey = PEM_read_bio_PUBKEY(BioByteArray(ba).ro(), NULL, cb, &p);
+        pkey = PEM_read_bio_PUBKEY(BioByteArray(ba).ro(), nullptr, cb, &p);
 	}
 	if (!pkey) {
 		pki_ign_openssl_error();
-		pkey = d2i_PUBKEY_bio(BioByteArray(ba).ro(), NULL);
+        pkey = d2i_PUBKEY_bio(BioByteArray(ba).ro(), nullptr);
 	}
 	if (!pkey) {
 		pki_ign_openssl_error();
@@ -489,9 +490,9 @@ EVP_PKEY *pki_evp::decryptKey() const
 	QByteArray myencKey = getEncKey();
 	qDebug() << "myencKey.count()"<<myencKey.count();
 	if (myencKey.count() == 0)
-		return NULL;
-	EVP_PKEY *priv = NULL;
-	X509_SIG *p8 = d2i_PKCS8_bio(BioByteArray(myencKey).ro(), NULL);
+        return nullptr;
+    EVP_PKEY *priv = nullptr;
+    X509_SIG *p8 = d2i_PKCS8_bio(BioByteArray(myencKey).ro(), nullptr);
 	if (p8) {
 		PKCS8_PRIV_KEY_INFO *p8inf = PKCS8_decrypt(p8,
 				ownPassBuf.constData(), ownPassBuf.size());
@@ -511,7 +512,7 @@ EVP_PKEY *pki_evp::priv2pub(EVP_PKEY* privateKey)
     unsigned char *p, *p1;
 	EVP_PKEY *pubkey;
 
-    keylen = i2d_PUBKEY(privateKey, NULL);
+    keylen = i2d_PUBKEY(privateKey, nullptr);
 	p1 = p = (unsigned char *)OPENSSL_malloc(keylen);
 	Q_CHECK_PTR(p);
 
@@ -519,7 +520,7 @@ EVP_PKEY *pki_evp::priv2pub(EVP_PKEY* privateKey)
     keylen = i2d_PUBKEY(privateKey, &p);
 	pki_openssl_error();
 	p = p1;
-    pubkey = d2i_PUBKEY(NULL, const_cast<const unsigned char **>(&p), keylen);
+    pubkey = d2i_PUBKEY(nullptr, const_cast<const unsigned char **>(&p), keylen);
 	OPENSSL_free(p1);
 	pki_openssl_error();
 	return pubkey;
@@ -568,7 +569,7 @@ void pki_evp::encryptKey(const char *password)
 	/* Convert private key to DER(PKCS8-aes) */
 	BioByteArray bba;
 	i2d_PKCS8PrivateKey_bio(bba, key, EVP_aes_256_cbc(),
-        ownPassBuf.data(), ownPassBuf.size(), NULL, nullptr);
+        ownPassBuf.data(), ownPassBuf.size(), nullptr, nullptr);
 	pki_openssl_error();
 	encKey = bba;
 
@@ -678,24 +679,24 @@ bool pki_evp::pem(BioByteArray &b)
 		case EVP_PKEY_RSA:
 			PEM_write_bio_RSAPrivateKey(b,
 				EVP_PKEY_get0_RSA(pkey),
-				NULL, NULL, 0, NULL, NULL);
+                nullptr, nullptr, 0, nullptr, nullptr);
 			break;
 		case EVP_PKEY_DSA:
 			PEM_write_bio_DSAPrivateKey(b,
 				EVP_PKEY_get0_DSA(pkey),
-				NULL, NULL, 0, NULL, NULL);
+                nullptr, nullptr, 0, nullptr, nullptr);
 			break;
 #ifndef OPENSSL_NO_EC
 		case EVP_PKEY_EC:
 			PEM_write_bio_ECPrivateKey(b,
 				EVP_PKEY_get0_EC_KEY(pkey),
-				NULL, NULL, 0, NULL, NULL);
+                nullptr, nullptr, 0, nullptr, nullptr);
 			break;
 #ifdef EVP_PKEY_ED25519
 		case EVP_PKEY_ED25519:
 			 if (xport->match_all(F_PRIVATE))
 				return false;
-			write_SSH2_ed25519_private(b, pkey, NULL);
+            write_SSH2_ed25519_private(b, pkey, nullptr);
 			break;
 #endif
 #endif
@@ -703,11 +704,11 @@ bool pki_evp::pem(BioByteArray &b)
 		EVP_PKEY_free(pkey);
 	} else if (xport->match_all(F_PKCS8 | F_PRIVATE)) {
 		const EVP_CIPHER *algo = xport->match_all(F_CRYPT) ?
-			EVP_aes_256_cbc() : NULL;
+            EVP_aes_256_cbc() : nullptr;
 		pkey = decryptKey();
         PEM_write_bio_PrivateKey(b, pkey, algo,
                      const_cast<unsigned char *>(passwd.constUchar()),
-                     passwd.size(), NULL, NULL);
+                     passwd.size(), nullptr, nullptr);
 		EVP_PKEY_free(pkey);
 	} else
 		return pki_key::pem(b);
@@ -728,9 +729,9 @@ void pki_evp::writePKCS8(XFile &file, const EVP_CIPHER *enc,
 	BioByteArray b;
 	if (pem) {
 		b += PEM_comment();
-		PEM_write_bio_PKCS8PrivateKey(b, pkey, enc, NULL, 0, cb, &p);
+        PEM_write_bio_PKCS8PrivateKey(b, pkey, enc, nullptr, 0, cb, &p);
 	} else {
-		i2d_PKCS8PrivateKey_bio(b, pkey, enc, NULL, 0, cb, &p);
+        i2d_PKCS8PrivateKey_bio(b, pkey, enc, nullptr, 0, cb, &p);
 	}
 	EVP_PKEY_free(pkey);
 	file.write(b);
@@ -770,7 +771,7 @@ void pki_evp::writeDefault(const QString &dirname) const
 {
 	XFile file(get_dump_filename(dirname, ".pem"));
 	file.open_key();
-	writeKey(file, pki_evp::passwd[0] ? EVP_des_ede3_cbc() : NULL,
+    writeKey(file, pki_evp::passwd[0] ? EVP_des_ede3_cbc() : nullptr,
 			mycb, true);
 }
 
@@ -798,7 +799,7 @@ void pki_evp::writeKey(XFile &file, const EVP_CIPHER *enc,
 		writePublic(file, pem);
 		return;
 	}
-	EVP_PKEY *pkey = key ? decryptKey() : NULL;
+    EVP_PKEY *pkey = key ? decryptKey() : nullptr;
 	if (!pkey) {
 	        pki_openssl_error();
 		return;
@@ -807,7 +808,7 @@ void pki_evp::writeKey(XFile &file, const EVP_CIPHER *enc,
 	if (pem) {
 		b += PEM_comment();
 		PEM_write_bio_PrivateKey_traditional(b, pkey, enc,
-						NULL, 0, cb, &p);
+                        nullptr, 0, cb, &p);
 	} else {
 		i2d_PrivateKey_bio(b, pkey);
 	}
@@ -821,9 +822,9 @@ bool pki_evp::verify_priv(EVP_PKEY *pkey) const
 	bool verify = true;
 	unsigned char data[32], sig[1024];
 	size_t datalen = sizeof data, siglen = sizeof sig;
-	EVP_MD_CTX *ctx = NULL;
+    EVP_MD_CTX *ctx = nullptr;
 	const EVP_MD *md = EVP_sha256();
-	EVP_PKEY_CTX *pkctx = NULL;
+    EVP_PKEY_CTX *pkctx = nullptr;
 
 	if (!EVP_PKEY_isPrivKey(pkey))
 		return true;
@@ -837,9 +838,9 @@ bool pki_evp::verify_priv(EVP_PKEY *pkey) const
 		/* Sign some random data in "data" */
 #ifdef EVP_PKEY_ED25519
 		if (EVP_PKEY_id(pkey) == EVP_PKEY_ED25519)
-			md = NULL;
+            md = nullptr;
 #endif
-		if (!EVP_DigestSignInit(ctx, &pkctx, md, NULL, pkey))
+        if (!EVP_DigestSignInit(ctx, &pkctx, md, nullptr, pkey))
 			break;
 
 		if (EVP_PKEY_id(pkey) == EVP_PKEY_RSA)
@@ -849,7 +850,7 @@ bool pki_evp::verify_priv(EVP_PKEY *pkey) const
 			break;
 
 		/* Verify the signature */
-		if (!EVP_DigestVerifyInit(ctx, NULL, md, NULL, pkey))
+        if (!EVP_DigestVerifyInit(ctx, nullptr, md, nullptr, pkey))
 			break;
 
 		if (EVP_DigestVerify(ctx, sig, siglen, data, datalen) != 1)

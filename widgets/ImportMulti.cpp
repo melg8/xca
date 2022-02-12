@@ -241,13 +241,13 @@ pki_base *ImportMulti::import(const QModelIndex &idx)
 		import(mcont->index(i, 0, idx));
 
 	if (!pki)
-		return NULL;
+        return nullptr;
 
 	mcont->remFromCont(idx);
 
 	if (!Database.isOpen()) {
 		delete pki;
-		return NULL;
+        return nullptr;
 	}
 	return Database.insert(pki);
 }
@@ -303,7 +303,7 @@ ImportMulti::~ImportMulti()
 		delete db_base::fromIndex(idx);
 		idx = listView->currentIndex();
 	}
-	listView->setModel(NULL);
+    listView->setModel(nullptr);
 	delete mcont;
 }
 

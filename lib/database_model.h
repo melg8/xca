@@ -72,7 +72,7 @@ class database_model final: public QObject
 				if (m)
 					return m;
 			}
-			return NULL;
+            return nullptr;
 		}
 		pki_base *insert(pki_base *pki);
 
@@ -110,7 +110,7 @@ class xca_db
 			if (db) {
 				qDebug() << "Closing database:" << name();
 				delete db;
-				db = NULL;
+                db = nullptr;
 			}
 		}
 		QString name() const
@@ -119,11 +119,11 @@ class xca_db
 		}
 		bool isOpen()
 		{
-			return db != NULL;
+            return db != nullptr;
 		}
 		template <class T> T *model() const
 		{
-			return db ? db->model<T>() : NULL;
+            return db ? db->model<T>() : nullptr;
 		}
 		void dump(const QString &dirname) const
 		{
@@ -140,11 +140,11 @@ class xca_db
 		}
 		pki_base *insert(pki_base *pki)
 		{
-			return db ? db->insert(pki) : NULL;
+            return db ? db->insert(pki) : nullptr;
 		}
 		db_base *modelForPki(const pki_base *pki) const
 		{
-			return db ? db->modelForPki(pki) : NULL;
+            return db ? db->modelForPki(pki) : nullptr;
 		}
 		void connectToDbChangeEvt(QObject *o, const char *slot)
 		{

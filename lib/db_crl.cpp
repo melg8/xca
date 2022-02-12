@@ -65,7 +65,7 @@ void db_crl::removeSigner(pki_base *signer)
 {
 	foreach(pki_crl *crl, Store.getAll<pki_crl>()) {
 		if (crl->getIssuer() == signer) {
-			crl->setIssuer(NULL);
+            crl->setIssuer(nullptr);
 		}
 	}
 }
@@ -95,7 +95,7 @@ pki_base *db_crl::insert(pki_base *item)
 	if (oldcrl) {
 		XCA_INFO(tr("The revocation list already exists in the database as:\n'%1'\nand so it was not imported").arg(oldcrl->getIntName()));
 		delete(crl);
-		return NULL;
+        return nullptr;
 	}
 	Transaction;
 	if (TransBegin()) {
@@ -127,13 +127,13 @@ void db_crl::exportItems(const QModelIndexList &indexes,
 
 pki_crl *db_crl::newCrl(const crljob &task)
 {
-	pki_crl *crl = NULL;
+    pki_crl *crl = nullptr;
 	pki_x509 *cert = task.issuer;
 	QSqlDatabase db = QSqlDatabase::database();
 	try {
 		x509v3ext e;
 		X509V3_CTX ext_ctx;
-		X509V3_set_ctx(&ext_ctx, cert->getCert(), NULL, NULL, NULL, 0);
+        X509V3_set_ctx(&ext_ctx, cert->getCert(), nullptr, nullptr, nullptr, 0);
         X509V3_set_ctx_nodb(&ext_ctx)
 		XSqlQuery q;
 
@@ -194,7 +194,7 @@ pki_crl *db_crl::newCrl(const crljob &task)
 	catch (errorEx &err) {
 		XCA_ERROR(err);
 		delete crl;
-		crl = NULL;
+        crl = nullptr;
 	}
 	return crl;
 }

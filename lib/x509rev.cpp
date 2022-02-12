@@ -37,7 +37,7 @@ static ENUMERATED_NAMES crl_reasons[] = {
 {CRL_REASON_REMOVE_FROM_CRL,     "Remove From CRL", "removeFromCRL"},
 {CRL_REASON_PRIVILEGE_WITHDRAWN, "Privilege Withdrawn", "privilegeWithdrawn"},
 {CRL_REASON_AA_COMPROMISE,       "AA Compromise", "AACompromise"},
-{-1, NULL, NULL}
+{-1, nullptr, nullptr}
 };
 
 QStringList x509rev::crlreasons()
@@ -75,7 +75,7 @@ void x509rev::fromREVOKED(const X509_REVOKED *rev)
 	date = a1time(X509_REVOKED_get0_revocationDate(rev));
 
 	reason = (ASN1_ENUMERATED *)X509_REVOKED_get_ext_d2i(
-                rev, NID_crl_reason, &j, NULL);
+                rev, NID_crl_reason, &j, nullptr);
 	openssl_error();
 	reason_idx = 0;
 	if (reason) {
@@ -86,7 +86,7 @@ void x509rev::fromREVOKED(const X509_REVOKED *rev)
 	}
 	ivalDate.setUndefined();
     at = (ASN1_TIME *)X509_REVOKED_get_ext_d2i(rev,
-			NID_invalidity_date, &j, NULL);
+            NID_invalidity_date, &j, nullptr);
 	openssl_error();
 	if (at) {
 		ivalDate = a1time(at);

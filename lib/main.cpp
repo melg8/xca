@@ -32,7 +32,7 @@
 
 
 char segv_data[1024];
-MainWindow *mainwin = NULL;
+MainWindow *mainwin = nullptr;
 
 static int debug;
 
@@ -62,7 +62,7 @@ static void myMessageOutput(QtMsgType type, const QMessageLogContext &,
 {
 	static QElapsedTimer *t;
 	static int abort_on_warning = -1;
-	const char *severity = "Unknown", *warn_msg = NULL;
+    const char *severity = "Unknown", *warn_msg = nullptr;
 	int el;
 
 	if (!t) {
@@ -106,7 +106,8 @@ static void cmd_version(FILE *fp)
 }
 
 static const char *xca_name = "xca";
-[[noreturn]] static void cmd_help(int exitcode = EXIT_SUCCESS, const char *msg = NULL)
+[[noreturn]] static void cmd_help(int exitcode = EXIT_SUCCESS,
+                                  const char *msg = nullptr)
 {
 	FILE *fp = exitcode == EXIT_SUCCESS ? stdout : stderr;
 	QString s;
@@ -273,7 +274,7 @@ static void read_cmdline(int argc, char *argv[])
 		db_crl *crls = Database.model<db_crl>();
 		db_x509 *certs = Database.model<db_x509>();
 		QList<pki_x509*>issuers = certs->getAllIssuers();
-		pki_x509 *issuer = NULL;
+        pki_x509 *issuer = nullptr;
 		QString ca = cmd_opts["crlgen"];
 		foreach(pki_x509 *iss, issuers) {
 			if (iss->getIntName() == ca ||
@@ -324,7 +325,7 @@ static void read_cmdline(int argc, char *argv[])
 		console_write(stdout, bba);
 	if (cmd_opts.has("import")) {
 		Database.insert(cmdline_items);
-		cmdline_items = NULL;
+        cmdline_items = nullptr;
 	}
 }
 
@@ -354,7 +355,7 @@ int main(int argc, char *argv[])
 			argv[i] = strdup(ba.constData());
 			qDebug() << "wargv" << i << argv[i] << s;
 		}
-		argv[i] = NULL;
+        argv[i] = nullptr;
 		LocalFree(wargv);
 	}
 	SetUnhandledExceptionFilter(w32_segfault);
@@ -402,7 +403,7 @@ int main(int argc, char *argv[])
 			gui->setMainwin(mainwin);
 			read_cmdline(argc, argv);
 			mainwin->importMulti(cmdline_items, 1);
-			cmdline_items = NULL;
+            cmdline_items = nullptr;
 			if (!Database.isOpen())
 				mainwin->init_database(QString());
 			else

@@ -39,9 +39,9 @@ XcaApplication::XcaApplication(int &argc, char *argv[])
 	:QApplication(argc, argv)
 {
 	QLocale lang;
-	qtTr = NULL;
-	xcaTr = NULL;
-	mainw = NULL;
+    qtTr = nullptr;
+    xcaTr = nullptr;
+    mainw = nullptr;
 
 	QFile file(defaultlang());
 
@@ -171,7 +171,7 @@ bool XcaApplication::eventFilter(QObject *watched, QEvent *ev)
 	case QEvent::MouseButtonPress:
 		me = static_cast<QMouseEvent *>(ev);
 		treeview = watched ?
-			dynamic_cast<XcaTreeView*>(watched->parent()) : NULL;
+            dynamic_cast<XcaTreeView*>(watched->parent()) : nullptr;
 
 		if ((watched == mainw || treeview) &&
 		    me->button() == Qt::MidButton &&

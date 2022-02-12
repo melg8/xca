@@ -42,7 +42,7 @@ x509v3ext::~x509v3ext()
 
 x509v3ext &x509v3ext::set(const X509_EXTENSION *n)
 {
-	if (ext != NULL)
+    if (ext != nullptr)
 		X509_EXTENSION_free(ext);
     ext = X509_EXTENSION_dup(const_cast<X509_EXTENSION *>(n));
 	return *this;
@@ -52,7 +52,7 @@ x509v3ext &x509v3ext::create(int nid, const QString &et, X509V3_CTX *ctx)
 {
 	if (ext) {
 		X509_EXTENSION_free(ext);
-		ext = NULL;
+        ext = nullptr;
 	}
 	if (!et.isEmpty()) {
 		QString etext = et;
@@ -66,7 +66,7 @@ x509v3ext &x509v3ext::create(int nid, const QString &et, X509V3_CTX *ctx)
 						QString("DNS:%1").arg(cn));
 		}
 		QByteArray ba = etext.toLocal8Bit();
-		ext = X509V3_EXT_conf_nid(NULL, ctx, nid, ba.data());
+        ext = X509V3_EXT_conf_nid(nullptr, ctx, nid, ba.data());
 	}
 	if (!ext)
 		ext = X509_EXTENSION_new();
@@ -94,7 +94,7 @@ const ASN1_OBJECT *x509v3ext::object() const
 	try {
 		openssl_error();
 	} catch (errorEx e) {
-		return NULL;
+        return nullptr;
 	}
 	return obj;
 }
@@ -387,7 +387,7 @@ bool x509v3ext::parse_ia5(QString *single, QString *adv) const
 
 	if (!str) {
 		const unsigned char *p = getData()->data;
-		str = d2i_ASN1_OCTET_STRING(NULL, &p, getData()->length);
+        str = d2i_ASN1_OCTET_STRING(nullptr, &p, getData()->length);
 		if (ign_openssl_error() || !str)
 			return false;
 		ret = QString("<ERROR: NOT IA5 but %1>%2").
@@ -497,7 +497,7 @@ static const BIT_STRING_BITNAME reason_flags[] = {
 {6, "", "certificateHold"},
 {7, "", "privilegeWithdrawn"},
 {8, "", "AACompromise"},
-{-1, NULL, NULL}
+{-1, nullptr, nullptr}
 };
 
 static QString parse_bits(const BIT_STRING_BITNAME *flags,
@@ -713,7 +713,7 @@ static const BIT_STRING_BITNAME key_usage_type_table[] = {
 {6, "CRL Sign", "cRLSign"},
 {7, "Encipher Only", "encipherOnly"},
 {8, "Decipher Only", "decipherOnly"},
-{-1, NULL, NULL}
+{-1, nullptr, nullptr}
 };
 
 static const BIT_STRING_BITNAME ns_cert_type_table[] = {
@@ -725,7 +725,7 @@ static const BIT_STRING_BITNAME ns_cert_type_table[] = {
 {5, "SSL CA", "sslCA"},
 {6, "S/MIME CA", "emailCA"},
 {7, "Object Signing CA", "objCA"},
-{-1, NULL, NULL}
+{-1, nullptr, nullptr}
 };
 
 bool x509v3ext::parse_bitstring(QString *single, QString *adv) const
@@ -1010,7 +1010,7 @@ bool extList::genConf(int nid, QString *single, QString *adv)
 void extList::genGenericConf(QString *adv)
 {
 	for (int i=0; i< size();) {
-		if (at(i).genConf(NULL, adv) || at(i).parse_generic(NULL, adv))
+        if (at(i).genConf(nullptr, adv) || at(i).parse_generic(nullptr, adv))
 			removeAt(i);
 		else
 			i++;

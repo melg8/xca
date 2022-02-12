@@ -72,7 +72,7 @@ ExportDialog::~ExportDialog()
 void ExportDialog::on_fileBut_clicked()
 {
 	QString s = QFileDialog::getSaveFileName(this, QString(),
-		filename->text(), filter, NULL,
+        filename->text(), filter, nullptr,
 		QFileDialog::DontConfirmOverwrite);
 
 	if (!s.isEmpty())
@@ -100,7 +100,7 @@ void ExportDialog::on_exportFormat_activated(int selected)
 bool ExportDialog::mayWriteFile(const QString &fname)
 {
         if (QFile::exists(fname)) {
-		xcaWarningBox msg(NULL,
+        xcaWarningBox msg(nullptr,
 			tr("The file: '%1' already exists!").arg(fname));
 		msg.addButton(QMessageBox::Ok, tr("Overwrite"));
 		msg.addButton(QMessageBox::Cancel, tr("Do not overwrite"));
@@ -134,7 +134,7 @@ const pki_export *ExportDialog::export_type(int idx) const
 	if (idx == -1)
 		idx = exportFormat->currentIndex();
 	idx = exportFormat->itemData(idx).toInt();
-	return idx ? pki_export::by_id(idx) : NULL;
+    return idx ? pki_export::by_id(idx) : nullptr;
 }
 
 void ExportDialog::on_exportFormat_highlighted(int index)

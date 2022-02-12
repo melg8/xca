@@ -25,7 +25,7 @@ void pk11_attr_data::load(const slotid &slot,
 	CK_RV rv;
 	if (attr.pValue) {
 		free(attr.pValue);
-		attr.pValue = NULL;
+        attr.pValue = nullptr;
 	}
 	attr.ulValueLen = 0;
 	rv = slot.p11()->C_GetAttributeValue(sess, obj, &attr, 1);
@@ -45,7 +45,7 @@ void pk11_attr_data::setValue(const unsigned char *ptr, unsigned long len)
 		free(attr.pValue);
 	if (!ptr || len == 0) {
 		attr.ulValueLen = 0;
-		attr.pValue = NULL;
+        attr.pValue = nullptr;
 		return;
 	}
 	attr.pValue = malloc(len+1);

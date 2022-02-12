@@ -26,8 +26,8 @@ CertDetail::CertDetail(QWidget *w)
 	setupUi(this);
 	setWindowTitle(XCA_TITLE);
 	showConf = false;
-	myPubKey = NULL;
-	tmpPubKey = NULL;
+    myPubKey = nullptr;
+    tmpPubKey = nullptr;
 
 	Database.connectToDbChangeEvt(this, SLOT(itemChanged(pki_base*)));
 }
@@ -116,7 +116,7 @@ void CertDetail::setCert(pki_x509 *cert)
 		tabwidget->removeTab(3);
 
 		// examine the signature
-		if (cert->getSigner() == NULL) {
+        if (cert->getSigner() == nullptr) {
 			signature->setText(tr("Signer unknown"));
 			signature->setDisabled(true);
 			signature->disableToolTip();

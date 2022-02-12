@@ -46,7 +46,7 @@ int a1time::from_asn1(const ASN1_TIME *a)
 	*this = QDateTime();
 	if (!a)
 		return -1;
-    gt = ASN1_TIME_to_generalizedtime(a, NULL);
+    gt = ASN1_TIME_to_generalizedtime(a, nullptr);
 	if (!gt)
 		return -1;
 	t = QString::fromLatin1((char*)gt->data, gt->length);
@@ -80,39 +80,39 @@ int a1time::set_asn1(const QString &str, int type)
 a1time::a1time(const QDateTime &a)
 	: QDateTime(a)
 {
-	atime = NULL;
+    atime = nullptr;
 }
 
 a1time::a1time(const a1time &a)
 	: QDateTime(a)
 {
-	atime = NULL;
+    atime = nullptr;
 }
 
 a1time &a1time::operator = (const a1time &a)
 {
 	if (atime)
 		ASN1_TIME_free(atime);
-	atime = NULL;
+    atime = nullptr;
 	QDateTime::operator=(a);
 	return *this;
 }
 
 a1time::a1time()
 {
-	atime = NULL;
+    atime = nullptr;
 	*this = now();
 }
 
 a1time::a1time(const ASN1_TIME *a)
 {
-	atime = NULL;
+    atime = nullptr;
 	from_asn1(a);
 }
 
 a1time::a1time(const QString &plain)
 {
-	atime = NULL;
+    atime = nullptr;
 	fromPlain(plain);
 }
 

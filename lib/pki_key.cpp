@@ -33,7 +33,7 @@ pki_key::pki_key(const pki_key *pk)
 {
 	if (pk->key) {
 		QByteArray ba = i2d_bytearray(I2D_VOID(i2d_PUBKEY), pk->key);
-		key = NULL;
+        key = nullptr;
 		d2i(ba);
 		sqlItemId = pk->sqlItemId;
 	} else {
@@ -73,7 +73,7 @@ void pki_key::d2i_old(QByteArray &ba, int type)
 {
 	const unsigned char *p, *p1;
 	p = p1 = (const unsigned char *)ba.constData();
-	EVP_PKEY *k = d2i_PublicKey(type, NULL, &p1, ba.count());
+    EVP_PKEY *k = d2i_PublicKey(type, nullptr, &p1, ba.count());
 
         pki_openssl_error();
 
@@ -148,7 +148,7 @@ void pki_key::writeSSH2private(XFile &file, pem_password_cb *cb) const
 		return;
 	}
 	BioByteArray b;
-	write_SSH2_ed25519_private(b, pkey, NULL);
+    write_SSH2_ed25519_private(b, pkey, nullptr);
 	file.write(b);
 }
 
@@ -157,11 +157,11 @@ QString pki_key::length() const
 	bool dsa_unset = false;
 
 	if (EVP_PKEY_id(key) == EVP_PKEY_DSA) {
-		const BIGNUM *p = NULL;
+        const BIGNUM *p = nullptr;
 		const DSA *dsa = EVP_PKEY_get0_DSA(key);
 		if (dsa)
-			DSA_get0_pqg(dsa, &p, NULL, NULL);
-		dsa_unset = p == NULL;
+            DSA_get0_pqg(dsa, &p, nullptr, nullptr);
+        dsa_unset = p == nullptr;
 	}
 
 	if (dsa_unset)
@@ -258,10 +258,10 @@ int pki_key::getKeyType() const
 QString pki_key::modulus() const
 {
 	if (getKeyType() == EVP_PKEY_RSA) {
-		const BIGNUM *n = NULL;
+        const BIGNUM *n = nullptr;
 
 		const RSA *rsa = EVP_PKEY_get0_RSA(key);
-		RSA_get0_key(rsa, &n, NULL, NULL);
+        RSA_get0_key(rsa, &n, nullptr, nullptr);
 		return BN2QString(n);
 	}
 	return QString();
@@ -270,9 +270,9 @@ QString pki_key::modulus() const
 QString pki_key::pubEx() const
 {
 	if (getKeyType() == EVP_PKEY_RSA) {
-		const BIGNUM *e = NULL;
+        const BIGNUM *e = nullptr;
 		const RSA *rsa = EVP_PKEY_get0_RSA(key);
-		RSA_get0_key(rsa, NULL, &e, NULL);
+        RSA_get0_key(rsa, nullptr, &e, nullptr);
 		return BN2QString(e);
 	}
 	return QString();
@@ -281,10 +281,10 @@ QString pki_key::pubEx() const
 QString pki_key::subprime() const
 {
 	if (getKeyType() == EVP_PKEY_DSA) {
-		const BIGNUM *q = NULL;
+        const BIGNUM *q = nullptr;
 		const DSA *dsa = EVP_PKEY_get0_DSA(key);
 		if (dsa)
-			DSA_get0_pqg(dsa, NULL, &q, NULL);
+            DSA_get0_pqg(dsa, nullptr, &q, nullptr);
 		return BN2QString(q);
 	}
 	return QString();
@@ -293,10 +293,10 @@ QString pki_key::subprime() const
 QString pki_key::pubkey() const
 {
 	if (getKeyType() == EVP_PKEY_DSA) {
-		const BIGNUM *pubkey = NULL;
+        const BIGNUM *pubkey = nullptr;
 		const DSA *dsa = EVP_PKEY_get0_DSA(key);
 		if (dsa)
-			DSA_get0_key(dsa, &pubkey, NULL);
+            DSA_get0_key(dsa, &pubkey, nullptr);
 		return BN2QString(pubkey);
 	}
 	return QString();
@@ -315,12 +315,12 @@ int pki_key::ecParamNid() const
 BIGNUM *pki_key::ecPubKeyBN() const
 {
 	if (getKeyType() != EVP_PKEY_EC)
-		return NULL;
+        return nullptr;
 
 	const EC_KEY *ec = EVP_PKEY_get0_EC_KEY(key);
 	return EC_POINT_point2bn(EC_KEY_get0_group(ec),
 				 EC_KEY_get0_public_key(ec),
-				 EC_KEY_get_conv_form(ec), NULL, NULL);
+                 EC_KEY_get_conv_form(ec), nullptr, nullptr);
 }
 
 QString pki_key::ecPubKey() const
@@ -433,7 +433,7 @@ QString pki_key::BNoneLine(BIGNUM *bn) const
 
 QString pki_key::BN2QString(const BIGNUM *bn) const
 {
-	if (bn == NULL)
+    if (bn == nullptr)
 		return "--";
 	QString x="";
 	char zs[10];
@@ -567,7 +567,7 @@ BIGNUM *pki_key::ssh_key_data2bn(QByteArray *ba) const
 {
 	QByteArray chunk = ssh_key_next_chunk(ba);
 	BIGNUM *bn = BN_bin2bn((const unsigned char *)chunk.constData(),
-				chunk.size(), NULL);
+                chunk.size(), nullptr);
 	Q_CHECK_PTR(bn);
 	return bn;
 }
@@ -595,7 +595,7 @@ EVP_PKEY *pki_key::load_ssh2_key(const QByteArray &b)
 {
 	/* See RFC 4253 Section 6.6 */
 	QStringList sl;
-	EVP_PKEY *pk = NULL;
+    EVP_PKEY *pk = nullptr;
 	QByteArray ba(b);
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
@@ -604,7 +604,7 @@ EVP_PKEY *pki_key::load_ssh2_key(const QByteArray &b)
 	sl = QString(ba).split(" ", QString::SkipEmptyParts);
 #endif
 	if (sl.size() < 2)
-		return NULL;
+        return nullptr;
 
 	ba = QByteArray::fromBase64(sl[1].toLatin1());
 	if (sl[0].startsWith("ssh-rsa")) {
@@ -615,7 +615,7 @@ EVP_PKEY *pki_key::load_ssh2_key(const QByteArray &b)
 
 		RSA *rsa = RSA_new();
 		Q_CHECK_PTR(rsa);
-		RSA_set0_key(rsa, n, e, NULL);
+        RSA_set0_key(rsa, n, e, nullptr);
 		pk = EVP_PKEY_new();
 		Q_CHECK_PTR(pk);
 		EVP_PKEY_assign_RSA(pk, rsa);
@@ -629,7 +629,7 @@ EVP_PKEY *pki_key::load_ssh2_key(const QByteArray &b)
 		Q_CHECK_PTR(dsa);
 
 		DSA_set0_pqg(dsa, p, q, g);
-		DSA_set0_key(dsa, pubkey, NULL);
+        DSA_set0_key(dsa, pubkey, nullptr);
 
 		pk = EVP_PKEY_new();
 		Q_CHECK_PTR(pk);
@@ -647,7 +647,7 @@ EVP_PKEY *pki_key::load_ssh2_key(const QByteArray &b)
 		Q_CHECK_PTR(ec);
 		EC_KEY_set_asn1_flag(ec, OPENSSL_EC_NAMED_CURVE);
 		EC_KEY_set_public_key(ec, EC_POINT_bn2point(
-					EC_KEY_get0_group(ec), bn, NULL, NULL));
+                    EC_KEY_get0_group(ec), bn, nullptr, nullptr));
 		BN_free(bn);
 		pki_openssl_error();
 
@@ -658,7 +658,7 @@ EVP_PKEY *pki_key::load_ssh2_key(const QByteArray &b)
 	} else if (sl[0].startsWith("ssh-ed25519")) {
 		ssh_key_check_chunk(&ba, "ssh-ed25519");
 		QByteArray pub = ssh_key_next_chunk(&ba);
-		pk = EVP_PKEY_new_raw_public_key(EVP_PKEY_ED25519, NULL,
+        pk = EVP_PKEY_new_raw_public_key(EVP_PKEY_ED25519, nullptr,
 			(const unsigned char *)pub.constData(), pub.count());
 		pki_openssl_error();
 #endif
@@ -723,7 +723,7 @@ QByteArray pki_key::SSH2publicQByteArray(bool raw) const
 		{
 			const RSA *rsa = EVP_PKEY_get0_RSA(key);
 			const BIGNUM *n, *e;
-			RSA_get0_key(rsa, &n, &e, NULL);
+            RSA_get0_key(rsa, &n, &e, nullptr);
 			ssh_key_bn2data(e, &data);
 			ssh_key_bn2data(n, &data);
 		}
@@ -735,7 +735,7 @@ QByteArray pki_key::SSH2publicQByteArray(bool raw) const
 			const DSA *dsa = EVP_PKEY_get0_DSA(key);
 			const BIGNUM *p, *q, *g, *pubkey;
 			DSA_get0_pqg(dsa, &p, &q, &g);
-			DSA_get0_key(dsa, &pubkey, NULL);
+            DSA_get0_key(dsa, &pubkey, nullptr);
 			ssh_key_bn2data(p, &data);
 			ssh_key_bn2data(q, &data);
 			ssh_key_bn2data(g, &data);
@@ -788,13 +788,13 @@ void pki_key::writeSSH2public(XFile &file) const
 bool pki_key::verify(EVP_PKEY *pkey) const
 {
 	bool verify = true;
-	const BIGNUM *a = NULL;
-	const BIGNUM *b = NULL;
-	const BIGNUM *c = NULL;
+    const BIGNUM *a = nullptr;
+    const BIGNUM *b = nullptr;
+    const BIGNUM *c = nullptr;
 
 	switch (EVP_PKEY_type(EVP_PKEY_id(pkey))) {
 	case EVP_PKEY_RSA:
-		RSA_get0_key(EVP_PKEY_get0_RSA(pkey), &a, &b, NULL);
+        RSA_get0_key(EVP_PKEY_get0_RSA(pkey), &a, &b, nullptr);
 		verify = a && b;
 		break;
 	case EVP_PKEY_DSA:
@@ -808,7 +808,7 @@ bool pki_key::verify(EVP_PKEY *pkey) const
 #ifdef EVP_PKEY_ED25519
 	case EVP_PKEY_ED25519: {
 		size_t len;
-		verify = EVP_PKEY_get_raw_private_key(pkey, NULL, &len) == 1 &&
+        verify = EVP_PKEY_get_raw_private_key(pkey, nullptr, &len) == 1 &&
 				len == ED25519_KEYLEN;
 		break;
 	}
@@ -859,12 +859,12 @@ QString pki_key::fingerprint(const QString &format) const
 
 QByteArray pki_key::X509_PUBKEY_public_key() const
 {
-	X509_PUBKEY *pk = NULL;
+    X509_PUBKEY *pk = nullptr;
 	const unsigned char *p;
 	int len;
 
 	X509_PUBKEY_set(&pk, key);
-	X509_PUBKEY_get0_param(NULL, &p, &len, NULL, pk);
+    X509_PUBKEY_get0_param(nullptr, &p, &len, nullptr, pk);
 
 	QByteArray data((const char*)p, len);
 	X509_PUBKEY_free(pk);
@@ -898,7 +898,7 @@ void pki_key::print(BioByteArray &bba, enum print_opt opt) const
 	pki_base::print(bba, opt);
 	switch (opt) {
 	case print_openssl_txt:
-		EVP_PKEY_print_public(bba, key, 0, NULL);
+        EVP_PKEY_print_public(bba, key, 0, nullptr);
 		break;
 	case print_pem:
 		PEM_write_bio_PUBKEY(bba, key);

@@ -236,14 +236,14 @@ pki_base *db_base::insertPKI(pki_base *pki)
 	Transaction;
 	if (!TransBegin()) {
 		delete pki;
-		return NULL;
+        return nullptr;
 	}
 	QSqlError e = pki->insertSql();
 	if (e.isValid()) {
 		XCA_SQLERROR(e);
 		TransRollback();
 		delete pki;
-		return NULL;
+        return nullptr;
 	}
 	Store.add(pki->getSqlItemId(), pki);
 	inToCont(pki);
@@ -345,13 +345,14 @@ pki_base *db_base::getByName(QString desc)
 		QString("SELECT id FROM items WHERE name=? AND del=0 AND ") +
 			sqlItemSelector(),
 		QList<QVariant>() << QVariant(desc));
-	return list.isEmpty() ? NULL : list[0];
+    return list.isEmpty() ? nullptr : list[0];
 }
 
 pki_base *db_base::getByReference(pki_base *refpki)
 {
-	if (refpki == NULL)
-		return NULL;
+    if (refpki == nullptr) {
+        return nullptr;
+    }
 	QList<pki_base*> list = Store.sqlSELECTpki<pki_base>(
 		QString("SELECT item FROM %1 WHERE hash=?").arg(sqlHashTable),
 		QList<QVariant>() << QVariant(refpki->hash()));
@@ -359,7 +360,7 @@ pki_base *db_base::getByReference(pki_base *refpki)
 		if (refpki->compare(pki))
 			return pki;
 	}
-	return NULL;
+    return nullptr;
 }
 
 pki_base *db_base::insert(pki_base *item)
@@ -413,7 +414,7 @@ QModelIndex db_base::parent(const QModelIndex &idx) const
 	pki_base *parentItem = childItem->getParent();
 
 	if (parentItem == treeItem || !treeview)
-		parentItem = NULL;
+        parentItem = nullptr;
 
 	return index(parentItem);
 }
@@ -423,7 +424,7 @@ int db_base::rowCount(const QModelIndex &parent) const
 	pki_base *parentItem = treeview ? treeItem : rootItem;
 
 	if (parent.isValid())
-		parentItem = treeview ? fromIndex(parent) : NULL;
+        parentItem = treeview ? fromIndex(parent) : nullptr;
 
 	return parentItem ? parentItem->childCount() : 0;
 }
@@ -636,7 +637,7 @@ QMimeData *db_base::mimeData(const QModelIndexList &indexes) const
 	QString data = pem2QString(indexes);
 
 	if (data.isEmpty())
-		return NULL;
+        return nullptr;
 
 	QMimeData *mimeData = new QMimeData();
 	mimeData->setText(data.toLatin1());

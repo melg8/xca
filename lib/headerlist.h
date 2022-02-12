@@ -65,7 +65,7 @@ class dbheader
 	void init()
 	{
 		id = HD_undef;
-		action = NULL;
+        action = nullptr;
 		show = showDefault = false;
 		size = -1;
 		visualIndex = -1;
@@ -175,7 +175,7 @@ class dbheader
 	}
 	void reset()
 	{
-		action = NULL;
+        action = nullptr;
 		show = showDefault;
 		size = -1;
 		visualIndex = -1;

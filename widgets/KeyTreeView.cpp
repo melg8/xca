@@ -163,7 +163,7 @@ void KeyTreeView::toToken()
 	if (!key || !pkcs11::libraries.loaded() || key->isToken())
 		return;
 
-	pki_scard *card = NULL;
+    pki_scard *card = nullptr;
 	try {
 		pkcs11 p11;
 		slotid slot;
@@ -178,7 +178,7 @@ void KeyTreeView::toToken()
 		if (XCA_YESNO(msg)) {
 			keys()->deletePKI(currentIdx);
 			keys()->insertPKI(card);
-			card = NULL;
+            card = nullptr;
 		}
 	} catch (errorEx &err) {
 		XCA_ERROR(err);
@@ -222,7 +222,7 @@ void KeyTreeView::load(void)
 ExportDialog *KeyTreeView::exportDialog(const QModelIndexList &indexes)
 {
 	if (indexes.size() == 0)
-		return NULL;
+        return nullptr;
 	pki_key *key = db_base::fromIndex<pki_key>(indexes[0]);
 	return new ExportDialog(this,
 		tr("Export public key [%1]").arg(key->getTypeString()),

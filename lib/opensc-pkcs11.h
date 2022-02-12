@@ -1268,8 +1268,6 @@ typedef struct ck_function_list **CK_FUNCTION_LIST_PTR_PTR;
 typedef struct ck_c_initialize_args CK_C_INITIALIZE_ARGS;
 typedef struct ck_c_initialize_args *CK_C_INITIALIZE_ARGS_PTR;
 
-#define NULL_PTR NULL
-
 /* Delete the helper macros defined at the top of the file.  */
 #undef ck_flags_t
 #undef ck_version

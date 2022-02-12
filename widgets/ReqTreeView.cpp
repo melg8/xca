@@ -48,7 +48,7 @@ void ReqTreeView::toRequest()
 {
 	pki_x509req *req = db_base::fromIndex<pki_x509req>(currentIndex());
 	if (basemodel)
-		reqs()->newItem(NULL, req);
+        reqs()->newItem(nullptr, req);
 }
 
 void ReqTreeView::markSigned()

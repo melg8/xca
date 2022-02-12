@@ -111,10 +111,10 @@ bool pki_x509super::compareRefKey(pki_key *ref) const
 {
 	bool x;
 
-	if (ref == NULL)
+    if (ref == nullptr)
 		return false;
 	pki_key *mk = getPubKey();
-	if (mk == NULL)
+    if (mk == nullptr)
 		return false;
 	x = ref->compare(mk);
 	delete mk;
@@ -164,7 +164,7 @@ QVariant pki_x509super::column_data(const dbheader *hd) const
 
 	if (hd->type == dbheader::hd_key) {
 		QVariant v;
-		pki_key *key = getRefKey(), *tmpkey = NULL;
+        pki_key *key = getRefKey(), *tmpkey = nullptr;
 		if (!key)
 			tmpkey = key = getPubKey();
 		if (key)

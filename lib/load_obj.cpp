@@ -25,7 +25,7 @@ pki_base *load_base::loadItem(const QString &s)
 {
 	pki_base *pki = newItem();
 	if (!pki)
-		return NULL;
+        return nullptr;
 	try {
 		pki->fload(s);
 		openssl_error();
@@ -42,7 +42,7 @@ pki_base *load_base::loadItem(const QString &s)
 
 pki_base * load_base::newItem()
 {
-	return NULL;
+    return nullptr;
 }
 
 load_base::~load_base()

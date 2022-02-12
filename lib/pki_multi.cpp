@@ -57,7 +57,7 @@ static pki_base *pkiByPEM(QString text, int *skip)
 		*skip = pos;
 
 	if (pos < 0)
-		return NULL;
+        return nullptr;
 
 	text = text.remove(0, pos + sizeof(BEGIN)-1);
 	if (text.startsWith(PEM_STRING_X509_OLD D5) ||
@@ -92,7 +92,7 @@ static pki_base *pkiByPEM(QString text, int *skip)
 
 		return new pki_evp();
 
-	return NULL;
+    return nullptr;
 }
 
 void pki_multi::fload(const QString &fname)
@@ -107,7 +107,7 @@ void pki_multi::fload(const QString &fname)
 
 void pki_multi::fromPEMbyteArray(const QByteArray &_ba, const QString &name)
 {
-	pki_base *item = NULL;
+    pki_base *item = nullptr;
 	int startpos, old_count = multi.size();
 	QByteArray ba = _ba;
 	for (;;) {
@@ -123,7 +123,7 @@ void pki_multi::fromPEMbyteArray(const QByteArray &_ba, const QString &name)
 		} catch (errorEx &err) {
 			XCA_ERROR(err);
 			delete item;
-			item = NULL;
+            item = nullptr;
 		}
 		ba.remove(0, sizeof BEGIN -1);
 	}
@@ -133,7 +133,7 @@ void pki_multi::fromPEMbyteArray(const QByteArray &_ba, const QString &name)
 
 void pki_multi::probeAnything(const QString &fname)
 {
-	pki_base *item = NULL;
+    pki_base *item = nullptr;
 	load_base *lb;
 	QList<load_base*> lbs;
 	int old_count = multi.size();

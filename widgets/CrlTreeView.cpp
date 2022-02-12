@@ -32,7 +32,7 @@ void CrlTreeView::newItem()
 {
 	db_x509 *certs = Database.model<db_x509>();
 	QList<pki_x509 *> cas = certs->getAllIssuers();
-	pki_x509 *ca = NULL;
+    pki_x509 *ca = nullptr;
 
 	switch (cas.size()) {
 	case 0:
@@ -42,7 +42,7 @@ void CrlTreeView::newItem()
 		ca = cas[0];
 		break;
 	default: {
-		itemComboCert *c = new itemComboCert(NULL);
+        itemComboCert *c = new itemComboCert(nullptr);
 		XcaDialog *d = new XcaDialog(this, revocation, c,
 			tr("Select CA certificate"), QString());
 		c->insertPkiItems(cas);

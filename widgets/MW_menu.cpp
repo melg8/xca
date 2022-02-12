@@ -47,7 +47,7 @@ static QAction *languageMenuEntry(const QStringList &sl)
 	if (sl.length() > 2)
 		tooltip += " - " + sl[2];
 
-	QAction *a = new QAction(lang, NULL);
+    QAction *a = new QAction(lang, nullptr);
 	a->setToolTip(tooltip);
 	a->setData(QVariant(locale));
 	a->setDisabled(!XcaApplication::languageAvailable(locale));
@@ -60,9 +60,9 @@ static QAction *languageMenuEntry(const QStringList &sl)
 
 void MainWindow::init_menu()
 {
-	static QMenu *file = NULL, *help = NULL, *import = NULL,
-			*token = NULL, *languageMenu = NULL, *extra = NULL;
-	static QActionGroup * langGroup = NULL;
+    static QMenu *file = nullptr, *help = nullptr, *import = nullptr,
+            *token = nullptr, *languageMenu = nullptr, *extra = nullptr;
+    static QActionGroup * langGroup = nullptr;
 	QAction *a;
 
 	delete file;

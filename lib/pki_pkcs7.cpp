@@ -17,7 +17,7 @@
 pki_pkcs7::pki_pkcs7(const QString &name)
 	:pki_multi(name)
 {
-	p7 = NULL;
+    p7 = nullptr;
 }
 
 pki_pkcs7::~pki_pkcs7()
@@ -61,12 +61,12 @@ void pki_pkcs7::signBio(pki_x509 *crt, BIO *bio)
 
 	pki_x509 *signer = crt->getSigner();
 	if (signer == crt)
-		signer = NULL;
-	while (signer != NULL ) {
+        signer = nullptr;
+    while (signer != nullptr ) {
 		sk_X509_push(certstack, signer->getCert());
 	        openssl_error();
 		if (signer == signer->getSigner() )
-			signer = NULL;
+            signer = nullptr;
 		else
 			signer = signer->getSigner();
 	}
@@ -119,11 +119,11 @@ void pki_pkcs7::writeP7(XFile &file, bool PEM)
 
 void pki_pkcs7::append_certs(PKCS7 *myp7, const QString &name)
 {
-	STACK_OF(X509) *certstack = NULL;
+    STACK_OF(X509) *certstack = nullptr;
 
 	pki_openssl_error();
 
-        if (myp7 == NULL)
+        if (myp7 == nullptr)
 		return;
 
 	setFilename(name);
@@ -132,11 +132,11 @@ void pki_pkcs7::append_certs(PKCS7 *myp7, const QString &name)
 	switch (OBJ_obj2nid(myp7->type)) {
 		case NID_pkcs7_signed:
 			certstack = myp7->d.sign->cert;
-			myp7->d.sign->cert = NULL;
+            myp7->d.sign->cert = nullptr;
 			break;
 		case NID_pkcs7_signedAndEnveloped:
 			certstack = myp7->d.signed_and_enveloped->cert;
-			myp7->d.signed_and_enveloped->cert = NULL;
+            myp7->d.signed_and_enveloped->cert = nullptr;
 			break;
 	}
 	if (!certstack)
@@ -157,7 +157,7 @@ void pki_pkcs7::append_certs(PKCS7 *myp7, const QString &name)
 
 void pki_pkcs7::fromPEM_BIO(BIO *bio, const QString &name)
 {
-	PKCS7 *myp7 = PEM_read_bio_PKCS7(bio, NULL, NULL, NULL);
+    PKCS7 *myp7 = PEM_read_bio_PKCS7(bio, nullptr, nullptr, nullptr);
 	append_certs(myp7, name);
 }
 
@@ -175,10 +175,10 @@ void pki_pkcs7::fload(const QString &name)
 	file.open_read();
 	QByteArray ba(file.readAll());
 
-	myp7 = PEM_read_bio_PKCS7(BioByteArray(ba).ro(), NULL, NULL, NULL);
+    myp7 = PEM_read_bio_PKCS7(BioByteArray(ba).ro(), nullptr, nullptr, nullptr);
 	if (!myp7) {
 		ign_openssl_error();
-		myp7 = d2i_PKCS7_bio(BioByteArray(ba).ro(), NULL);
+        myp7 = d2i_PKCS7_bio(BioByteArray(ba).ro(), nullptr);
 	}
 	if (ign_openssl_error()) {
 		if (myp7)

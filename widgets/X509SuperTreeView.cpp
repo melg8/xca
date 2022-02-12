@@ -21,7 +21,7 @@ void X509SuperTreeView::fillContextMenu(QMenu *menu, QMenu *subExport,
 {
 	pki_x509super *x = dynamic_cast<pki_x509super*>(
 					db_base::fromIndex(index));
-	transform = NULL;
+    transform = nullptr;
 
 	if (indexes.size() != 1 || !x)
 		return;
@@ -58,7 +58,7 @@ void X509SuperTreeView::toOpenssl()
 
 	pki_x509super *pki = db_base::fromIndex<pki_x509super>(idx);
 	QString fn = Settings["workingdir"] + pki->getUnderlinedName() + ".conf";
-	QString fname = QFileDialog::getSaveFileName(NULL,
+    QString fname = QFileDialog::getSaveFileName(nullptr,
 		tr("Save as OpenSSL config"),   fn,
 		tr("Config files ( *.conf *.cnf);; All files ( * )"));
 	if (fname.isEmpty())

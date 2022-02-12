@@ -25,43 +25,43 @@ const QList<arg_option> arguments::opts = {
 		"Generate CRL for <ca>. Use the 'name' option to set the internal name of the new CRL."),
 	arg_option("database", "database", file_argument, false, false,
 		"File name (*.xdb) of the SQLite database or a remote database descriptor: [user@host/TYPE:dbname#prefix]."),
-	arg_option("exit", NULL, no_argument, false, false,
+    arg_option("exit", nullptr, no_argument, false, false,
 		"Exit after importing items."),
-	arg_option("help", NULL, no_argument, true, false,
+    arg_option("help", nullptr, no_argument, true, false,
 		"Print this help and exit."),
 	arg_option("hierarchy", "directory", file_argument, true, true,
 		"Save OpenSSL index hierarchy in <dir>."),
 	arg_option("index", "file", file_argument, true, true,
 		"Save OpenSSL index in <file>."),
-	arg_option("import", NULL, no_argument, false, true,
+    arg_option("import", nullptr, no_argument, false, true,
 		"Import all provided items into the database."),
-	arg_option("issuers", NULL, no_argument, true, true,
+    arg_option("issuers", nullptr, no_argument, true, true,
 		"Print all known issuer certificates that have an associated private key and the CA basic constraints set to 'true'."),
 	arg_option("keygen", "type", required_argument, true, true,
 		"Generate a new key and import it into the database. Use the 'name' option to set the internal name of the new key. The <type> parameter has the format: '[RSA|DSA|EC]:[<size>|<curve>]."),
-	arg_option("list-curves", NULL, no_argument, true, false,
+    arg_option("list-curves", nullptr, no_argument, true, false,
 		"Prints all known Elliptic Curves."),
-	arg_option("list-items", NULL, no_argument, true, true,
+    arg_option("list-items", nullptr, no_argument, true, true,
 		"List all items in the database."),
 	arg_option("name", "internal-name", required_argument, false, true,
 		"Provides the name of new generated items. An automatic name will be generated if omitted."),
-	arg_option("no-gui", NULL, no_argument, true, false,
+    arg_option("no-gui", nullptr, no_argument, true, false,
 		"Do not start the GUI. Alternatively set environment variable XCA_NO_GUI=1 or call xca as 'xca-console' symlink."),
 	arg_option("password", "password", required_argument, false, false,
 		"Database password for unlocking the database."),
-	arg_option("pem", NULL, no_argument, true, false,
+    arg_option("pem", nullptr, no_argument, true, false,
 		"Print PEM representation of provided files. Prints only the public part of private keys."),
-	arg_option("print", NULL, no_argument, true, false,
+    arg_option("print", nullptr, no_argument, true, false,
 		"Print a synopsis of provided files."),
 	arg_option("select", "id-list", required_argument, true, true,
 		"Selects all items in the comma separated id-list to be shown with 'print', 'text' or 'pem'."),
 	arg_option("sqlpass", "password", required_argument, false, false,
 		"Password to access the remote SQL server."),
-	arg_option("text", NULL, no_argument, true, false,
+    arg_option("text", nullptr, no_argument, true, false,
 		"Print the content of provided files as OpenSSL does."),
-	arg_option("verbose", NULL, no_argument, false, false,
+    arg_option("verbose", nullptr, no_argument, false, false,
 		"Print debug log on stderr. Alternatively set the environment variable XCA_DEBUG=1."),
-	arg_option("version", NULL, no_argument, true, false,
+    arg_option("version", nullptr, no_argument, true, false,
 		"Print version information and exit."),
 };
 
@@ -89,7 +89,7 @@ void arg_option::fillOption(struct option *opt) const
 	opt->has_arg = arg_type;
 	if (arg_type == file_argument)
 		opt->has_arg = required_argument;
-	opt->flag = NULL;
+    opt->flag = nullptr;
 	opt->val = 0;
 }
 
@@ -245,8 +245,8 @@ int arguments::parse(int argc, char *argv[])
 	Q_CHECK_PTR(long_opts);
     for (int i = 0; i < cnt; ++i)
 		opts[i].fillOption(long_opts +i);
-	long_opts[cnt].name = NULL;
-	long_opts[cnt].flag = NULL;
+    long_opts[cnt].name = nullptr;
+    long_opts[cnt].flag = nullptr;
 	opterr = 0;
 	/* Parse cmdline options argv */
 	while (true) {
@@ -291,7 +291,7 @@ QString arguments::resultString() const
 
 arguments::arguments(int argc, char *argv[])
 {
-	long_opts = NULL;
+    long_opts = nullptr;
 	need_db = false;
 	parse(argc, argv);
 }
@@ -303,7 +303,7 @@ arguments::arguments(const arguments &a)
 
 arguments &arguments::operator = (const arguments &a)
 {
-	long_opts = NULL;
+    long_opts = nullptr;
 	files = a.files;
 	found_options = a.found_options;
 	return *this;

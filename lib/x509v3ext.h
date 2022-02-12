@@ -26,9 +26,9 @@ class x509v3ext
 	x509v3ext(const x509v3ext &n);
 	~x509v3ext();
 	x509v3ext &set(const X509_EXTENSION *n);
-	x509v3ext &create(int nid, const QString &et, X509V3_CTX *ctx = NULL);
+    x509v3ext &create(int nid, const QString &et, X509V3_CTX *ctx = nullptr);
 	x509v3ext &create_ia5(int nid, const QString &et,
-				X509V3_CTX *ctx = NULL);
+                X509V3_CTX *ctx = nullptr);
 	x509v3ext &operator = (const x509v3ext &x);
 	// bool operator == (const x509v3ext &x) const;
 	QString getObject() const;
@@ -73,7 +73,7 @@ class extList : public QList<x509v3ext>
 	bool delByNid(int nid);
 	int delInvalid();
 	int idxByNid(int nid);
-	bool genConf(int nid, QString *single, QString *adv = NULL);
+    bool genConf(int nid, QString *single, QString *adv = nullptr);
 	void genGenericConf(QString *adv);
 	bool search(const QRegExp &pattern);
 };

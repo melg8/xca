@@ -14,7 +14,7 @@
 #include <QHelpLink>
 #include <QDialogButtonBox>
 
-Help::Help() : QWidget(NULL), helpengine(nullptr)
+Help::Help() : QWidget(nullptr), helpengine(nullptr)
 {
 	setupUi(this);
 	setWindowTitle(XCA_TITLE);

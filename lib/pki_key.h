@@ -133,7 +133,7 @@ class keyjob
 	}
 	bool isToken() const
 	{
-		return slot.lib != NULL;
+        return slot.lib != nullptr;
 	}
 	bool isEC() const
 	{

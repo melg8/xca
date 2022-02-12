@@ -163,7 +163,7 @@ extList NewX509::getAdvanced()
 	CONF *conf;
 	extList elist;
 	long err_line=0;
-    STACK_OF(X509_EXTENSION) **sk = NULL, *sk_tmp = NULL;
+    STACK_OF(X509_EXTENSION) **sk = nullptr, *sk_tmp = nullptr;
 	const STACK_OF(X509_EXTENSION) *csk;
 	const char *ext_name = "default";
 	int ret, start;
@@ -176,7 +176,7 @@ extList NewX509::getAdvanced()
 	if (conf_str.isEmpty())
 		return elist;
 
-	conf = NCONF_new(NULL);
+    conf = NCONF_new(nullptr);
 	ret = NCONF_load_bio(conf, BioByteArray(conf_str.toLatin1()).ro(),
 				&err_line);
 	if (ret != 1) {
@@ -210,7 +210,7 @@ extList NewX509::getAdvanced()
 	if (!ext_ctx.subject_cert)
 		sk_X509_EXTENSION_pop_free(sk_tmp, X509_EXTENSION_free);
 
-	X509V3_set_nconf(&ext_ctx, NULL);
+    X509V3_set_nconf(&ext_ctx, nullptr);
 	NCONF_free(conf);
 	openssl_error();
 	return elist;
@@ -274,14 +274,14 @@ extList NewX509::getNetscapeExt()
 
 void NewX509::initCtx(pki_x509 *subj, pki_x509 *iss, pki_x509req *req)
 {
-	X509 *s = NULL, *s1 = NULL;
-	X509_REQ *r = NULL;
+    X509 *s = nullptr, *s1 = nullptr;
+    X509_REQ *r = nullptr;
 
 	if (subj) s1 = subj->getCert();
 	if (iss) s = iss->getCert();
 	if (req) r = req->getReq();
 
-	X509V3_set_ctx(&ext_ctx, s, s1, r, NULL, 0);
+    X509V3_set_ctx(&ext_ctx, s, s1, r, nullptr, 0);
 }
 
 extList NewX509::getExtDuplicates()

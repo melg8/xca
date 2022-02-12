@@ -50,7 +50,7 @@ class pki_evp final: public pki_key
         void generate(const keyjob &task) final;
 		void setOwnPass(enum passType);
 		void set_evp_key(EVP_PKEY *pkey);
-		void encryptKey(const char *password = NULL);
+        void encryptKey(const char *password = nullptr);
 		void bogusEncryptKey();
         EVP_PKEY *decryptKey() const final;
         EVP_PKEY *priv2pub(EVP_PKEY* privateKey);

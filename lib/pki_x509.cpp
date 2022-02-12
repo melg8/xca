@@ -175,7 +175,7 @@ pki_x509 *pki_x509::findIssuer()
 	pki_x509 *issuer;
 	unsigned hash;
 
-	if ((issuer = getSigner()) != NULL)
+    if ((issuer = getSigner()) != nullptr)
 		return issuer;
 	// first check for self-signed
 	if (verify(this))
@@ -198,13 +198,13 @@ pki_x509 *pki_x509::findIssuer()
 			return issuer;
 		}
 	}
-	return NULL;
+    return nullptr;
 }
 
 void pki_x509::fromPEM_BIO(BIO *bio, const QString &fname)
 {
 	X509 *_cert;
-	_cert = PEM_read_bio_X509(bio, NULL, NULL, NULL);
+    _cert = PEM_read_bio_X509(bio, nullptr, nullptr, nullptr);
 	openssl_error(fname);
 	X509_free(cert);
 	cert = _cert;
@@ -217,10 +217,10 @@ void pki_x509::fload(const QString &fname)
 	file.open_read();
 	QByteArray ba(file.readAll());
 
-	_cert = PEM_read_bio_X509(BioByteArray(ba).ro(), NULL, NULL, NULL);
+    _cert = PEM_read_bio_X509(BioByteArray(ba).ro(), nullptr, nullptr, nullptr);
 	if (!_cert) {
 		pki_ign_openssl_error();
-		_cert = d2i_X509_bio(BioByteArray(ba).ro(), NULL);
+        _cert = d2i_X509_bio(BioByteArray(ba).ro(), nullptr);
 	}
 	if (pki_ign_openssl_error() || !_cert) {
 		if (_cert)
@@ -244,7 +244,7 @@ void pki_x509::init()
 	caTemplateSqlId = QVariant();
 	crlDays = 30;
 	crlExpire.setUndefined();
-	cert = NULL;
+    cert = nullptr;
 	pkiType = x509;
 }
 
@@ -268,7 +268,7 @@ pki_x509 *pki_x509::getBySerial(const a1int &a) const
 		if (a == pki->getSerial())
 			return pki;
 	}
-	return NULL;
+    return nullptr;
 }
 
 a1int pki_x509::hashInfo(const EVP_MD *md) const
@@ -343,7 +343,7 @@ QByteArray pki_x509::i2d() const
 
 void pki_x509::store_token(bool alwaysSelect)
 {
-	pki_scard *card = NULL;
+    pki_scard *card = nullptr;
 	slotid slot;
 	x509name xname;
 	QList<CK_OBJECT_HANDLE> objects;
@@ -352,7 +352,7 @@ void pki_x509::store_token(bool alwaysSelect)
 
 	pki_key *privkey = getRefKey();
 	if (!privkey || !privkey->isToken() || alwaysSelect) {
-		if (!p11.selectToken(&slot, NULL))
+        if (!p11.selectToken(&slot, nullptr))
 			return;
 	} else {
 		card = dynamic_cast<pki_scard *>(privkey);
@@ -539,7 +539,7 @@ bool pki_x509::isCA() const
 	bool ca;
 	int crit;
 	BASIC_CONSTRAINTS *bc = (BASIC_CONSTRAINTS *)
-		X509_get_ext_d2i(cert, NID_basic_constraints, &crit, NULL);
+        X509_get_ext_d2i(cert, NID_basic_constraints, &crit, nullptr);
 	pki_openssl_error();
 	ca = bc && bc->ca;
 	if (bc)
@@ -600,7 +600,7 @@ void pki_x509::writeCert(XFile &file, bool PEM) const
 
 QString pki_x509::getIndexEntry()
 {
-	QString flag = NULL;
+    QString flag{};
 	bool revoked = isRevoked();
 
 	if (revoked)
@@ -614,7 +614,7 @@ QString pki_x509::getIndexEntry()
 		flag, getNotAfter().toPlainUTC(),
 		revoked ? revocation.getDate().toPlainUTC() : "",
 		getSerial(),
-		QString(X509_NAME_oneline(getSubject().get(), NULL, 0)));
+        QString(X509_NAME_oneline(getSubject().get(), nullptr, 0)));
 }
 
 bool pki_x509::pem(BioByteArray &b)
@@ -709,8 +709,9 @@ pki_key *pki_x509::getPubKey() const
 {
 	EVP_PKEY *pkey = X509_get_pubkey(cert);
 	pki_ign_openssl_error();
-	if (pkey == NULL)
-		return NULL;
+    if (pkey == nullptr) {
+        return nullptr;
+    }
 	pki_evp *key = new pki_evp(pkey);
 	pki_openssl_error();
 	return key;
@@ -924,7 +925,7 @@ void pki_x509::print(BioByteArray &bba, enum print_opt opt) const
 QStringList pki_x509::icsVEVENT_ca() const
 {
 	QStringList ics;
-	pki_crl *crl = NULL;
+    pki_crl *crl = nullptr;
 
 	ics << icsVEVENT();
 	foreach(pki_base *p, childItems) {
@@ -958,7 +959,7 @@ QVariant pki_x509::getIcon(const dbheader *hd) const
 	};
 	switch (hd->id) {
 	case HD_cert_ca:
-		if (!caAndPathLen(&ca, NULL, NULL))
+        if (!caAndPathLen(&ca, nullptr, nullptr))
 			return QVariant();
 		if (!ca)
 			return QVariant();

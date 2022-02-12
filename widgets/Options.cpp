@@ -40,7 +40,7 @@ Options::Options(QWidget *parent)
 	mbstring->addItems(s);
 	mbstring->setCurrentIndex(string_opts.indexOf(Settings["string_opt"]));
 
-	searchP11 = NULL;
+    searchP11 = nullptr;
 	transDnEntries->setText(transDnEntries->text()
 			.arg(OBJ_nid2ln(NID_commonName))
 			.arg(dn_translations[NID_commonName]));

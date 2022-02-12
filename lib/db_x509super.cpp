@@ -97,12 +97,12 @@ pki_key *db_x509super::findKey(pki_x509super *ref)
 	db_key *keys = Database.model<db_key>();
 	pki_key *key, *refkey;
 	if (!ref)
-		return NULL;
-	if ((key = ref->getRefKey()) != NULL )
+        return nullptr;
+    if ((key = ref->getRefKey()) != nullptr )
 		return key;
 	refkey = ref->getPubKey();
 	if (!refkey)
-		return NULL;
+        return nullptr;
 	key = dynamic_cast<pki_key *>(keys->getByReference(refkey));
 	ref->setRefKey(key);
 	delete refkey;

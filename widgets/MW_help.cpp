@@ -54,7 +54,7 @@ const QList<QStringList> MainWindow::getTranslators() const
 
 void MainWindow::about()
 {
-	QTextEdit *textbox = new QTextEdit(NULL);
+    QTextEdit *textbox = new QTextEdit(nullptr);
 	XcaDialog *about = new XcaDialog(this, x509, textbox,
 					QString(), QString());
 	about->aboutDialog(QPixmap(":scardImg"));

@@ -174,7 +174,7 @@ kvView::kvView(QWidget *parent)
 
 	connect(verticalHeader(), SIGNAL(sectionMoved(int,int,int)),
 		this, SLOT(moveRow(int,int,int)));
-	infoLabel = NULL;
+    infoLabel = nullptr;
 	initLineDelegate();
 }
 

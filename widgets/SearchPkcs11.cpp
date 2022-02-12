@@ -27,7 +27,7 @@ SearchPkcs11::SearchPkcs11(QWidget *parent, const QString &fname)
 	setWindowTitle(XCA_TITLE);
 
 	liblist->setSelectionMode(QAbstractItemView::ExtendedSelection);
-	searching = NULL;
+    searching = nullptr;
 }
 
 SearchPkcs11::~SearchPkcs11()
@@ -77,7 +77,7 @@ void SearchPkcs11::finishSearch()
 		return;
 	searching->wait(1000);
 	delete searching;
-	searching = NULL;
+    searching = nullptr;
 }
 
 void SearchPkcs11::buttonPress(QAbstractButton *but)

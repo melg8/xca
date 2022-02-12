@@ -19,7 +19,7 @@ class XcaTranslator : public QTranslator
 {
 	Q_OBJECT
 public:
-	XcaTranslator(QObject *p = NULL) : QTranslator(p) { }
+    XcaTranslator(QObject *p = nullptr) : QTranslator(p) { }
 	bool load(const QLocale &locale, const QString &filename,
 		const QString &dir)
 	{

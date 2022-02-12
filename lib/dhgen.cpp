@@ -17,13 +17,13 @@
 
 void DHgen::run()
 {
-	DH *dh = NULL;
+    DH *dh = nullptr;
 	BioByteArray b;
 
 	try {
 		dh = DH_new();
 		Q_CHECK_PTR(dh);
-		DH_generate_parameters_ex(dh, bits, 2, NULL);
+        DH_generate_parameters_ex(dh, bits, 2, nullptr);
 		openssl_error();
 		PEM_write_bio_DHparams(b, dh);
 		openssl_error();

@@ -23,7 +23,7 @@ pkcs11_lib::pkcs11_lib(const QString &f)
 	CK_RV (*c_get_function_list)(CK_FUNCTION_LIST_PTR_PTR);
 	CK_RV rv;
     file = name2File(f, &is_enabled);
-	p11 = NULL;
+    p11 = nullptr;
 
     if (!is_enabled)
 		return;
@@ -48,7 +48,7 @@ pkcs11_lib::pkcs11_lib(const QString &f)
 		if (rv != CKR_OK)
 			pk11error("C_GetFunctionList", rv);
 
-		CALL_P11_C(this, C_Initialize, NULL);
+        CALL_P11_C(this, C_Initialize, nullptr);
 		if (rv != CKR_OK && rv != CKR_CRYPTOKI_ALREADY_INITIALIZED)
 			pk11error("C_Initialize", rv);
 
@@ -57,7 +57,7 @@ pkcs11_lib::pkcs11_lib(const QString &f)
 		load_error = err.getString();
 		WAITCURSOR_END;
 		if (p11)
-			p11 = NULL;
+            p11 = nullptr;
 		unload();
 		qDebug() << "Failed to load PKCS#11 provider" << file;
 	}
@@ -70,7 +70,7 @@ pkcs11_lib::~pkcs11_lib()
 	if (!isLoaded())
 		return;
 	qDebug() << "Unloading PKCS#11 provider" << file;
-	CALL_P11_C(this, C_Finalize, NULL);
+    CALL_P11_C(this, C_Finalize, nullptr);
 	unload();
 	qDebug() << "Unloaded PKCS#11 provider" << file;
 }
@@ -78,7 +78,7 @@ pkcs11_lib::~pkcs11_lib()
 QList<unsigned long> pkcs11_lib::getSlotList()
 {
 	CK_RV rv;
-	CK_SLOT_ID *p11_slots = NULL;
+    CK_SLOT_ID *p11_slots = nullptr;
 	QList<unsigned long> sl;
 	unsigned long i, num_slots = 0;
 
@@ -157,10 +157,10 @@ QString pkcs11_lib::name2File(const QString &name, bool *enabled)
 pkcs11_lib *pkcs11_lib_list::add_lib(const QString &fname)
 {
 	int idx = -1;
-	pkcs11_lib *l = NULL;
+    pkcs11_lib *l = nullptr;
 
 	if (fname.isEmpty())
-		return NULL;
+        return nullptr;
 
 	for (int i = 0; i < libs.size(); i++) {
 		l = libs[i];
@@ -188,7 +188,7 @@ void pkcs11_lib_list::load(const QString &list)
 	QString orig = getPkcs11Provider();
 	QList<pkcs11_lib*> newlist;
 	foreach(QString name, list.split('\n')) {
-		pkcs11_lib *newitem = NULL;
+        pkcs11_lib *newitem = nullptr;
 		name = name.trimmed();
 		if (name.isEmpty())
 			continue;
@@ -272,9 +272,9 @@ int pkcs11_lib_list::rowCount(const QModelIndex &) const
 pkcs11_lib *pkcs11_lib_list::libByModelIndex(const QModelIndex &index) const
 {
 	if (!index.isValid())
-		return NULL;
+        return nullptr;
 	int idx = model_data[index.row()];
-	return (idx >= 0 && idx < libs.size()) ? libs[idx] : NULL;
+    return (idx >= 0 && idx < libs.size()) ? libs[idx] : nullptr;
 }
 
 QVariant pkcs11_lib_list::data(const QModelIndex &index, int role) const

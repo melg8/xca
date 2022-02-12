@@ -18,6 +18,6 @@ extern MainWindow *mainwin;
 extern char segv_data[1024];
 //extern bool exitApp;
 
-pki_multi *probeAnything(const QString &, int *ret = NULL);
+pki_multi *probeAnything(const QString &, int *ret = nullptr);
 int exportIndex(const QString &fname, bool hierarchy);
 #endif

@@ -126,7 +126,7 @@ class pk11_attr_data final: public pk11_attribute
 
 public:
 	pk11_attr_data() :pk11_attribute(0) { }
-	pk11_attr_data(unsigned long type, const unsigned char *v = NULL,
+    pk11_attr_data(unsigned long type, const unsigned char *v = nullptr,
 			unsigned long len = 0) :pk11_attribute(type)
 	{
 		setValue(v, len);
@@ -191,7 +191,7 @@ public:
 	BIGNUM *getBignum() const
 	{
 		return BN_bin2bn((unsigned char*)attr.pValue,
-				attr.ulValueLen, NULL);
+                attr.ulValueLen, nullptr);
 	}
 	void setBignum(BIGNUM *bn, bool consume=true);
 	void setConstBignum(const BIGNUM *bn);
@@ -218,7 +218,7 @@ class pk11_attlist {
 		{
 			attlen = 0;
 			alloc_len = 0;
-			attributes = NULL;
+            attributes = nullptr;
 		}
 
 	public:

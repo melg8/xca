@@ -81,7 +81,7 @@ QString a1int::toQString(int dec) const
 	if (in->length == 0) {
 		return r;
 	}
-	BIGNUM *bn = ASN1_INTEGER_to_BN(in, NULL);
+    BIGNUM *bn = ASN1_INTEGER_to_BN(in, nullptr);
 	openssl_error();
 	char *res = dec ? BN_bn2dec(bn) : BN_bn2hex(bn);
 	openssl_error();
@@ -103,7 +103,7 @@ QString a1int::toDec() const
 
 a1int &a1int::setQString(const QString &s, int dec)
 {
-	BIGNUM *bn = NULL;
+    BIGNUM *bn = nullptr;
 	if (s.isEmpty()) {
 		return *this;
 	}
@@ -130,7 +130,7 @@ a1int &a1int::setDec(const QString &s)
 
 a1int &a1int::setRaw(const unsigned char *data, unsigned len)
 {
-	BIGNUM *bn = BN_bin2bn(data, len, NULL);
+    BIGNUM *bn = BN_bin2bn(data, len, nullptr);
 	if (!bn)
 		openssl_error();
 	BN_to_ASN1_INTEGER(bn, in);
@@ -158,7 +158,7 @@ long a1int::getLong() const
 
 a1int &a1int::operator ++ (void)
 {
-	BIGNUM *bn = ASN1_INTEGER_to_BN(in, NULL);
+    BIGNUM *bn = ASN1_INTEGER_to_BN(in, nullptr);
 	openssl_error();
 	BN_add(bn, bn, BN_value_one());
 	openssl_error();
@@ -220,6 +220,6 @@ QByteArray a1int::i2d()
 
 int a1int::derSize() const
 {
-	return i2d_ASN1_INTEGER(in, NULL);
+    return i2d_ASN1_INTEGER(in, nullptr);
 }
 

@@ -26,7 +26,7 @@ class pkcs11_lib final: public QLibrary
     bool is_enabled;
 
     public:
-	static QString name2File(const QString &name, bool *enabled = NULL);
+    static QString name2File(const QString &name, bool *enabled = nullptr);
 	pkcs11_lib(const QString &file);
     ~pkcs11_lib() final;
 
@@ -42,7 +42,7 @@ class pkcs11_lib final: public QLibrary
 	}
 	bool isLoaded() const
 	{
-		return p11 != NULL;
+        return p11 != nullptr;
 	}
 	enum Qt::CheckState checked() const
 	{

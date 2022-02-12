@@ -56,7 +56,7 @@ int console_write(FILE *fp, const QByteArray &ba)
 						 STD_OUTPUT_HANDLE);
 	if (con != INVALID_HANDLE_VALUE) {
 		QString string = QString::fromUtf8(ba);
-		WriteConsoleW(con, string.utf16(), string.size(), NULL, NULL);
+        WriteConsoleW(con, string.utf16(), string.size(), nullptr, nullptr);
 		//return 0;
 	}
 #endif
@@ -117,7 +117,7 @@ static QString registryInstallDir()
 	ULONG len = sizeof inst_dir;
 
 	if (RegGetValueW(HKEY_LOCAL_MACHINE, L"Software\\xca",
-			L"Install_Dir64", RRF_RT_REG_SZ, NULL,
+            L"Install_Dir64", RRF_RT_REG_SZ, nullptr,
 			inst_dir, &len) != ERROR_SUCCESS)
 		return dir;
 
@@ -153,10 +153,10 @@ int portable_app()
 #if defined(Q_OS_WIN32)
 static QString specialFolder(int csidl)
 {
-	LPITEMIDLIST pidl = NULL;
+    LPITEMIDLIST pidl = nullptr;
 	wchar_t buf[MAX_PATH] = L"";
 
-	if (SUCCEEDED(SHGetSpecialFolderLocation(NULL, csidl, &pidl)))
+    if (SUCCEEDED(SHGetSpecialFolderLocation(nullptr, csidl, &pidl)))
 		SHGetPathFromIDListW(pidl, buf);
 
 	QString f = QString::fromWCharArray(buf);
@@ -337,7 +337,7 @@ QString hostId()
 			KEY_READ, &hKey) != ERROR_SUCCESS) {
 		XCA_WARN("Registry Key: '" REG_CRYPTO "' not found");
 	} else {
-		if (RegQueryValueExA(hKey, REG_GUID, NULL, NULL,
+        if (RegQueryValueExA(hKey, REG_GUID, nullptr, nullptr,
 			guid, &dwGuid) != ERROR_SUCCESS) {
 			XCA_WARN("Registry Key: '" REG_CRYPTO "\\" REG_GUID
 				 "' not found");
@@ -409,7 +409,7 @@ QString compressFilename(const QString &filename, int maxlen)
 
 QString asn1ToQString(const ASN1_STRING *str, bool quote)
 {
-	unsigned char *out = NULL;
+    unsigned char *out = nullptr;
 	int len;
 	QString utf8;
 
@@ -430,7 +430,7 @@ ASN1_STRING *QStringToAsn1(const QString s, int nid)
 	const unsigned char *utf8 = (const unsigned char *)ba.constData();
 	unsigned long global_mask = ASN1_STRING_get_default_mask();
 	unsigned long mask = DIRSTRING_TYPE & global_mask;
-	ASN1_STRING *out = NULL;
+    ASN1_STRING *out = nullptr;
 	ASN1_STRING_TABLE *tbl;
 
 	tbl = ASN1_STRING_TABLE_get(nid);
@@ -476,7 +476,7 @@ QByteArray i2d_bytearray(int(*i2d)(const void*, unsigned char **),
 {
 	QByteArray ba;
 
-	ba.resize(i2d(data, NULL));
+    ba.resize(i2d(data, nullptr));
 	unsigned char *p = (unsigned char*)ba.data();
 	i2d(data, &p);
 	openssl_error();
@@ -489,7 +489,7 @@ void *d2i_bytearray(void *(*d2i)(void *, unsigned char **, long),
 	unsigned char *p, *p1;
 	void *ret;
     p = p1 = reinterpret_cast<unsigned char *>(ba.data());
-	ret = d2i(NULL, &p1, ba.count());
+    ret = d2i(nullptr, &p1, ba.count());
 	ba = ba.mid(p1-p);
 	openssl_error();
 	return ret;
@@ -500,9 +500,9 @@ void _openssl_error(const QString &txt, const char *file, int line)
 	QString error;
 
 	while (int i = ERR_get_error() ) {
-		error += QString(ERR_error_string(i, NULL)) + "\n";
+        error += QString(ERR_error_string(i, nullptr)) + "\n";
 		fputs(CCHAR(QString("OpenSSL error (%1:%2) : %3\n").
-			arg(file).arg(line).arg(ERR_error_string(i, NULL))),
+            arg(file).arg(line).arg(ERR_error_string(i, nullptr))),
 			stderr);
 	}
 	if (!error.isEmpty()) {
@@ -527,7 +527,7 @@ bool _ign_openssl_error(const QString &txt, const char *file, int line)
 	(void)line;
 #endif
 	while (int i = ERR_get_error() ) {
-		errtxt = ERR_error_string(i, NULL);
+        errtxt = ERR_error_string(i, nullptr);
 #ifdef PRINT_IGNORED_ANYWAY
 		qDebug() << QString("IGNORED (%1:%2) : %3\n")
 				.arg(file).arg(line).arg(errtxt);
@@ -548,7 +548,7 @@ QByteArray Digest(const QByteArray &data, const EVP_MD *type)
 	unsigned int n;
 	unsigned char m[EVP_MAX_MD_SIZE];
 
-	EVP_Digest(data.constData(), data.size(), m, &n, type, NULL);
+    EVP_Digest(data.constData(), data.size(), m, &n, type, nullptr);
 	openssl_error();
 	return QByteArray((char*)m, (int)n);
 }

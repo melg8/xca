@@ -44,7 +44,7 @@
 #include "Help.h"
 #include "OidResolver.h"
 
-OidResolver *MainWindow::resolver = NULL;
+OidResolver *MainWindow::resolver = nullptr;
 
 void MainWindow::enableTokenMenu(bool enable)
 {
@@ -63,7 +63,7 @@ void MainWindow::initResolver()
 		search = resolver->input->text();
 		delete resolver;
 	}
-	resolver = new OidResolver(NULL);
+    resolver = new OidResolver(nullptr);
 	resolver->setWindowTitle(XCA_TITLE);
 	if (shown)
 		resolver->searchOid(search);
@@ -95,7 +95,7 @@ MainWindow::MainWindow() : QMainWindow()
 		qDebug() << "DB driver:" << driver;
 	}
 
-	historyMenu = NULL;
+    historyMenu = nullptr;
 	helpdlg = new Help();
 	init_menu();
 	setItemEnabled(false);
@@ -225,7 +225,7 @@ bool MainWindow::pastePem(QString text, bool silent)
 	if (pemdata.size() == 0)
 		return false;
 
-	pki_multi *pem = NULL;
+    pki_multi *pem = nullptr;
 	try {
 		pem = new pki_multi();
 		pem->fromPEMbyteArray(pemdata, QString());
@@ -351,9 +351,9 @@ void MainWindow::manageToken()
 {
 	pkcs11 p11;
 	slotid slot;
-	pki_scard *card = NULL;
-	pki_x509 *cert = NULL;
-	ImportMulti *dlgi = NULL;
+    pki_scard *card = nullptr;
+    pki_x509 *cert = nullptr;
+    ImportMulti *dlgi = nullptr;
 
 	if (!pkcs11::libraries.loaded())
 		return;
@@ -387,7 +387,7 @@ void MainWindow::manageToken()
 				XCA_ERROR(err);
 				delete card;
 			}
-			card = NULL;
+            card = nullptr;
 		}
 		atts.reset();
 		atts << pk11_attr_ulong(CKA_CLASS, CKO_CERTIFICATE) <<
@@ -403,7 +403,7 @@ void MainWindow::manageToken()
 				XCA_ERROR(err);
 				delete cert;
 			}
-			cert = NULL;
+            cert = nullptr;
 		}
         if (import_dialog->entries() == 0) {
 			tkInfo ti = p11.tokenInfo();
@@ -440,9 +440,9 @@ void MainWindow::closeEvent(QCloseEvent *e)
 		dhgen->terminate();
 	}
 	delete resolver;
-	resolver = NULL;
+    resolver = nullptr;
 	delete helpdlg;
-	helpdlg = NULL;
+    helpdlg = nullptr;
 	close_database();
 	QMainWindow::closeEvent(e);
 }
@@ -639,7 +639,7 @@ void MainWindow::close_database()
 
 	history.addEntry(Database.name());
 	foreach(XcaTreeView *v, views)
-		v->setModel(NULL);
+        v->setModel(nullptr);
 	Database.close();
 
 	setItemEnabled(false);
@@ -681,7 +681,7 @@ void MainWindow::generateDHparamDone()
 	else
 		XCA_ERROR(e);
 	dhgen->deleteLater();
-	dhgen = NULL;
+    dhgen = nullptr;
 	delete dhgenProgress;
 	dhgenProgress = nullptr;
 }
@@ -707,7 +707,7 @@ void MainWindow::generateDHparam()
 	try {
 		QString fname = QString("%1/dh%2.pem").arg(homedir).arg(bits);
 		fname = QFileDialog::getSaveFileName(this, QString(),
-			fname, tr("All files ( * )"), NULL);
+            fname, tr("All files ( * )"), nullptr);
 		if (fname == "")
 			throw errorEx("");
 		dhgen = new DHgen(fname, bits);
@@ -777,7 +777,7 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
 void MainWindow::dump_database()
 {
 	QString dirname = QFileDialog::getExistingDirectory(
-				NULL, XCA_TITLE, Settings["workingdir"]);
+                nullptr, XCA_TITLE, Settings["workingdir"]);
 	try {
 		Database.dump(dirname);
 	} catch (errorEx &err) {

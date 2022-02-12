@@ -31,7 +31,7 @@
 XcaTreeView::XcaTreeView(QWidget *parent)
 	:QTreeView(parent)
 {
-	mainwin = NULL;
+    mainwin = nullptr;
 	setHeader(new XcaHeaderView());
 	setAlternatingRowColors(true);
 	setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -45,7 +45,7 @@ XcaTreeView::XcaTreeView(QWidget *parent)
 	setSortingEnabled(true);
 	proxy->setDynamicSortFilter(true);
 	sortByColumn(0, Qt::AscendingOrder);
-	basemodel = NULL;
+    basemodel = nullptr;
 	connect(header(), SIGNAL(sectionHandleDoubleClicked(int)),
 		this, SLOT(resizeColumnToContents(int)));
 	connect(this, SIGNAL(doubleClicked(const QModelIndex &)),
@@ -103,7 +103,7 @@ void XcaTreeView::setModel(QAbstractItemModel *model)
 
 	basemodel = dynamic_cast<db_base*>(model);
 	proxy->setSourceModel(model);
-	QTreeView::setModel(model ? proxy : NULL);
+    QTreeView::setModel(model ? proxy : nullptr);
 
 	if (basemodel) {
 		setRootIsDecorated(basemodel->treeViewMode());
@@ -127,7 +127,7 @@ void XcaTreeView::setModel(QAbstractItemModel *model)
 
 void XcaTreeView::headerEvent(QContextMenuEvent *e, int col)
 {
-	contextMenu(e, NULL, col);
+    contextMenu(e, nullptr, col);
 }
 
 QModelIndex XcaTreeView::getIndex(const QModelIndex &index)
@@ -217,7 +217,7 @@ void XcaTreeView::deleteItems()
 	QModelIndexList indexes = getSelectedIndexes();
 	QString items, msg;
 	int count = 0;
-	pki_base *pki = NULL;
+    pki_base *pki = nullptr;
 
 	if (indexes.count() == 0 || !basemodel)
 		return;
@@ -268,7 +268,7 @@ void XcaTreeView::newItem()
 void XcaTreeView::load_default(load_base *load)
 {
 	QString s;
-	QStringList slist = QFileDialog::getOpenFileNames(NULL, load->caption,
+    QStringList slist = QFileDialog::getOpenFileNames(nullptr, load->caption,
 				Settings["workingdir"], load->filter);
 
 	if (!slist.count())
@@ -276,9 +276,9 @@ void XcaTreeView::load_default(load_base *load)
 
 	update_workingdir(slist[0]);
 
-	ImportMulti *dlgi = new ImportMulti(NULL);
+    ImportMulti *dlgi = new ImportMulti(nullptr);
 	foreach(s, slist) {
-		pki_base *item = NULL;
+        pki_base *item = nullptr;
 		try {
 			item = load->loadItem(s);
 			dlgi->addItem(item);
@@ -390,7 +390,7 @@ void XcaTreeView::contextMenu(QContextMenuEvent *e, QMenu *parent, int col)
 			menu->addAction(tr("Details"), this,
 						SLOT(headerDetails()));
 	} else {
-		curr_hd = NULL;
+        curr_hd = nullptr;
 	}
 	menu->addSeparator();
 	foreach(hd, allHeaders) {
@@ -439,7 +439,7 @@ void XcaTreeView::contextMenu(QContextMenuEvent *e, QMenu *parent, int col)
 		if (hd->action)
 			hd->show = hd->action->isChecked();
 		shown += hd->show ? 1 : 0;
-		hd->action = NULL;
+        hd->action = nullptr;
 	}
 	if (!shown)
 		allHeaders[0]->show = true;
@@ -484,14 +484,14 @@ void XcaTreeView::exportItems(const QModelIndexList &indexes)
 
 ExportDialog *XcaTreeView::exportDialog(const QModelIndexList &)
 {
-	return NULL;
+    return nullptr;
 }
 
 void XcaTreeView::showContextMenu(QContextMenuEvent *e,
 		const QModelIndex &idx)
 {
 	QMenu *menu = new QMenu(mainwin);
-	QMenu *subExport = NULL;
+    QMenu *subExport = nullptr;
 	QModelIndexList indexes = getSelectedIndexes();
 	QModelIndex index;
 

@@ -38,8 +38,8 @@ class revListItem final: public QTreeWidgetItem
 static void setup_revRevItem(QTreeWidgetItem *item, const x509rev &revit,
 			const pki_x509 *iss)
 {
-	pki_x509 *rev = iss ? iss->getBySerial(revit.getSerial()) : NULL;
-	if (rev != NULL) {
+    pki_x509 *rev = iss ? iss->getBySerial(revit.getSerial()) : nullptr;
+    if (rev != nullptr) {
 		for (int i = 0; i < Cmax; i++)
 			item->setToolTip(i, rev->getIntName());
 	}

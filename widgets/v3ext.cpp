@@ -68,7 +68,7 @@ void v3ext::addItem(QString list)
 void v3ext::setupLineEdit(const QString &s, QLineEdit *l)
 {
 	QString tt;
-	QValidator *v = NULL;
+    QValidator *v = nullptr;
 
 	if (s == "email") {
 		if (nid == NID_subject_alt_name)
@@ -161,7 +161,7 @@ bool v3ext::__validate(bool showSuccess)
 	str = prefix + toString();
 	ext.create(nid, str, ext_ctx);
 	while (int i = ERR_get_error() ) {
-		error += ERR_error_string(i ,NULL);
+        error += ERR_error_string(i, nullptr);
 		error += "\n";
 	}
 	if (!error.isEmpty()) {

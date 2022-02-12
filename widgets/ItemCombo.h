@@ -30,7 +30,7 @@ template <class T> class itemCombo : public QComboBox
 		return itemData(currentIndex()).template value<T*>();
 	}
 	void setNullItem(QString text) {
-		if (itemData(0).template value<T*>() == NULL)
+        if (itemData(0).template value<T*>() == nullptr)
 			removeItem(0);
 		insertItem(0, text, QVariant());
 	}

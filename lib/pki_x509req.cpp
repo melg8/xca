@@ -103,7 +103,7 @@ void pki_x509req::createReq(pki_key *key, const x509name &dn,
 	QList<int> bad_nids; bad_nids << NID_authority_key_identifier <<
 		NID_issuer_alt_name << NID_undef;
 
-	EVP_PKEY *privkey = NULL;
+    EVP_PKEY *privkey = nullptr;
 
 	if (key->isPubKey()) {
 		my_error(tr("Signing key not valid (public key)"));
@@ -160,7 +160,7 @@ QString pki_x509req::getMsg(msg_type msg) const
 void pki_x509req::fromPEM_BIO(BIO *bio, const QString &name)
 {
 	X509_REQ *req;
-	req = PEM_read_bio_X509_REQ(bio, NULL, NULL, NULL);
+    req = PEM_read_bio_X509_REQ(bio, nullptr, nullptr, nullptr);
 	openssl_error(name);
 	X509_REQ_free(request);
 	request = req;
@@ -173,10 +173,11 @@ void pki_x509req::fload(const QString &fname)
 	file.open_read();
 	QByteArray ba(file.readAll());
 
-	_req = PEM_read_bio_X509_REQ(BioByteArray(ba).ro(), NULL, NULL, NULL);
+    _req = PEM_read_bio_X509_REQ(BioByteArray(ba).ro(),
+                                 nullptr, nullptr, nullptr);
 	if (!_req) {
 		pki_ign_openssl_error();
-		_req = d2i_X509_REQ_bio(BioByteArray(ba).ro(), NULL);
+        _req = d2i_X509_REQ_bio(BioByteArray(ba).ro(), nullptr);
 	}
 	if (pki_ign_openssl_error() || !_req) {
 		if (_req)
@@ -270,8 +271,9 @@ pki_key *pki_x509req::getPubKey() const
 {
 	 EVP_PKEY *pkey = X509_REQ_get_pubkey(request);
 	 pki_ign_openssl_error();
-	 if (pkey == NULL)
-		 return NULL;
+     if (pkey == nullptr) {
+         return nullptr;
+     }
 	 pki_evp *key = new pki_evp(pkey);
 	 pki_openssl_error();
 	 return key;

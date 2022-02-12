@@ -26,11 +26,11 @@ class BioByteArray
 
     public:
 	BioByteArray(const QByteArray &qba) :
-		 read_write(NULL), read_only(NULL), store(qba) { }
+         read_write(nullptr), read_only(nullptr), store(qba) { }
 	BioByteArray(const BioByteArray &bba) :
-		 read_write(NULL), read_only(NULL), store(bba.byteArray()) { }
+         read_write(nullptr), read_only(nullptr), store(bba.byteArray()) { }
 	BioByteArray() :
-		 read_write(NULL), read_only(NULL), store() { }
+         read_write(nullptr), read_only(nullptr), store() { }
 	~BioByteArray();
 	int size() const;
 	BIO *bio();

@@ -32,7 +32,7 @@ class db_x509req final: public db_x509super
                 const pki_export *xport, XFile &file) const final;
 
 	public slots:
-		void newItem(pki_temp *temp, pki_x509req *orig = NULL);
+        void newItem(pki_temp *temp, pki_x509req *orig = nullptr);
         void newItem() final;
 };
 

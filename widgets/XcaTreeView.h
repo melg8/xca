@@ -56,7 +56,7 @@ class XcaTreeView: public QTreeView
 		(void)menu; (void)subExport; (void)index; (void)indexes;
 	}
 	void contextMenu(QContextMenuEvent *e,
-			QMenu *parent = NULL, int sect = -1);
+            QMenu *parent = nullptr, int sect = -1);
     void keyPressEvent(QKeyEvent *event) override;
     virtual void showPki(pki_base *) {}
 	virtual void exportItems(const QModelIndexList &indexes);

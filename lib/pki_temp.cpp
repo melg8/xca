@@ -248,7 +248,7 @@ extList pki_temp::fromCert(pki_x509super *cert_or_req)
 	settings["subKey"] =  el.delByNid(NID_subject_key_identifier) ? "1" : "0";
 	settings["OCSPstaple"] = el.delByNid(NID_tlsfeature) ? "1" : "0";
 
-	int nsCT = bitsToInt(el, NID_netscape_cert_type, NULL);
+    int nsCT = bitsToInt(el, NID_netscape_cert_type, nullptr);
 	/* bit 4 is unused. Move higher bits down. */
 	settings["nsCertType"] = QString::number(
 				(nsCT & 0xf) | ((nsCT & 0xf0) >> 1));
@@ -488,8 +488,8 @@ void pki_temp::fromPEM_BIO(BIO *bio, const QString &name)
 {
 	QByteArray ba;
 	QString msg;
-	char *nm = NULL, *header = NULL;
-        unsigned char *data = NULL;
+    char *nm = nullptr, *header = nullptr;
+        unsigned char *data = nullptr;
 	long len;
 
 	PEM_read_bio(bio, &nm, &header, &data, &len);

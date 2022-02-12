@@ -26,7 +26,7 @@ class X509SuperTreeView: public XcaTreeView
     public:
 	X509SuperTreeView(QWidget *parent) : XcaTreeView(parent)
 	{
-		transform = NULL;
+        transform = nullptr;
 	}
 	void fillContextMenu(QMenu *menu, QMenu *subExport,
             const QModelIndex &index, QModelIndexList indexes) override;

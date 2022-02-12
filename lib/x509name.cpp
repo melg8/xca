@@ -26,13 +26,13 @@ x509name::x509name(const X509_NAME *n)
 
 x509name::x509name(STACK_OF(X509_NAME_ENTRY) *entries)
 {
-	xn = NULL;
+    xn = nullptr;
 	set(entries);
 }
 
 x509name::x509name(const x509name &n)
 {
-	xn = NULL;
+    xn = nullptr;
 	set(n.xn);
 }
 
@@ -43,7 +43,7 @@ x509name::~x509name()
 
 x509name &x509name::set(const X509_NAME *n)
 {
-	if (xn != NULL)
+    if (xn != nullptr)
 		X509_NAME_free(xn);
     xn = X509_NAME_dup(const_cast<X509_NAME *>(n));
 	return *this;
@@ -51,7 +51,7 @@ x509name &x509name::set(const X509_NAME *n)
 
 x509name &x509name::set(const STACK_OF(X509_NAME_ENTRY) *entries)
 {
-	if (xn != NULL)
+    if (xn != nullptr)
 		X509_NAME_free(xn);
 	xn = X509_NAME_new();
 	if (xn && entries) {
@@ -162,7 +162,7 @@ int x509name::nid(int i) const
 	X509_NAME_ENTRY *ne;
 
 	ne = X509_NAME_get_entry(xn, i);
-	if (ne == NULL)
+    if (ne == nullptr)
 		return NID_undef;
 	return OBJ_obj2nid(X509_NAME_ENTRY_get_object(ne));
 }
@@ -172,7 +172,7 @@ QString x509name::getOid(int i) const
 	X509_NAME_ENTRY *ne;
 
 	ne = X509_NAME_get_entry(xn, i);
-	if (ne == NULL)
+    if (ne == nullptr)
 		return QString();
 	return OBJ_obj2QString(X509_NAME_ENTRY_get_object(ne), 1);
 }

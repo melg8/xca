@@ -89,7 +89,7 @@ void db_key::remFromCont(const QModelIndex &idx)
 	QList<pki_x509super*> items = Store.sqlSELECTpki<pki_x509super>(
 		"SELECT item FROM x509super WHERE pkey is NULL");
 	foreach(pki_x509super *x509s, items) {
-		x509s->setRefKey(NULL);
+        x509s->setRefKey(nullptr);
 	}
 	/* "UPDATE x509super SET pkey=NULL WHERE pkey=?" done in
 	 * pki->deleteSqlData() */
@@ -128,12 +128,12 @@ pki_base* db_key::insert(pki_base *item)
 		evp->setOwnPass(pki_evp::ptCommon);
 
 	oldkey = static_cast<pki_key *>(getByReference(lkey));
-	if (oldkey != NULL) {
+    if (oldkey != nullptr) {
 		if ((oldkey->isPrivKey() && lkey->isPrivKey()) || lkey->isPubKey()){
 			XCA_INFO(
 			tr("The key is already in the database as:\n'%1'\nand is not going to be imported").arg(oldkey->getIntName()));
 			delete lkey;
-			return NULL;
+            return nullptr;
 		} else {
 			XCA_INFO(
 			tr("The database already contains the public part of the imported key as\n'%1\nand will be completed by the new, private part of the key").arg(oldkey->getIntName()));
@@ -150,16 +150,16 @@ pki_base* db_key::insert(pki_base *item)
 
 pki_key *db_key::newKey(const keyjob &task, const QString &name)
 {
-	pki_key *key = NULL;
+    pki_key *key = nullptr;
 
 	if (!task.isEC() && !task.isED25519()) {
 		if (task.size < 32) {
 			XCA_WARN(tr("Key size too small !"));
-			return NULL;
+            return nullptr;
 		}
 		if (task.size < 1024 || task.size > 8192)
 			if (!XCA_YESNO(tr("You are sure to create a key of the size: %1 ?").arg(task.size))) {
-				return NULL;
+                return nullptr;
 			}
 	}
 	try {
@@ -178,7 +178,7 @@ pki_key *db_key::newKey(const keyjob &task, const QString &name)
 
 	} catch (errorEx &err) {
 		delete key;
-		key = NULL;
+        key = nullptr;
 		XCA_ERROR(err);
 	}
 	return key;
@@ -212,11 +212,11 @@ int db_key::exportFlags(const QModelIndex &index) const
 void db_key::exportItem(const QModelIndex &index, const pki_export *xport,
 			XFile &file) const
 {
-	const EVP_CIPHER *algo = NULL;
+    const EVP_CIPHER *algo = nullptr;
 	pki_key *key = fromIndex<pki_key>(index);
 	pki_evp *privkey = dynamic_cast<pki_evp *>(key);
 
-	int(*pwCallback)(char *, int, int, void *) = NULL;
+    int(*pwCallback)(char *, int, int, void *) = nullptr;
 
 	if (xport->match_all(F_CRYPT)) {
 		algo = EVP_aes_256_cbc();
@@ -224,7 +224,7 @@ void db_key::exportItem(const QModelIndex &index, const pki_export *xport,
 	}
 
 	if (privkey && xport->match_all(F_DER | F_PRIVATE))
-		privkey->writeKey(file, NULL, NULL, false);
+        privkey->writeKey(file, nullptr, nullptr, false);
 	else if (privkey && xport->match_all(F_PEM | F_PRIVATE))
 		privkey->writeKey(file, algo, pwCallback, true);
 	else if (xport->match_all(F_DER))

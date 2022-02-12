@@ -39,7 +39,7 @@ void pki_crl::setIssuer(pki_x509 *iss)
 void pki_crl::fromPEM_BIO(BIO *bio, const QString &name)
 {
 	X509_CRL *_crl;
-	_crl = PEM_read_bio_X509_CRL(bio, NULL, NULL, NULL);
+    _crl = PEM_read_bio_X509_CRL(bio, nullptr, nullptr, nullptr);
 	openssl_error(name);
 	X509_CRL_free(crl);
 	crl = _crl;
@@ -134,10 +134,11 @@ void pki_crl::fload(const QString &fname)
 	file.open_read();
 	QByteArray ba(file.readAll());
 
-	_crl = PEM_read_bio_X509_CRL(BioByteArray(ba).ro(), NULL, NULL, NULL);
+    _crl = PEM_read_bio_X509_CRL(BioByteArray(ba).ro(),
+                                 nullptr, nullptr, nullptr);
 	if (!_crl) {
 		pki_ign_openssl_error();
-		_crl = d2i_X509_CRL_bio(BioByteArray(ba).ro(), NULL);
+        _crl = d2i_X509_CRL_bio(BioByteArray(ba).ro(), nullptr);
 	}
 	if (pki_ign_openssl_error() || !_crl) {
 		if (_crl)
@@ -354,7 +355,7 @@ bool pki_crl::getCrlNumber(a1int *num) const
 {
 	int j;
 	ASN1_INTEGER *i;
-	i = (ASN1_INTEGER *)X509_CRL_get_ext_d2i(crl, NID_crl_number, &j, NULL);
+    i = (ASN1_INTEGER *)X509_CRL_get_ext_d2i(crl, NID_crl_number, &j, nullptr);
 	pki_openssl_error();
 	if (j == -1)
 		return false;

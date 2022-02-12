@@ -31,9 +31,9 @@ pki_pkcs12::pki_pkcs12(const QString &fname)
 	:pki_multi(fname)
 {
 	Passwd pass;
-	EVP_PKEY *mykey = NULL;
-	X509 *mycert = NULL;
-	key = NULL; cert = NULL;
+    EVP_PKEY *mykey = nullptr;
+    X509 *mycert = nullptr;
+    key = nullptr; cert = nullptr;
 	pass_info p(XCA_TITLE, tr("Please enter the password to decrypt the PKCS#12 file:\n%1").arg(compressFilename(fname)));
 
 	setFilename(fname);
@@ -41,7 +41,7 @@ pki_pkcs12::pki_pkcs12(const QString &fname)
 	file.open_read();
 	BioByteArray b(file.readAll());
 
-	PKCS12 *pkcs12 = d2i_PKCS12_bio(b.ro(), NULL);
+    PKCS12 *pkcs12 = d2i_PKCS12_bio(b.ro(), nullptr);
 	if (pki_ign_openssl_error()) {
 		if (pkcs12)
 			PKCS12_free(pkcs12);
@@ -74,7 +74,7 @@ pki_pkcs12::pki_pkcs12(const QString &fname)
 	}
 	pki_ign_openssl_error();
 	if (mycert) {
-		unsigned char *str = X509_alias_get0(mycert, NULL);
+        unsigned char *str = X509_alias_get0(mycert, nullptr);
 		if (str)
 			alias = QString::fromUtf8((const char *)str);
 		alias = QString::fromUtf8(alias.toLatin1());
@@ -125,7 +125,7 @@ void pki_pkcs12::writePKCS12(XFile &file) const
 	pass_info p(XCA_TITLE,
 		tr("Please enter the password to encrypt the PKCS#12 file"));
 
-	if (cert == NULL || key == NULL)
+    if (cert == nullptr || key == nullptr)
 		my_error(tr("No key or no Cert and no pkcs12"));
 
 	if (PwDialogCore::execute(&p, &pass, true) != 1)

@@ -52,19 +52,19 @@ pki_base *db_x509req::insert(pki_base *item)
 	if (oldreq) {
 		XCA_INFO(tr("The certificate signing request already exists in the database as\n'%1'\nand thus was not stored").arg(oldreq->getIntName()));
 		delete req;
-		return NULL;
+        return nullptr;
 	}
 	return insertPKI(req);
 }
 
 void db_x509req::newItem()
 {
-	newItem(NULL, NULL);
+    newItem(nullptr, nullptr);
 }
 
 void db_x509req::newItem(pki_temp *temp, pki_x509req *orig)
 {
-	pki_x509req *req = NULL;
+    pki_x509req *req = nullptr;
 	NewX509 *dlg = new NewX509();
 
 	if (temp) {

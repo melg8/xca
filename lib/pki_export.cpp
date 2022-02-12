@@ -36,7 +36,7 @@ const pki_export *pki_export::by_id(int id)
 		if (exp->id == id)
 			return exp;
 	}
-	return NULL;
+    return nullptr;
 }
 
 QList<pki_export*> pki_export::elements {

@@ -74,13 +74,13 @@ bool TempTreeView::runTempDlg(pki_temp *temp)
 
 void TempTreeView::newItem()
 {
-	pki_temp *temp = NULL;
+    pki_temp *temp = nullptr;
 	QString type;
 
 	if (!basemodel)
 		return;
 
-	itemComboTemp *ic = new itemComboTemp(NULL);
+    itemComboTemp *ic = new itemComboTemp(nullptr);
 	ic->insertPkiItems(temps()->getPredefs());
 	XcaDialog *dlg = new XcaDialog(this, tmpl, ic,
 				tr("Preset Template values"), QString());

@@ -29,7 +29,7 @@ class pass_info: public QObject
 	enum open_result result;
 
    public:
-	pass_info(const QString &t, const QString &d, QWidget *w = NULL);
+    pass_info(const QString &t, const QString &d, QWidget *w = nullptr);
 	QString getTitle() const
 	{
 		return title;

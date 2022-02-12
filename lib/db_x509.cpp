@@ -155,7 +155,7 @@ static bool recursiveSigning(pki_x509 *cert, pki_x509 *client)
 void db_x509::inToCont(pki_base *pki)
 {
 	pki_x509 *cert = dynamic_cast<pki_x509*>(pki);
-	cert->setParent(NULL);
+    cert->setParent(nullptr);
 	pki_base *root = cert->getSigner();
 
 	insertChild(cert, root);
@@ -327,7 +327,7 @@ pki_base *db_x509::insert(pki_base *item)
 	if (oldcert) {
 		XCA_INFO(tr("The certificate already exists in the database as:\n'%1'\nand so it was not imported").arg(oldcert->getIntName()));
 		delete cert;
-		return NULL;
+        return nullptr;
 	}
 	return insertPKI(cert);
 }
@@ -419,10 +419,10 @@ void db_x509::newCert(pki_x509 *cert)
 
 pki_x509 *db_x509::newCert(NewX509 *dlg)
 {
-	pki_x509 *cert = NULL;
-	pki_x509 *signcert = NULL;
-	pki_x509req *req = NULL;
-	pki_key *signkey = NULL, *clientkey = NULL, *tempkey = NULL;
+    pki_x509 *cert = nullptr;
+    pki_x509 *signcert = nullptr;
+    pki_x509req *req = nullptr;
+    pki_key *signkey = nullptr, *clientkey = nullptr, *tempkey = nullptr;
 	a1int serial;
 	QString intname;
 
@@ -432,15 +432,15 @@ pki_x509 *db_x509::newCert(NewX509 *dlg)
 	if (!dlg->fromReqCB->isChecked()) {
 		clientkey = dlg->getSelectedKey();
 		if (!clientkey)
-			return NULL;
+            return nullptr;
 		intname = dlg->description->text();
 	} else {
 		// A PKCS#10 Request was selected
 		req = dlg->getSelectedReq();
 		if (!req)
-			return NULL;
+            return nullptr;
 		clientkey = req->getRefKey();
-		if (clientkey == NULL) {
+        if (clientkey == nullptr) {
 			clientkey = req->getPubKey();
 			tempkey = clientkey;
 		}
@@ -448,7 +448,7 @@ pki_x509 *db_x509::newCert(NewX509 *dlg)
 	}
     TransThrow()
 
-	if (clientkey == NULL)
+    if (clientkey == nullptr)
 		throw errorEx(tr("Invalid public key"));
 	// initially create cert
 	cert = new pki_x509();
@@ -461,17 +461,17 @@ pki_x509 *db_x509::newCert(NewX509 *dlg)
 		signcert = dlg->getSelectedSigner();
 		if (!signcert) {
 			delete cert;
-			return NULL;
+            return nullptr;
 		}
 		serial = getUniqueSerial(signcert);
 		signkey = signcert->getRefKey();
 	} else {
 		signcert = cert;
 		signkey = clientkey;
-		serial = getUniqueSerial(NULL);
+        serial = getUniqueSerial(nullptr);
 	}
 
-	dlg->initCtx(cert, signcert, NULL);
+    dlg->initCtx(cert, signcert, nullptr);
 	// if we can not sign
 	if (! signkey || signkey->isPubKey()) {
 		delete cert;
@@ -534,9 +534,9 @@ pki_x509 *db_x509::newCert(NewX509 *dlg)
     catch (errorEx &err) {
 		XCA_ERROR(err);
 		delete cert;
-		if (tempkey != NULL)
+        if (tempkey != nullptr)
 			delete(tempkey);
-		cert = NULL;
+        cert = nullptr;
     }
     return cert;
 }
@@ -607,7 +607,7 @@ void db_x509::exportItems(const QModelIndexList &list,
 			pkey->writePKCS8(file, EVP_des_ede3_cbc(),
 				PwDialogCore::pwCallback, true);
 		} else {
-			pkey->writeKey(file, NULL, NULL, true);
+            pkey->writeKey(file, nullptr, nullptr, true);
 		}
 		crt->writeCert(file, true);
 	} else if (xport->match_all(F_PEM)) {
@@ -643,7 +643,7 @@ void db_x509::writeIndex(XFile &file, QList<pki_x509*> items) const
 void db_x509::writePKCS12(pki_x509 *cert, XFile &file, bool chain) const
 {
 	QStringList filt;
-	pki_pkcs12 *p12 = NULL;
+    pki_pkcs12 *p12 = nullptr;
 	try {
 		pki_evp *privkey = (pki_evp *)cert->getRefKey();
 		if (!privkey || privkey->isPubKey()) {
@@ -656,7 +656,7 @@ void db_x509::writePKCS12(pki_x509 *cert, XFile &file, bool chain) const
 		}
 		p12 = new pki_pkcs12(cert->getIntName(), cert, privkey);
 		pki_x509 *signer = cert->getSigner();
-		while ((signer != NULL ) && (signer != cert) && chain) {
+        while ((signer != nullptr ) && (signer != cert) && chain) {
 			p12->append_item(signer);
 			cert = signer;
 			signer = signer->getSigner();
@@ -706,11 +706,11 @@ void db_x509::writePKCS7(pki_x509 *cert, XFile &file, int flags,
 
 void db_x509::certRenewal(QModelIndexList indexes)
 {
-	pki_x509 *oldcert = NULL, *signer = NULL, *newcert =NULL;
-	pki_key *signkey = NULL;
+    pki_x509 *oldcert = nullptr, *signer = nullptr, *newcert = nullptr;
+    pki_key *signkey = nullptr;
 	a1time time;
 	a1int serial;
-	CertExtend *dlg = NULL;
+    CertExtend *dlg = nullptr;
 	x509rev r;
 	bool doRevoke = false;
 	bool doReplace = false;
@@ -726,8 +726,8 @@ void db_x509::certRenewal(QModelIndexList indexes)
 				signkey->isPubKey())
 			return;
 		bool renew_myself = signer == oldcert;
-        CertExtend *extend_dialog = new CertExtend(NULL,
-					renew_myself ? NULL : signer);
+        CertExtend *extend_dialog = new CertExtend(nullptr,
+                    renew_myself ? nullptr : signer);
         extend_dialog->revoke->setEnabled(!renew_myself);
         if (!extend_dialog->exec()) {
             delete extend_dialog;
@@ -795,7 +795,7 @@ void db_x509::revoke(QModelIndexList indexes)
 
 void db_x509::do_revoke(QModelIndexList indexes, const x509rev &r)
 {
-	pki_x509 *parent = NULL, *cert, *iss;
+    pki_x509 *parent = nullptr, *cert, *iss;
 	x509revList revlist;
 
 	foreach(QModelIndex idx, indexes) {
@@ -803,10 +803,10 @@ void db_x509::do_revoke(QModelIndexList indexes, const x509rev &r)
 		if (!cert)
 			continue;
 		iss = cert->getSigner();
-		if (parent == NULL) {
+        if (parent == nullptr) {
 			parent = iss;
 		} else if (parent != iss) {
-			parent = NULL;
+            parent = nullptr;
 			break;
 		}
 	}
@@ -828,7 +828,7 @@ void db_x509::do_revoke(QModelIndexList indexes, const x509rev &r)
 
 void db_x509::unRevoke(QModelIndexList indexes)
 {
-	pki_x509 *parent = NULL;
+    pki_x509 *parent = nullptr;
 	x509revList revList;
 
 	foreach(QModelIndex idx, indexes) {
@@ -836,10 +836,10 @@ void db_x509::unRevoke(QModelIndexList indexes)
 		if (!cert)
 			continue;
 		pki_x509 *iss = cert->getSigner();
-		if (parent == NULL) {
+        if (parent == nullptr) {
 			parent = iss;
 		} else if (parent != iss) {
-			parent = NULL;
+            parent = nullptr;
 			break;
 		}
 	}

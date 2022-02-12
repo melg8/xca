@@ -125,7 +125,7 @@ static const QList<int> other_curve_nids()
 
 builtin_curves::builtin_curves()
 {
-	int i, num_curves = EC_get_builtin_curves(NULL, 0);
+    int i, num_curves = EC_get_builtin_curves(nullptr, 0);
 	EC_builtin_curve *curves = new EC_builtin_curve[num_curves];
 
 	Q_CHECK_PTR(curves);
@@ -149,7 +149,7 @@ builtin_curves::builtin_curves()
 			continue;
 
 		EC_GROUP *group = EC_GROUP_new_by_curve_name(nid);
-		EC_GROUP_get_order(group, order, NULL);
+        EC_GROUP_get_order(group, order, nullptr);
 
 		switch (EC_METHOD_get_field_type(EC_GROUP_method_of(group))) {
 		case NID_X9_62_prime_field:
