@@ -19,7 +19,7 @@
 
 class pass_info;
 
-class pki_evp: public pki_key
+class pki_evp final: public pki_key
 {
 		Q_OBJECT
 		QByteArray encKey;
@@ -45,7 +45,7 @@ class pki_evp: public pki_key
 		pki_evp(const QString &n = QString(), int type = EVP_PKEY_RSA);
 		pki_evp(const pki_evp *pkey);
 		pki_evp(EVP_PKEY *pkey);
-		virtual ~pki_evp();
+        ~pki_evp() final;
 
 		void generate(const keyjob &task);
 		void setOwnPass(enum passType);

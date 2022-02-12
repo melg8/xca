@@ -21,7 +21,7 @@
 
 class pki_x509;
 
-class pki_x509req : public pki_x509super
+class pki_x509req final: public pki_x509super
 {
 		Q_OBJECT
 
@@ -35,7 +35,7 @@ class pki_x509req : public pki_x509super
 	public:
 		pki_x509req(const QString &name = QString());
 		pki_x509req(const pki_x509req *req);
-		~pki_x509req();
+        ~pki_x509req() final;
 
 		extList getV3ext() const;
 		void fromPEM_BIO(BIO *bio, const QString &name);

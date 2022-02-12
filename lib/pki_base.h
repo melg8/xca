@@ -85,7 +85,7 @@ class pki_base : public QObject
 
 		pki_base(const QString &d = QString(), pki_base *p = NULL);
 		pki_base(const pki_base *p);
-		virtual ~pki_base();
+        ~pki_base() override;
 
 		QList<pki_base*> getChildItems() const;
 		void clear();

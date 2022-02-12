@@ -121,7 +121,7 @@ public:
 	}
 };
 
-class pk11_attr_data: public pk11_attribute
+class pk11_attr_data final: public pk11_attribute
 {
 
 public:
@@ -170,7 +170,7 @@ public:
 		*ptr = (const unsigned char*)attr.pValue;
 		return attr.ulValueLen;
 	}
-	~pk11_attr_data()
+    ~pk11_attr_data() final
 	{
 		if (attr.pValue) {
 			memset(attr.pValue, 0, attr.ulValueLen);

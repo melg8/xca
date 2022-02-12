@@ -15,7 +15,7 @@
 
 class pki_x509;
 
-class pki_pkcs7: public pki_multi
+class pki_pkcs7 final: public pki_multi
 {
 		Q_OBJECT
 
@@ -29,7 +29,7 @@ class pki_pkcs7: public pki_multi
 
 	public:
 		pki_pkcs7(const QString &name = QString());
-		virtual ~pki_pkcs7();
+        ~pki_pkcs7() final;
 
         void signFile(pki_x509 *crt, const QString &name);
 		void signCert(pki_x509 *crt, pki_x509 *contCert);

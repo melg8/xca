@@ -128,7 +128,7 @@ public:
 	void moveRow(int oldi, int newi);
 };
 
-class kvView: public QTableView
+class kvView final: public QTableView
 {
 	Q_OBJECT
 
@@ -137,7 +137,7 @@ class kvView: public QTableView
 
 public:
 	kvView(QWidget *parent = 0);
-	~kvView();
+    ~kvView() final;
 	int rowCount()
 	{
 		return model()->rowCount(QModelIndex());

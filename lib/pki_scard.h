@@ -22,7 +22,7 @@
 #define VIEW_tokens_slot_label 14
 #define VIEW_tokens_object_id  15
 
-class pki_scard: public pki_key
+class pki_scard final: public pki_key
 {
 		Q_OBJECT
 	protected:
@@ -37,7 +37,7 @@ class pki_scard: public pki_key
 
 	public:
 		pki_scard(const QString name);
-		virtual ~pki_scard();
+        ~pki_scard() final;
 		void load_token(pkcs11 &p11, CK_OBJECT_HANDLE object);
 		bool prepare_card(slotid *slot) const;
 		bool find_key_on_card(slotid *slot) const;

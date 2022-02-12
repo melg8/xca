@@ -16,7 +16,7 @@
 #include <QList>
 #include <QLibrary>
 
-class pkcs11_lib : public QLibrary
+class pkcs11_lib final: public QLibrary
 {
 	Q_OBJECT
 
@@ -28,7 +28,7 @@ class pkcs11_lib : public QLibrary
     public:
 	static QString name2File(const QString &name, bool *enabled = NULL);
 	pkcs11_lib(const QString &file);
-	~pkcs11_lib();
+    ~pkcs11_lib() final;
 
 	QList<unsigned long> getSlotList();
 	QString driverInfo() const;

@@ -14,7 +14,7 @@
 #include "SearchPkcs11.h"
 #include "MainWindow.h"
 
-class Options: public QDialog, public Ui::Options
+class Options final: public QDialog, public Ui::Options
 {
 		Q_OBJECT
 	private:
@@ -25,7 +25,7 @@ class Options: public QDialog, public Ui::Options
 
 	public:
 		Options(QWidget *parent);
-		~Options();
+        ~Options() final;
 		int exec();
 
 	public slots:

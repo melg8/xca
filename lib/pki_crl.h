@@ -48,7 +48,7 @@ class crljob
 	crljob() = delete;
 };
 
-class pki_crl: public pki_x509name
+class pki_crl final: public pki_x509name
 {
 		Q_OBJECT
 	friend class pki_x509;
@@ -59,7 +59,7 @@ class pki_crl: public pki_x509name
 		void collect_properties(QMap<QString, QString> &prp) const;
 	public:
 		pki_crl(const QString name = "");
-		~pki_crl();
+        ~pki_crl() final;
 		void fromPEM_BIO(BIO *bio, const QString &name);
 		void fload(const QString &fname);
 		QString getSigAlg() const;

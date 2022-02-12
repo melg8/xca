@@ -40,7 +40,7 @@ class db_base: public QAbstractItemModel
 		int colResizing;
 		QString sqlItemSelector();
 		bool isValidCol(int col) const;
-		void timerEvent(QTimerEvent *event);
+        void timerEvent(QTimerEvent *event) override;
 		bool treeview;
 		pki_base *rootItem;
 		pki_base *treeItem;
@@ -53,7 +53,7 @@ class db_base: public QAbstractItemModel
 		virtual pki_base *newPKI(enum pki_type type = none);
 		db_base(const char *classname);
 		virtual void updateHeaders();
-		virtual ~db_base();
+        ~db_base() override;
 		virtual pki_base *insertPKI(pki_base *pki);
 		pki_base *getByName(QString desc);
 		pki_base *getByReference(pki_base *refpki);
@@ -75,20 +75,21 @@ class db_base: public QAbstractItemModel
 
 		void dump(const QString &dirname) const;
 		QModelIndex index(int row, int column,
-				const QModelIndex &parent) const;
+                const QModelIndex &parent) const override;
 		QModelIndex index(pki_base *pki) const;
-		QModelIndex parent(const QModelIndex &index) const;
-		int rowCount(const QModelIndex &parent) const;
+        QModelIndex parent(const QModelIndex &index) const override;
+        int rowCount(const QModelIndex &parent) const override;
 		int allItemsCount() const
 		{
 			return rootItem->childCount();
 		}
-		int columnCount(const QModelIndex &parent) const;
-		QVariant data(const QModelIndex &index, int role) const;
+        int columnCount(const QModelIndex &parent) const override;
+        QVariant data(const QModelIndex &index, int role) const override;
 		QVariant headerData(int section, Qt::Orientation orientation,
-				int role) const;
-		Qt::ItemFlags flags(const QModelIndex &index) const;
-		bool setData(const QModelIndex &index, const QVariant &value, int role);
+                int role) const override;
+        Qt::ItemFlags flags(const QModelIndex &index) const override;
+        bool setData(const QModelIndex &index,
+                     const QVariant &value, int role) override;
 		void deleteSelectedItems(QModelIndexList indexes);
 		static pki_base *fromIndex(const QModelIndex &index)
 		{
@@ -127,7 +128,7 @@ class db_base: public QAbstractItemModel
 		QString pem2QString(QModelIndexList indexes) const;
 
 		void deletePKI(QModelIndex idx);
-		QMimeData *mimeData(const QModelIndexList &indexes) const;
+        QMimeData *mimeData(const QModelIndexList &indexes) const override;
 		void emitDataChanged(pki_base *pki);
 		bool containsType(enum pki_type t) const;
 		void writeVcalendar(XFile &file, QStringList vcal) const;

@@ -38,7 +38,7 @@ class nameEdit {
 	}
 };
 
-class NewX509: public QDialog, public Ui::NewX509
+class NewX509 final: public QDialog, public Ui::NewX509
 {
 		Q_OBJECT
 	private:
@@ -69,7 +69,7 @@ class NewX509: public QDialog, public Ui::NewX509
 
 	public:
 		NewX509(QWidget *w = nullptr);
-		virtual ~NewX509();
+        ~NewX509() final;
 		void initCtx();
 		void setRequest(); // reduce to request form
 		void setTemp(pki_temp *temp); // reduce to template form

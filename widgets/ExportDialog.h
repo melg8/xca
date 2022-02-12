@@ -15,7 +15,7 @@
 class QPixmap;
 class pki_base;
 
-class ExportDialog: public QDialog, public Ui::ExportDialog
+class ExportDialog final: public QDialog, public Ui::ExportDialog
 {
 	Q_OBJECT
 
@@ -27,7 +27,7 @@ class ExportDialog: public QDialog, public Ui::ExportDialog
 		     const QModelIndexList &indexes, const QPixmap &img,
 		     QList<const pki_export*> types,
 		     const QString &help_ctx = QString());
-	~ExportDialog();
+    ~ExportDialog() final;
 	static bool mayWriteFile(const QString &fname);
 	const pki_export *export_type(int idx = -1) const;
 

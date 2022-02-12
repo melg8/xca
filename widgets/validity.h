@@ -11,7 +11,7 @@
 #include <QDateTimeEdit>
 #include <lib/asn1time.h>
 
-class Validity : public QDateTimeEdit
+class Validity final: public QDateTimeEdit
 {
     Q_OBJECT
 
@@ -23,7 +23,7 @@ class Validity : public QDateTimeEdit
 
   public:
 	Validity( QWidget* parent);
-	~Validity();
+    ~Validity() final;
 	a1time getDate() const;
 	void setDate(const a1time &a);
 	void setDiff(const Validity *start, int number, int range);

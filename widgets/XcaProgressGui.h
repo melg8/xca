@@ -16,7 +16,7 @@
 #include <QStatusBar>
 #include <QMainWindow>
 
-class XcaProgressGui : public XcaProgress_i
+class XcaProgressGui final: public XcaProgress_i
 {
     private:
 	QMainWindow *mwin;
@@ -43,7 +43,7 @@ class XcaProgressGui : public XcaProgress_i
 	{
 		mwin->statusBar()->removeWidget(bar);
 	}
-	~XcaProgressGui()
+    ~XcaProgressGui() final
 	{
 		delete bar;
 	}

@@ -13,7 +13,7 @@
 
 class pki_temp;
 
-class db_temp: public db_x509name
+class db_temp final: public db_x509name
 {
 	Q_OBJECT
     protected:
@@ -21,7 +21,7 @@ class db_temp: public db_x509name
 
     public:
 	db_temp();
-	~db_temp();
+    ~db_temp() final;
 	pki_base *newPKI(enum pki_type type = none);
 	void fillContextMenu(QMenu *menu, const QModelIndex &index);
 	QList<pki_temp*> getPredefs() const;

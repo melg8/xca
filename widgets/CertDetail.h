@@ -14,7 +14,7 @@
 
 class pki_x509;
 
-class CertDetail: public QDialog, public Ui::CertDetail
+class CertDetail final: public QDialog, public Ui::CertDetail
 {
 		Q_OBJECT
 
@@ -28,7 +28,7 @@ class CertDetail: public QDialog, public Ui::CertDetail
 
 	public:
 		CertDetail(QWidget *w = nullptr);
-		~CertDetail();
+        ~CertDetail() final;
 		void setX509super(pki_x509super *x);
 		static void showCert(QWidget *parent, pki_x509super *x);
 

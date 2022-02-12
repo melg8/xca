@@ -16,7 +16,7 @@
 class pki_x509;
 class pki_key;
 
-class ImportMulti: public QDialog, private Ui::ImportMulti
+class ImportMulti final: public QDialog, private Ui::ImportMulti
 {
 	Q_OBJECT
 
@@ -27,7 +27,7 @@ class ImportMulti: public QDialog, private Ui::ImportMulti
 
 	public:
 		ImportMulti(QWidget *parent);
-		~ImportMulti();
+        ~ImportMulti() final;
 		void addItem(pki_base *pki);
 		pki_base *getSelected();
 		pki_base *import(const QModelIndex &idx);

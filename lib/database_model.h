@@ -20,7 +20,7 @@
 
 typedef QMap<QString, QString> DbMap;
 
-class database_model: public QObject
+class database_model final: public QObject
 {
 	Q_OBJECT
 
@@ -52,7 +52,7 @@ class database_model: public QObject
 		static bool open_without_password;
 		database_model(const QString &dbName,
 				const Passwd &pass = Passwd());
-		~database_model();
+        ~database_model() final;
 		void timerEvent(QTimerEvent *event);
 		db_base *modelForPki(const pki_base *pki) const;
 

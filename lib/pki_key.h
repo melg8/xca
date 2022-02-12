@@ -179,8 +179,8 @@ class pki_key: public pki_base
 		QString BNoneLine(BIGNUM *bn) const;
 		QByteArray SSH2publicQByteArray(bool raw=false) const;
 		QByteArray X509_PUBKEY_public_key() const;
-		QByteArray PEM_comment() const;
-		void collect_properties(QMap<QString, QString> &prp) const;
+        QByteArray PEM_comment() const override;
+        void collect_properties(QMap<QString, QString> &prp) const override;
 
 		BIGNUM *ssh_key_data2bn(QByteArray *ba) const;
 		void ssh_key_check_chunk(QByteArray *ba, const char *expect) const;
@@ -194,20 +194,20 @@ class pki_key: public pki_base
 
 		pki_key(const QString &name = QString());
 		pki_key(const pki_key *pk);
-		virtual ~pki_key();
+        ~pki_key() override;
 
-		void autoIntName(const QString &file);
+        void autoIntName(const QString &file) override;
 		QString length() const;
-		QString comboText() const;
+        QString comboText() const override;
 		QString getKeyTypeString(void) const;
 		virtual EVP_PKEY *decryptKey() const = 0;
 		virtual bool isToken();
 		virtual QString getTypeString(void) const;
-		virtual QList<int> possibleHashNids();
-		QString getMsg(msg_type msg) const;
+        virtual QList<int> possibleHashNids();
+        QString getMsg(msg_type msg) const override;
 
 		void writePublic(XFile &file, bool pem) const;
-		bool compare(const pki_base *ref) const;
+        bool compare(const pki_base *ref) const override;
 		int getKeyType() const;
 		bool isPrivKey() const;
 		bool verify(EVP_PKEY *pkey) const;
@@ -233,8 +233,8 @@ class pki_key: public pki_base
 		{
 			qFatal("generate in pki_key");
 		}
-		bool pem(BioByteArray &);
-		QVariant column_data(const dbheader *hd) const;
+        bool pem(BioByteArray &) override;
+        QVariant column_data(const dbheader *hd) const override;
 		QString modulus() const;
 		QString pubEx() const;
 		QString subprime() const;
@@ -249,7 +249,7 @@ class pki_key: public pki_base
 #endif
 		void d2i(QByteArray &ba);
 		void d2i_old(QByteArray &ba, int type);
-		QByteArray i2d() const;
+        QByteArray i2d() const override;
 		EVP_PKEY *load_ssh2_key(const QByteArray &ba);
 		void writeSSH2public(XFile &file) const;
 		void writeSSH2private(XFile &file, pem_password_cb *cb) const;
@@ -257,14 +257,14 @@ class pki_key: public pki_base
 		bool SSH2_compatible() const;
 		void write_SSH2_ed25519_private(BIO *b,
 			const EVP_PKEY *pkey, const EVP_CIPHER *enc) const;
-		void print(BioByteArray &b, enum print_opt opt) const;
+        void print(BioByteArray &b, enum print_opt opt) const override;
 		void resetUcount()
 		{
 			useCount = -1;
 		}
-		QSqlError insertSqlData();
-		QSqlError deleteSqlData();
-		void restoreSql(const QSqlRecord &rec);
+        QSqlError insertSqlData() override;
+        QSqlError deleteSqlData() override;
+        void restoreSql(const QSqlRecord &rec) override;
 };
 
 Q_DECLARE_METATYPE(pki_key *)

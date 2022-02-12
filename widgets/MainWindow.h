@@ -52,7 +52,7 @@ class tipMenu : public QMenu
 	}
 };
 
-class MainWindow: public QMainWindow, public Ui::MainWindow
+class MainWindow final: public QMainWindow, public Ui::MainWindow
 {
 	Q_OBJECT
 
@@ -91,7 +91,7 @@ class MainWindow: public QMainWindow, public Ui::MainWindow
 		QLabel *dbindex;
 		Help *helpdlg;
 		MainWindow();
-		virtual ~MainWindow();
+        ~MainWindow() final;
 		void loadSettings();
 		void saveSettings();
 		void load_engine();

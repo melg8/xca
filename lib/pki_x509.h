@@ -30,7 +30,7 @@
 
 class pki_key;
 
-class pki_x509 : public pki_x509super
+class pki_x509 final: public pki_x509super
 {
 		Q_OBJECT
 	private:
@@ -53,7 +53,7 @@ class pki_x509 : public pki_x509super
 		pki_x509(X509 *c);
 		pki_x509(const pki_x509 *crt);
 		pki_x509(const QString &name = QString());
-		~pki_x509();
+        ~pki_x509() final;
 
 		void setSigner(pki_x509 *s)
 		{

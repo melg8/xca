@@ -28,7 +28,7 @@ public:
 	}
 };
 
-class XcaApplication : public QApplication
+class XcaApplication final: public QApplication
 {
 	Q_OBJECT
 
@@ -40,7 +40,7 @@ private:
 
 public:
 	XcaApplication(int &argc, char *argv[]);
-	virtual ~XcaApplication();
+    ~XcaApplication() final;
 	void setMainwin(MainWindow *m);
 	void setupLanguage(const QLocale &lang);
 	static QFont tableFont;

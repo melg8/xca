@@ -22,7 +22,7 @@
 #define VIEW_temp_version 6
 #define VIEW_temp_template 7
 
-class pki_temp: public pki_x509name
+class pki_temp final: public pki_x509name
 {
 		Q_OBJECT
 	protected:
@@ -38,7 +38,7 @@ class pki_temp: public pki_x509name
 	public:
 		pki_temp(const pki_temp *pk);
 		pki_temp(const QString &d = QString());
-		~pki_temp();
+        ~pki_temp() final;
 
 		QString getSetting(QString key)
 		{

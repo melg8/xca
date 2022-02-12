@@ -40,7 +40,7 @@ class searchThread: public QThread
 	void updateLibs(QString f);
 };
 
-class SearchPkcs11: public QDialog, public Ui::SearchPkcs11
+class SearchPkcs11 final: public QDialog, public Ui::SearchPkcs11
 {
 	Q_OBJECT
 
@@ -50,7 +50,7 @@ class SearchPkcs11: public QDialog, public Ui::SearchPkcs11
 
    public:
 	SearchPkcs11(QWidget *parent, const QString &fname);
-	~SearchPkcs11();
+    ~SearchPkcs11() final;
 
    public slots:
 	void on_search_clicked();

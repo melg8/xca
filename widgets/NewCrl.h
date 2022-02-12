@@ -13,14 +13,14 @@
 
 class pki_key;
 
-class NewCrl: public QWidget, public Ui::NewCrl
+class NewCrl final: public QWidget, public Ui::NewCrl
 {
 	Q_OBJECT
 
 	crljob task;
    public:
 	NewCrl(const crljob &task, QWidget *w = nullptr);
-	~NewCrl();
+    ~NewCrl() final;
 	crljob getCrlJob() const;
 	static void newCrl(QWidget *parent, pki_x509 *issuer);
 

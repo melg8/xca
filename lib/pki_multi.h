@@ -19,13 +19,13 @@ class pki_multi: public pki_base
 		QList<pki_base*> multi;
 	public:
 		pki_multi(const QString &name = "");
-		~pki_multi();
+        ~pki_multi() override;
 		QStringList failed_files;
-		void fromPEMbyteArray(const QByteArray &, const QString &);
-		void fload(const QString &fname);
+        void fromPEMbyteArray(const QByteArray &, const QString &) override;
+        void fload(const QString &fname) override;
 		void probeAnything(const QString &fname);
 		void append_item(pki_base *pki);
-		void print(BioByteArray &b, enum print_opt opt) const;
+        void print(BioByteArray &b, enum print_opt opt) const override;
 		QList<pki_base *> pull();
 		QList<pki_base *> get() const;
 };

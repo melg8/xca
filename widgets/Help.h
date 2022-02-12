@@ -15,7 +15,7 @@
 class QHelpEngineCore;
 class QHelpLink;
 
-class Help: public QWidget, public Ui::Help
+class Help final: public QWidget, public Ui::Help
 {
 	Q_OBJECT
 
@@ -24,7 +24,7 @@ class Help: public QWidget, public Ui::Help
 
    public:
 	Help();
-	~Help();
+    ~Help() final;
 	void register_ctxhelp_button(QDialog *dlg,
 					const QString &help_ctx) const;
     QList<QHelpLink> url_by_ctx(const QString &ctx) const;
