@@ -16,7 +16,7 @@ class XcaProxyModel final: public QSortFilterProxyModel
 {
 	Q_OBJECT
    public:
-	XcaProxyModel(QWidget *parent = 0)
+    XcaProxyModel(QWidget *parent = nullptr)
 		:QSortFilterProxyModel(parent) { }
     bool lessThan(const QModelIndex &left,
                   const QModelIndex &right) const final;

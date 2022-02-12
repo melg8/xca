@@ -255,7 +255,7 @@ QString database_model::get_default_db() const
 	char buf[2048];
 	int ret = inputFile.readLine(buf, sizeof buf);
 	if (ret < 1)
-		return 0;
+        return QString();
 
 	inputFile.close();
 

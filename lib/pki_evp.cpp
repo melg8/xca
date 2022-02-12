@@ -242,7 +242,7 @@ void pki_evp::fromPEMbyteArray(const QByteArray &ba, const QString &name)
 	}
 	if (!pkey) {
 		pki_ign_openssl_error();
-		pkey = PEM_read_bio_PUBKEY(BioByteArray(ba).ro(), NULL, NULL,0);
+        pkey = PEM_read_bio_PUBKEY(BioByteArray(ba).ro(), NULL, NULL, nullptr);
 	}
 	pki_openssl_error();
 	set_EVP_PKEY(pkey, name);
@@ -568,7 +568,7 @@ void pki_evp::encryptKey(const char *password)
 	/* Convert private key to DER(PKCS8-aes) */
 	BioByteArray bba;
 	i2d_PKCS8PrivateKey_bio(bba, key, EVP_aes_256_cbc(),
-		ownPassBuf.data(), ownPassBuf.size(), NULL, 0);
+        ownPassBuf.data(), ownPassBuf.size(), NULL, nullptr);
 	pki_openssl_error();
 	encKey = bba;
 

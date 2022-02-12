@@ -33,7 +33,7 @@ class comboDelegate final: public kvDelegate
 	QStringList keys;
 
 public:
-	comboDelegate(QStringList k, QObject *parent = 0)
+    comboDelegate(QStringList k, QObject *parent = nullptr)
 			:kvDelegate(parent)
 	{
 		keys = k;
@@ -65,7 +65,7 @@ class lineDelegate final: public kvDelegate
 
 	QLabel *infoLabel;
 public:
-	lineDelegate(QLabel *lbl = 0, QObject *parent = 0)
+    lineDelegate(QLabel *lbl = nullptr, QObject *parent = nullptr)
 			:kvDelegate(parent)
 	{
 		infoLabel = lbl;
@@ -138,7 +138,7 @@ class kvView final: public QTableView
 	QLabel *infoLabel;
 
 public:
-	kvView(QWidget *parent = 0);
+    kvView(QWidget *parent = nullptr);
     ~kvView() final;
 	int rowCount()
 	{

@@ -38,7 +38,7 @@ class XcaTreeView: public QTreeView
 	MainWindow *mainwin;
 
    public:
-	XcaTreeView(QWidget *parent = 0);
+    XcaTreeView(QWidget *parent = nullptr);
     ~XcaTreeView() override;
     void contextMenuEvent(QContextMenuEvent *e) override;
     void setModel(QAbstractItemModel *model) override;
