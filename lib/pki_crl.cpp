@@ -159,7 +159,8 @@ void pki_crl::createCrl(const QString d, pki_x509 *iss)
 	if (!iss)
 		my_error(tr("No issuer given"));
 	X509_CRL_set_version(crl, 1); /* version 2 CRL */
-	X509_CRL_set_issuer_name(crl, (X509_NAME*)iss->getSubject().get0());
+    X509_CRL_set_issuer_name(crl,
+                             const_cast<X509_NAME*>(iss->getSubject().get0()));
 	setIssuer(iss);
 	pki_openssl_error();
 }

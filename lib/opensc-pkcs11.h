@@ -754,14 +754,14 @@ _CK_DECLARE_FUNCTION (C_GetMechanismInfo,
 		      (ck_slot_id_t slot_id, ck_mechanism_type_t type,
 		       struct ck_mechanism_info *info));
 _CK_DECLARE_FUNCTION (C_InitToken,
-		      (ck_slot_id_t slot_id, unsigned char *pin,
+              (ck_slot_id_t slot_id, const unsigned char *pin,
 		       unsigned long pin_len, unsigned char *label));
 _CK_DECLARE_FUNCTION (C_InitPIN,
-		      (ck_session_handle_t session, unsigned char *pin,
+              (ck_session_handle_t session, const unsigned char *pin,
 		       unsigned long pin_len));
 _CK_DECLARE_FUNCTION (C_SetPIN,
-		      (ck_session_handle_t session, unsigned char *old_pin,
-		       unsigned long old_len, unsigned char *new_pin,
+              (ck_session_handle_t session, const unsigned char *old_pin,
+               unsigned long old_len, const unsigned char *new_pin,
 		       unsigned long new_len));
 
 _CK_DECLARE_FUNCTION (C_OpenSession,
@@ -785,7 +785,7 @@ _CK_DECLARE_FUNCTION (C_SetOperationState,
 		       ck_object_handle_t authentiation_key));
 _CK_DECLARE_FUNCTION (C_Login,
 		      (ck_session_handle_t session, ck_user_type_t user_type,
-		       unsigned char *pin, unsigned long pin_len));
+               const unsigned char *pin, unsigned long pin_len));
 _CK_DECLARE_FUNCTION (C_Logout, (ck_session_handle_t session));
 
 _CK_DECLARE_FUNCTION (C_CreateObject,
@@ -850,7 +850,7 @@ _CK_DECLARE_FUNCTION (C_DecryptInit,
 		       ck_object_handle_t key));
 _CK_DECLARE_FUNCTION (C_Decrypt,
 		      (ck_session_handle_t session,
-		       unsigned char *encrypted_data,
+               const unsigned char *encrypted_data,
 		       unsigned long encrypted_data_len,
 		       unsigned char *data, unsigned long *data_len));
 _CK_DECLARE_FUNCTION (C_DecryptUpdate,
@@ -887,7 +887,7 @@ _CK_DECLARE_FUNCTION (C_SignInit,
 		       ck_object_handle_t key));
 _CK_DECLARE_FUNCTION (C_Sign,
 		      (ck_session_handle_t session,
-		       unsigned char *data, unsigned long data_len,
+               const unsigned char *data, unsigned long data_len,
 		       unsigned char *signature,
 		       unsigned long *signature_len));
 _CK_DECLARE_FUNCTION (C_SignUpdate,

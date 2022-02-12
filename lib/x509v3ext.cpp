@@ -24,7 +24,7 @@ x509v3ext::x509v3ext()
 
 x509v3ext::x509v3ext(const X509_EXTENSION *n)
 {
-	ext = X509_EXTENSION_dup((X509_EXTENSION *)n);
+    ext = X509_EXTENSION_dup(const_cast<X509_EXTENSION *>(n));
 }
 
 x509v3ext::x509v3ext(const x509v3ext &n)
@@ -44,7 +44,7 @@ x509v3ext &x509v3ext::set(const X509_EXTENSION *n)
 {
 	if (ext != NULL)
 		X509_EXTENSION_free(ext);
-	ext = X509_EXTENSION_dup((X509_EXTENSION *)n);
+    ext = X509_EXTENSION_dup(const_cast<X509_EXTENSION *>(n));
 	return *this;
 }
 

@@ -274,8 +274,8 @@ static void search_ec_oid(EVP_PKEY *pkey)
 	foreach(builtin_curve curve, builtinCurves) {
 		builtin = EC_GROUP_new_by_curve_name(curve.nid);
 		if (EC_GROUP_cmp(builtin, ec_group, NULL) == 0) {
-			EC_GROUP_set_curve_name((EC_GROUP *)ec_group, curve.nid);
-			EC_GROUP_set_asn1_flag((EC_GROUP *)ec_group, 1);
+            EC_GROUP_set_curve_name(const_cast<EC_GROUP *>(ec_group), curve.nid);
+            EC_GROUP_set_asn1_flag(const_cast<EC_GROUP *>(ec_group), 1);
 			EC_GROUP_free(builtin);
 			break;
 		}
@@ -508,7 +508,7 @@ EVP_PKEY *pki_evp::decryptKey() const
 EVP_PKEY *pki_evp::priv2pub(EVP_PKEY* privateKey)
 {
 	int keylen;
-	unsigned char *p, *p1;
+    unsigned char *p, *p1;
 	EVP_PKEY *pubkey;
 
     keylen = i2d_PUBKEY(privateKey, NULL);
@@ -519,7 +519,7 @@ EVP_PKEY *pki_evp::priv2pub(EVP_PKEY* privateKey)
     keylen = i2d_PUBKEY(privateKey, &p);
 	pki_openssl_error();
 	p = p1;
-	pubkey = d2i_PUBKEY(NULL, (const unsigned char**)&p, keylen);
+    pubkey = d2i_PUBKEY(NULL, const_cast<const unsigned char **>(&p), keylen);
 	OPENSSL_free(p1);
 	pki_openssl_error();
 	return pubkey;
@@ -706,8 +706,8 @@ bool pki_evp::pem(BioByteArray &b)
 			EVP_aes_256_cbc() : NULL;
 		pkey = decryptKey();
         PEM_write_bio_PrivateKey(b, pkey, algo,
-					 passwd.constUchar(), passwd.size(),
-					 NULL, NULL);
+                     const_cast<unsigned char *>(passwd.constUchar()),
+                     passwd.size(), NULL, NULL);
 		EVP_PKEY_free(pkey);
 	} else
 		return pki_key::pem(b);

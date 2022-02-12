@@ -56,7 +56,7 @@ void settings::clear()
 void settings::setAction(const QString &key, const QString &value)
 {
 	if (key == "string_opt")
-		ASN1_STRING_set_default_mask_asc((char*)CCHAR(value));
+        ASN1_STRING_set_default_mask_asc(CCHAR(value));
 	else if (key == "default_hash")
 		digest::setDefault(value);
 	else if (key == "defaultkey")

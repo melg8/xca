@@ -197,11 +197,11 @@ extList NewX509::getAdvanced()
 
 	if (ext_ctx.subject_cert) {
 		if (X509V3_EXT_add_nconf(conf, &ext_ctx,
-				(char *) ext_name, ext_ctx.subject_cert))
+                         ext_name, ext_ctx.subject_cert))
 			openssl_error();
 		csk = X509_get0_extensions(ext_ctx.subject_cert);
 	} else {
-		if (X509V3_EXT_add_nconf_sk(conf, &ext_ctx, (char *)ext_name, sk))
+        if (X509V3_EXT_add_nconf_sk(conf, &ext_ctx, ext_name, sk))
 			openssl_error();
 		csk = *sk;
 	}

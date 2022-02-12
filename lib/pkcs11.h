@@ -136,8 +136,8 @@ class pkcs11
 		bool selectToken(slotid *slot, QWidget *w);
 		void changePin(const slotid &slot, bool so);
 		void initPin(const slotid &slot);
-		void initToken(const slotid &slot, unsigned char *pin,
-			int pinlen, QString label);
+        void initToken(const slotid &slot, const unsigned char *pin,
+            int pinlen, QString label);
 		QList<CK_MECHANISM_TYPE> mechanismList(const slotid &slot);
 		void mechanismInfo(const slotid &slot, CK_MECHANISM_TYPE m,
 			CK_MECHANISM_INFO *info);
@@ -153,10 +153,10 @@ class pkcs11
 		void getRandom();
 		void logout();
 		bool needsLogin(bool so);
-		void login(unsigned char *pin, unsigned long pinlen, bool so);
+        void login(const unsigned char *pin, unsigned long pinlen, bool so);
 
-		void setPin(unsigned char *oldPin, unsigned long oldPinLen,
-			unsigned char *pin, unsigned long pinLen);
+        void setPin(const unsigned char *oldPin, const unsigned long oldPinLen,
+            const unsigned char *pin, unsigned long pinLen);
 		CK_OBJECT_HANDLE createObject(pk11_attlist &attrs);
 		pk11_attr_data findUniqueID(unsigned long oclass);
 		pk11_attr_data generateKey(QString name,

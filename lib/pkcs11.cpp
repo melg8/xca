@@ -167,7 +167,7 @@ bool pkcs11::needsLogin(bool so)
 	return true;
 }
 
-void pkcs11::login(unsigned char *pin, unsigned long pinlen, bool so)
+void pkcs11::login(const unsigned char *pin, unsigned long pinlen, bool so)
 {
 	unsigned long user = so ? CKU_SO : CKU_USER;
 	CK_RV rv;
@@ -298,8 +298,8 @@ bool pkcs11::selectToken(slotid *slot, QWidget *w)
 	return true;
 }
 
-void pkcs11::setPin(unsigned char *oldPin, unsigned long oldPinLen,
-	    unsigned char *pin, unsigned long pinLen)
+void pkcs11::setPin(const unsigned char *oldPin, const unsigned long oldPinLen,
+        const unsigned char *pin, unsigned long pinLen)
 {
 	CK_RV rv;
 	p11slot.isValid();
@@ -374,7 +374,7 @@ void pkcs11::initPin(const slotid &slot)
 	logout();
 }
 
-void pkcs11::initToken(const slotid &slot, unsigned char *pin, int pinlen,
+void pkcs11::initToken(const slotid &slot, const unsigned char *pin, int pinlen,
 		QString label)
 {
 	CK_RV rv;
@@ -619,8 +619,7 @@ int pkcs11::decrypt(int flen, const unsigned char *from,
 
 	CALL_P11_C(p11slot.lib, C_DecryptInit, session, &mech, p11obj);
 	if (rv == CKR_OK)
-		CALL_P11_C(p11slot.lib, C_Decrypt, session,
-			(CK_BYTE *)from, flen, to, &size);
+        CALL_P11_C(p11slot.lib, C_Decrypt, session, from, flen, to, &size);
 
 	if (rv != CKR_OK) {
 		qDebug() << "Error: C_Decrypt(init):"
@@ -642,8 +641,7 @@ int pkcs11::encrypt(int flen, const unsigned char *from,
 
 	CALL_P11_C(p11slot.lib, C_SignInit, session, &mech, p11obj);
 	if (rv == CKR_OK)
-		CALL_P11_C(p11slot.lib, C_Sign, session,
-				(CK_BYTE *)from, flen, to, &size);
+        CALL_P11_C(p11slot.lib, C_Sign, session, from, flen, to, &size);
 
 	if (rv != CKR_OK) {
 		qDebug() << "Error: C_Sign(init):"

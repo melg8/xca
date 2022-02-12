@@ -20,7 +20,7 @@ class Passwd: public QByteArray
     Passwd(const Passwd& lhs) = default;
     Passwd& operator=(const Passwd& lhs) = default;
 
-	unsigned char *constUchar() const;
+    const unsigned char *constUchar() const;
 	Passwd & operator= (const char *p)
 	{
 		return (Passwd&)QByteArray::operator=(p);

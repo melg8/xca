@@ -75,7 +75,7 @@ void x509rev::fromREVOKED(const X509_REVOKED *rev)
 	date = a1time(X509_REVOKED_get0_revocationDate(rev));
 
 	reason = (ASN1_ENUMERATED *)X509_REVOKED_get_ext_d2i(
-			(X509_REVOKED *)rev, NID_crl_reason, &j, NULL);
+                rev, NID_crl_reason, &j, NULL);
 	openssl_error();
 	reason_idx = 0;
 	if (reason) {
@@ -85,7 +85,7 @@ void x509rev::fromREVOKED(const X509_REVOKED *rev)
 		ASN1_ENUMERATED_free(reason);
 	}
 	ivalDate.setUndefined();
-	at = (ASN1_TIME *)X509_REVOKED_get_ext_d2i((X509_REVOKED *)rev,
+    at = (ASN1_TIME *)X509_REVOKED_get_ext_d2i(rev,
 			NID_invalidity_date, &j, NULL);
 	openssl_error();
 	if (at) {

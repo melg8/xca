@@ -16,7 +16,7 @@ ASN1_INTEGER *a1int::dup(const ASN1_INTEGER *a) const
 {
 	// this wrapper casts the const to work around the nonconst
 	// declared ASN1_STRING_dup (actually it is const
-	ASN1_INTEGER *r = ASN1_INTEGER_dup((ASN1_INTEGER *)a);
+    ASN1_INTEGER *r = ASN1_INTEGER_dup(const_cast<ASN1_INTEGER *>(a));
 	openssl_error();
 	if (!r)
 		r = ASN1_INTEGER_new();

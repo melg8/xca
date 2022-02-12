@@ -71,7 +71,7 @@ BIO *BioByteArray::ro()
 {
 	if (!read_only)
 		read_only = BIO_new_mem_buf(
-			(void*)store.constData(), store.length());
+            static_cast<const void*>(store.constData()), store.length());
 	return read_only;
 }
 

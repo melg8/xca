@@ -21,7 +21,7 @@ x509name::x509name()
 
 x509name::x509name(const X509_NAME *n)
 {
-	xn = X509_NAME_dup((X509_NAME *)n);
+    xn = X509_NAME_dup(const_cast<X509_NAME *>(n));
 }
 
 x509name::x509name(STACK_OF(X509_NAME_ENTRY) *entries)
@@ -45,7 +45,7 @@ x509name &x509name::set(const X509_NAME *n)
 {
 	if (xn != NULL)
 		X509_NAME_free(xn);
-	xn = X509_NAME_dup((X509_NAME *)n);
+    xn = X509_NAME_dup(const_cast<X509_NAME *>(n));
 	return *this;
 }
 

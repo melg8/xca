@@ -46,7 +46,7 @@ int a1time::from_asn1(const ASN1_TIME *a)
 	*this = QDateTime();
 	if (!a)
 		return -1;
-	gt = ASN1_TIME_to_generalizedtime((ASN1_TIME*)a, NULL);
+    gt = ASN1_TIME_to_generalizedtime(a, NULL);
 	if (!gt)
 		return -1;
 	t = QString::fromLatin1((char*)gt->data, gt->length);

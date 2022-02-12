@@ -18,7 +18,7 @@ Passwd::~Passwd()
 {
 	Passwd::cleanse();
 }
-unsigned char *Passwd::constUchar() const
+const unsigned char *Passwd::constUchar() const
 {
-	return (unsigned char *)(size() ? constData() : "");
+    return reinterpret_cast<const unsigned char*>(size() ? constData() : "");
 }

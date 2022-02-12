@@ -488,7 +488,7 @@ void *d2i_bytearray(void *(*d2i)(void *, unsigned char **, long),
 {
 	unsigned char *p, *p1;
 	void *ret;
-	p = p1 = (unsigned char *)ba.constData();
+    p = p1 = reinterpret_cast<unsigned char *>(ba.data());
 	ret = d2i(NULL, &p1, ba.count());
 	ba = ba.mid(p1-p);
 	openssl_error();

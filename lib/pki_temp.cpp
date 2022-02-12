@@ -437,7 +437,7 @@ void pki_temp::writeDefault(const QString &dirname) const
 bool pki_temp::pem(BioByteArray &b)
 {
 	QByteArray ba = toExportData();
-	return PEM_write_bio(b, PEM_STRING_XCA_TEMPLATE, (char*)"",
+    return PEM_write_bio(b, PEM_STRING_XCA_TEMPLATE, "",
 		(unsigned char*)(ba.data()), ba.size());
 }
 

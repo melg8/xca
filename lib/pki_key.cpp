@@ -114,7 +114,7 @@ void pki_key::write_SSH2_ed25519_private(BIO *b,
 	ssh_key_QBA2data(pubfull, &data);
 	ssh_key_QBA2data(priv, &data);
 
-	PEM_write_bio(b, PEM_STRING_OPENSSH_KEY, (char*)"",
+    PEM_write_bio(b, PEM_STRING_OPENSSH_KEY, "",
 		(unsigned char*)(data.data()), data.size());
 	pki_openssl_error();
 #else
@@ -394,7 +394,7 @@ QList<int> pki_key::possibleHashNids()
 
 bool pki_key::compare(const pki_base *ref) const
 {
-	const pki_key *kref = (pki_key *)ref;
+    const pki_key *kref = static_cast<const pki_key *>(ref);
 
 	if (kref->getKeyType() != getKeyType())
 		return false;
