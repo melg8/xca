@@ -41,7 +41,7 @@ class pki_scard final: public pki_key
 		void load_token(pkcs11 &p11, CK_OBJECT_HANDLE object);
 		bool prepare_card(slotid *slot) const;
 		bool find_key_on_card(slotid *slot) const;
-		QString getTypeString(void) const;
+        QString getTypeString(void) const final;
 		QString getManufacturer() const
 		{
 			return card_manufacturer;
@@ -68,14 +68,14 @@ class pki_scard final: public pki_key
 		{
 			return card_label;
 		}
-		EVP_PKEY *decryptKey() const;
+        EVP_PKEY *decryptKey() const final;
 		QString scardLogin(pkcs11 &p11, bool so, bool force=false)const;
 		void changePin();
 		void initPin();
 		void changeSoPin();
 		int verify();
-		bool isToken();
-		QVariant getIcon(const dbheader *hd) const;
+        bool isToken() final;
+        QVariant getIcon(const dbheader *hd) const final;
 		QList<CK_MECHANISM_TYPE> getMech_list()
 		{
 			return mech_list;
@@ -83,17 +83,17 @@ class pki_scard final: public pki_key
 		pk11_attlist objectAttributes(bool priv) const;
 		pk11_attlist objectAttributesNoId(EVP_PKEY *pk, bool priv) const;
         void setMech_list(QList<CK_MECHANISM_TYPE> ml) { mech_list = ml; }
-		QList<int> possibleHashNids();
+        QList<int> possibleHashNids() final;
 		EVP_PKEY *load_pubkey(pkcs11 &p11, CK_OBJECT_HANDLE object) const;
-		void generate(const keyjob &task);
-		void deleteFromToken();
-		void deleteFromToken(const slotid &slot);
+        void generate(const keyjob &task) final;
+        void deleteFromToken() final;
+        void deleteFromToken(const slotid &slot) final;
 		void store_token(const slotid &slot, EVP_PKEY *pkey);
-		int renameOnToken(const slotid &slot, const QString &name);
-		QString getMsg(msg_type msg) const;
-		bool visible() const;
-		QSqlError insertSqlData();
-		QSqlError deleteSqlData();
-		void restoreSql(const QSqlRecord &rec);
+        int renameOnToken(const slotid &slot, const QString &name) final;
+        QString getMsg(msg_type msg) const final;
+        bool visible() const final;
+        QSqlError insertSqlData() final;
+        QSqlError deleteSqlData() final;
+        void restoreSql(const QSqlRecord &rec) final;
 };
 #endif

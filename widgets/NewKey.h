@@ -14,7 +14,7 @@
 #include "lib/builtin_curves.h"
 #include <QStringList>
 
-class NewKey: public QDialog, public Ui::NewKey
+class NewKey final: public QDialog, public Ui::NewKey
 {
 	Q_OBJECT
 	private:
@@ -26,7 +26,7 @@ class NewKey: public QDialog, public Ui::NewKey
 		keyjob getKeyJob() const;
 
 	public slots:
-		void accept();
+        void accept() final;
 		void on_keyType_currentIndexChanged(int);
 };
 #endif

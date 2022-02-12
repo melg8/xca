@@ -46,8 +46,8 @@ class pki_x509 final: public pki_x509super
 		void resetX509ReqCount() const;
 
 	protected:
-		int sigAlg() const;
-		void collect_properties(QMap<QString, QString> &prp) const;
+        int sigAlg() const final;
+        void collect_properties(QMap<QString, QString> &prp) const final;
 
 	public:
 		pki_x509(X509 *c);
@@ -59,11 +59,11 @@ class pki_x509 final: public pki_x509super
 		{
 			issuerSqlId = s ? s->getSqlItemId() : QVariant();
 		}
-		void fload(const QString &fname);
+        void fload(const QString &fname) final;
 		void load_token(pkcs11 &p11, CK_OBJECT_HANDLE object);
 		void store_token(bool alwaysSelect);
-		void fromPEM_BIO(BIO *bio, const QString &name);
-		void writeDefault(const QString &dirname) const;
+        void fromPEM_BIO(BIO *bio, const QString &name) final;
+        void writeDefault(const QString &dirname) const final;
 		a1int hashInfo(const EVP_MD *md) const;
 		void setSerial(const a1int &serial);
 		a1int getSerial() const;
@@ -71,7 +71,7 @@ class pki_x509 final: public pki_x509super
 		void setNotAfter(const a1time &a);
 		a1time getNotBefore() const;
 		a1time getNotAfter() const;
-		x509name getSubject() const;
+        x509name getSubject() const final;
 		x509name getIssuerName() const;
 		void setSubject(const x509name &n);
 		void setIssuer(const x509name &n);
@@ -83,12 +83,12 @@ class pki_x509 final: public pki_x509super
 		QString getIndexEntry();
 		bool verify(pki_x509 *signer);
 		bool verify_only(const pki_x509 *signer) const;
-		pki_key *getPubKey() const;
+        pki_key *getPubKey() const final;
 		void setPubKey(pki_key *key);
 		pki_x509 *getSigner();
 		void delSigner(pki_base *s);
 		QString fingerprint(const EVP_MD *digest) const;
-		extList getV3ext() const;
+        extList getV3ext() const final;
 		bool checkDate();
 		bool addV3ext(const x509v3ext &e, bool skip_existing = false);
 		void sign(pki_key *signkey, const digest &digest);
@@ -135,21 +135,21 @@ class pki_x509 final: public pki_x509super
 		pk11_attlist objectAttributes();
 		bool hasExtension(int nid) const;
 		bool cmpIssuerAndSerial(pki_x509 *refcert);
-		bool visible() const;
+        bool visible() const final;
 		void updateView();
-		void print(BioByteArray &b, enum print_opt opt) const;
+        void print(BioByteArray &b, enum print_opt opt) const final;
 		x509v3ext getExtByNid(int nid) const;
-		QVariant column_data(const dbheader *hd) const;
-		QVariant getIcon(const dbheader *hd) const;
-		a1time column_a1time(const dbheader *hd) const;
-		QByteArray i2d() const;
+        QVariant column_data(const dbheader *hd) const final;
+        QVariant getIcon(const dbheader *hd) const final;
+        a1time column_a1time(const dbheader *hd) const final;
+        QByteArray i2d() const final;
 		void d2i(QByteArray &ba);
-		void deleteFromToken();
-		void deleteFromToken(const slotid &slot);
-		QString getMsg(msg_type msg) const;
-		int renameOnToken(const slotid &slot, const QString &name);
-		bool pem(BioByteArray &);
-		QVariant bg_color(const dbheader *hd) const;
+        void deleteFromToken() final;
+        void deleteFromToken(const slotid &slot) final;
+        QString getMsg(msg_type msg) const final;
+        int renameOnToken(const slotid &slot, const QString &name) final;
+        bool pem(BioByteArray &) final;
+        QVariant bg_color(const dbheader *hd) const final;
 		void mergeRevList(x509revList &l);
 		void setRevocations(const x509revList &rl);
 		x509revList getRevList() const;
@@ -158,9 +158,9 @@ class pki_x509 final: public pki_x509super
 		{
 			crlExpire = a;
 		}
-		QSqlError insertSqlData();
-		QSqlError deleteSqlData();
-		void restoreSql(const QSqlRecord &rec);
+        QSqlError insertSqlData() final;
+        QSqlError deleteSqlData() final;
+        void restoreSql(const QSqlRecord &rec) final;
 		QStringList icsVEVENT() const;
 		QStringList icsVEVENT_ca() const;
 };

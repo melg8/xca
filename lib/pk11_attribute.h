@@ -196,7 +196,7 @@ public:
 	void setBignum(BIGNUM *bn, bool consume=true);
 	void setConstBignum(const BIGNUM *bn);
 	void load(const slotid &slot,
-		CK_SESSION_HANDLE sess, CK_OBJECT_HANDLE obj);
+        CK_SESSION_HANDLE sess, CK_OBJECT_HANDLE obj) final;
 	void setValue(const unsigned char *ptr, unsigned long len);
 	pk11_attr_data &operator = (const pk11_attr_data &p)
 	{

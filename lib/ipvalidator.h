@@ -40,16 +40,16 @@
 }
 #endif
 
-class ipValidator : public QValidator
+class ipValidator final: public QValidator
 {
     public:
-	QValidator::State validate(QString &input, int&) const
+    QValidator::State validate(QString &input, int&) const final
 	{
 		if (!QRegExp("[0-9a-fA-F:\\.]*").exactMatch(input))
             return Invalid;
         return IsValidIp(input) ? Acceptable : Intermediate;
 	}
-	void fixup(QString &input) const
+    void fixup(QString &input) const final
 	{
 		input = input.toLower();
 	}

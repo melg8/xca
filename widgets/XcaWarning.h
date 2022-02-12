@@ -20,19 +20,19 @@ class xcaWarningBox: public QMessageBox
 			const QString &text = QString());
 };
 
-class xcaWarningGui : public QObject, public xcaWarning_i
+class xcaWarningGui final: public QObject, public xcaWarning_i
 {
 	Q_OBJECT
 
 	int showBox(const QString &txt, QMessageBox::Icon icn,
 			QMessageBox::StandardButtons b);
     public:
-	void information(const QString &msg);
-	void warning(const QString &msg);
-	void warningv3(const QString &msg, const extList &el);
-	bool yesno(const QString &msg);
-	bool okcancel(const QString &msg);
-	void sqlerror(QSqlError err);
-	void error(const QString &msg);
+    void information(const QString &msg) final;
+    void warning(const QString &msg) final;
+    void warningv3(const QString &msg, const extList &el) final;
+    bool yesno(const QString &msg) final;
+    bool okcancel(const QString &msg) final;
+    void sqlerror(QSqlError err) final;
+    void error(const QString &msg) final;
 };
 #endif

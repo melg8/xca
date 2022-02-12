@@ -142,7 +142,7 @@ class NewX509 final: public QDialog, public Ui::NewX509
 		void on_usedKeysToo_toggled(bool checked);
         void on_tabWidget_currentChanged(int tab_index);
 		void on_reqSubChange_clicked();
-		void accept();
+        void accept() final;
 		void itemChanged(pki_base*);
 		void setupExtDNwidget(const QString &s, QLineEdit *w);
 		void checkSubAltName(const QString & text);

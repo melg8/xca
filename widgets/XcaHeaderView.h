@@ -10,13 +10,13 @@
 
 #include <QHeaderView>
 
-class XcaHeaderView: public QHeaderView
+class XcaHeaderView final: public QHeaderView
 {
 	Q_OBJECT
 
     public:
 	XcaHeaderView();
-	void contextMenuEvent(QContextMenuEvent *e);
+    void contextMenuEvent(QContextMenuEvent *e) final;
 
     public slots:
 	void resetMoves();

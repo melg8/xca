@@ -60,8 +60,8 @@ class pki_temp final: public pki_x509name
 			CHECK_TMPL_KEY
 			settings[key] = QString::number(value);
 		}
-		void fload(const QString &fname);
-		void writeDefault(const QString &dirname) const ;
+        void fload(const QString &fname) final;
+        void writeDefault(const QString &dirname) const final;
 		void fromData(const unsigned char *p, int size, int version);
 		void old_fromData(const unsigned char *p, int size, int version);
 		void fromData(QByteArray &ba, int version);
@@ -69,29 +69,29 @@ class pki_temp final: public pki_x509name
 		{
 			pre_defined = true;
 		}
-		QString comboText() const;
+        QString comboText() const final;
 		QByteArray toData() const;
 		QString toB64Data()
 		{
 			return QString::fromLatin1(toData().toBase64());
 		}
-		bool compare(const pki_base *ref) const;
+        bool compare(const pki_base *ref) const final;
 		void writeTemp(XFile &file) const;
-		QVariant getIcon(const dbheader *hd) const;
-		QString getMsg(msg_type msg) const;
-		x509name getSubject() const;
+        QVariant getIcon(const dbheader *hd) const final;
+        QString getMsg(msg_type msg) const final;
+        x509name getSubject() const final;
 		void setSubject(x509name n)
 		{
 			xname = n;
 		}
-		bool pem(BioByteArray &);
+        bool pem(BioByteArray &) final;
 		QByteArray toExportData() const;
-		void fromPEM_BIO(BIO *, const QString &);
+        void fromPEM_BIO(BIO *, const QString &) final;
 		void fromExportData(QByteArray data);
 		extList fromCert(pki_x509super *cert_or_req);
-		QSqlError insertSqlData();
-		QSqlError deleteSqlData();
-		void restoreSql(const QSqlRecord &rec);
+        QSqlError insertSqlData() final;
+        QSqlError deleteSqlData() final;
+        void restoreSql(const QSqlRecord &rec) final;
 };
 
 Q_DECLARE_METATYPE(pki_temp *)

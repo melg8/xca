@@ -30,7 +30,7 @@ class XcaProgressGui final: public XcaProgress_i
 		bar->setMinimum(0);
 		bar->setTextVisible(true);
 	}
-	void start(const QString &what, int max)
+    void start(const QString &what, int max) final
 	{
 		bar->setValue(0);
 		bar->setMaximum(max);
@@ -39,7 +39,7 @@ class XcaProgressGui final: public XcaProgress_i
 		bar->show();
 		mwin->repaint();
 	}
-	void stop()
+    void stop() final
 	{
 		mwin->statusBar()->removeWidget(bar);
 	}
@@ -47,7 +47,7 @@ class XcaProgressGui final: public XcaProgress_i
 	{
 		delete bar;
 	}
-	void increment()
+    void increment() final
 	{
 		int value = bar->value();
 		if (value == bar->maximum()) {

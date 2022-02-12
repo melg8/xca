@@ -12,7 +12,7 @@
 #include "lib/PwDialogCore.h"
 #include "lib/pass_info.h"
 
-class PwDialog: public QDialog, public Ui::PwDialog
+class PwDialog final: public QDialog, public Ui::PwDialog
 {
 	Q_OBJECT
 
@@ -33,13 +33,13 @@ class PwDialog: public QDialog, public Ui::PwDialog
 			bool write = false, bool abort = false);
 
    public slots:
-	void accept();
+    void accept() final;
 	void buttonPress(QAbstractButton *but);
 };
 
-class PwDialogUI: public PwDialogUI_i
+class PwDialogUI final: public PwDialogUI_i
 {
 	enum open_result execute(pass_info *p, Passwd *passwd,
-                        bool write = false, bool abort = false);
+                        bool write = false, bool abort = false) final;
 };
 #endif

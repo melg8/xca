@@ -626,7 +626,7 @@ bool pki_scard::prepare_card(slotid *slot) const
 	return false;
 }
 
-class keygenThread: public QThread
+class keygenThread final: public QThread
 {
 public:
 	errorEx err;
@@ -638,7 +638,7 @@ public:
 	keygenThread(const keyjob &t, const QString &n, pkcs11 *_p11)
 		: QThread(), task(t), name(n), p11(_p11) { }
 
-	void run()
+    void run() final
 	{
 		try {
 			id = p11->generateKey(name, task.ktype.mech, task.size,

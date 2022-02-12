@@ -20,16 +20,16 @@
 class pki_x509name : public pki_base
 {
     protected:
-	QByteArray PEM_comment() const;
+    QByteArray PEM_comment() const override;
 
     public:
 	pki_x509name(const QString &name = QString());
 	pki_x509name(const pki_x509name *n);
 	virtual x509name getSubject() const = 0;
-	void autoIntName(const QString &file);
-	QVariant column_data(const dbheader *hd) const;
-	bool visible() const;
-	void collect_properties(QMap<QString, QString> &prp) const;
+    void autoIntName(const QString &file) override;
+    QVariant column_data(const dbheader *hd) const override;
+    bool visible() const override;
+    void collect_properties(QMap<QString, QString> &prp) const override;
 };
 
 class pki_x509super : public pki_x509name

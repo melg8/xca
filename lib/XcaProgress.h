@@ -20,15 +20,15 @@ class XcaProgress_i
 	virtual ~XcaProgress_i() = default;
 };
 
-class XcaProgressCmd : public XcaProgress_i
+class XcaProgressCmd final: public XcaProgress_i
 {
     private:
 	int i;
 
     public:
-	void start(const QString &what, int max);
-	void stop();
-	void increment();
+    void start(const QString &what, int max) final;
+    void stop() final;
+    void increment() final;
 };
 
 class XcaProgress

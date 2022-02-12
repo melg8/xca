@@ -22,11 +22,11 @@ class db_temp final: public db_x509name
     public:
 	db_temp();
     ~db_temp() final;
-	pki_base *newPKI(enum pki_type type = none);
+    pki_base *newPKI(enum pki_type type = none) final;
 	void fillContextMenu(QMenu *menu, const QModelIndex &index);
 	QList<pki_temp*> getPredefs() const;
 	bool alterTemp(pki_temp *temp);
 	void exportItem(const QModelIndex &index,
-			const pki_export *, XFile &file) const;
+            const pki_export *, XFile &file) const final;
 };
 #endif

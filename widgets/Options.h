@@ -26,7 +26,7 @@ class Options final: public QDialog, public Ui::Options
 	public:
 		Options(QWidget *parent);
         ~Options() final;
-		int exec();
+        int exec() final;
 
 	public slots:
 		void on_extDNadd_clicked();

@@ -12,7 +12,7 @@
 #include "db_base.h"
 
 class pki_scard;
-class db_token: public db_base
+class db_token final: public db_base
 {
 		Q_OBJECT
 	private:
@@ -20,12 +20,12 @@ class db_token: public db_base
 	public:
 		db_token();
 		bool setData(const QModelIndex &index,
-			const QVariant &value, int role);
+            const QVariant &value, int role) final;
 		void setSlot(const slotid &s)
 		{
 			slot = s;
 		}
-		void saveHeaderState();
+        void saveHeaderState() final;
 		void rename_token_in_database(pki_scard *token);
 };
 

@@ -92,7 +92,7 @@ class slotid
 
 typedef QList<slotid> slotidList;
 
-class pkcs11_lib_list: public QAbstractListModel
+class pkcs11_lib_list final: public QAbstractListModel
 {
 	QList<pkcs11_lib*> libs;
 	QList<int> model_data;
@@ -109,19 +109,23 @@ class pkcs11_lib_list: public QAbstractListModel
 	pkcs11_lib *libByModelIndex(const QModelIndex &index) const;
 
 	/* Reimplementation from QAbstractListModel */
-	int rowCount(const QModelIndex &parent = QModelIndex()) const;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const final;
 	QVariant data(const QModelIndex &index,
-			int role = Qt::DisplayRole) const;
-	bool setData(const QModelIndex &index, const QVariant &value, int role);
+            int role = Qt::DisplayRole) const final;
+    bool setData(const QModelIndex &index,
+                 const QVariant &value, int role) final;
 
-	QMap<int, QVariant> itemData(const QModelIndex &index) const;
-	bool setItemData(const QModelIndex &index, const QMap<int, QVariant> &roles);
+    QMap<int, QVariant> itemData(const QModelIndex &index) const final;
+    bool setItemData(const QModelIndex &index,
+                     const QMap<int, QVariant> &roles) final;
 
-	Qt::ItemFlags flags(const QModelIndex& index) const;
-	Qt::DropActions supportedDropActions() const;
+    Qt::ItemFlags flags(const QModelIndex& index) const final;
+    Qt::DropActions supportedDropActions() const final;
 
-	bool removeRows(int row, int count, const QModelIndex &p = QModelIndex());
-	bool insertRows(int row, int count, const QModelIndex &p = QModelIndex());
+    bool removeRows(int row,
+                    int count, const QModelIndex &p = QModelIndex()) final;
+    bool insertRows(int row,
+                    int count, const QModelIndex &p = QModelIndex()) final;
 };
 
 [[noreturn]] void pk11error(const QString &fmt, int r);

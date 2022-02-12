@@ -11,7 +11,7 @@
 #include "X509SuperTreeView.h"
 #include "lib/db_x509req.h"
 
-class ReqTreeView: public X509SuperTreeView
+class ReqTreeView final: public X509SuperTreeView
 {
 	Q_OBJECT
 
@@ -23,8 +23,8 @@ class ReqTreeView: public X509SuperTreeView
     public:
 	ReqTreeView(QWidget *parent) : X509SuperTreeView(parent) { }
 	void fillContextMenu(QMenu *menu, QMenu *subExport,
-			const QModelIndex &index, QModelIndexList indexes);
-	ExportDialog *exportDialog(const QModelIndexList &indexes);
+            const QModelIndex &index, QModelIndexList indexes) final;
+    ExportDialog *exportDialog(const QModelIndexList &indexes) final;
 
     public slots:
 	void toRequest();

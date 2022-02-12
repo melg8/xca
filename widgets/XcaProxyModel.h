@@ -12,16 +12,17 @@
 #include <QItemSelectionModel>
 #include <QSortFilterProxyModel>
 
-class XcaProxyModel: public QSortFilterProxyModel
+class XcaProxyModel final: public QSortFilterProxyModel
 {
 	Q_OBJECT
    public:
 	XcaProxyModel(QWidget *parent = 0)
 		:QSortFilterProxyModel(parent) { }
-	bool lessThan(const QModelIndex &left, const QModelIndex &right) const;
+    bool lessThan(const QModelIndex &left,
+                  const QModelIndex &right) const final;
 	bool filterAcceptsRow(int sourceRow,
-			const QModelIndex &sourceParent) const;
-	QVariant data(const QModelIndex &index, int role) const;
+            const QModelIndex &sourceParent) const final;
+    QVariant data(const QModelIndex &index, int role) const final;
 };
 
 #endif

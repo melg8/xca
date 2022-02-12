@@ -13,7 +13,7 @@
 
 class pki_x509;
 
-class CrlTreeView: public XcaTreeView
+class CrlTreeView final: public XcaTreeView
 {
 	Q_OBJECT
 
@@ -24,8 +24,8 @@ class CrlTreeView: public XcaTreeView
 
     public:
 	CrlTreeView(QWidget *parent) : XcaTreeView(parent) { }
-	void showPki(pki_base *pki);
-	ExportDialog *exportDialog(const QModelIndexList &index);
+    void showPki(pki_base *pki) final;
+    ExportDialog *exportDialog(const QModelIndexList &index) final;
 
     public slots:
 	void newItem(pki_x509 *cert);

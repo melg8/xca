@@ -183,7 +183,7 @@ class dbheader
 	}
 };
 
-class nid_dbheader : public dbheader
+class nid_dbheader final: public dbheader
 {
     private:
 	QString sn;
@@ -199,11 +199,11 @@ class nid_dbheader : public dbheader
 		if (tooltip.isEmpty())
 			tooltip = name;
 	}
-	QString getName()
+    QString getName() final
 	{
 		return Settings["translate_dn"] ? tooltip : name;
 	}
-	QString getTooltip()
+    QString getTooltip() final
 	{
 		return QString("[%1] %2").arg(sn)
 			.arg(Settings["translate_dn"] ? name : tooltip);

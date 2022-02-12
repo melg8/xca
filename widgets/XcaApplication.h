@@ -45,8 +45,8 @@ public:
 	void setupLanguage(const QLocale &lang);
 	static QFont tableFont;
 	static bool languageAvailable(const QLocale &l);
-	bool eventFilter(QObject *watched, QEvent *ev);
-	bool notify(QObject* receiver, QEvent* event);
+    bool eventFilter(QObject *watched, QEvent *ev) final;
+    bool notify(QObject* receiver, QEvent* event) final;
 
 public slots:
 	void switchLanguage(QAction* a);

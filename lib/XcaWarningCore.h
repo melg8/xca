@@ -35,18 +35,18 @@ class xcaWarning_i
     virtual ~xcaWarning_i() { }
 };
 
-class xcaWarningCore : public QObject, public xcaWarning_i
+class xcaWarningCore final: public QObject, public xcaWarning_i
 {
 	Q_OBJECT
 
     public:
-	void information(const QString &msg);
-	void warning(const QString &msg);
-	bool yesno(const QString &msg);
-	bool okcancel(const QString &msg);
-	void sqlerror(QSqlError err);
-	void warningv3(const QString &msg, const extList &el);
-	void error(const QString &msg);
+    void information(const QString &msg) final;
+    void warning(const QString &msg) final;
+    bool yesno(const QString &msg) final;
+    bool okcancel(const QString &msg) final;
+    void sqlerror(QSqlError err) final;
+    void warningv3(const QString &msg, const extList &el) final;
+    void error(const QString &msg) final;
 };
 
 class xcaWarning

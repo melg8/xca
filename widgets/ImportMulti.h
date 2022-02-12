@@ -34,8 +34,8 @@ class ImportMulti final: public QDialog, private Ui::ImportMulti
 		void execute(int force=0, QStringList failed = QStringList());
 		int entries();
 		void tokenInfo(const slotid &s);
-		void dragEnterEvent(QDragEnterEvent *event);
-		void dropEvent(QDropEvent *event);
+        void dragEnterEvent(QDragEnterEvent *event) final;
+        void dropEvent(QDropEvent *event) final;
 		bool openDB() const;
 
 	public slots:

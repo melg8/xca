@@ -12,7 +12,7 @@
 #include "ui_SearchPkcs11.h"
 
 class SearchPkcs11;
-class searchThread: public QThread
+class searchThread final: public QThread
 {
 	Q_OBJECT
 
@@ -27,7 +27,7 @@ class searchThread: public QThread
    public:
 	searchThread(QString _dir, const QStringList _ext, bool _recursive);
 	void search(QString mydir);
-	void run()
+    void run() final
 	{
 		search(dirname);
 	}

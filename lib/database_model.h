@@ -53,7 +53,7 @@ class database_model final: public QObject
 		database_model(const QString &dbName,
 				const Passwd &pass = Passwd());
         ~database_model() final;
-		void timerEvent(QTimerEvent *event);
+        void timerEvent(QTimerEvent *event) final;
 		db_base *modelForPki(const pki_base *pki) const;
 
 		QString dbname() const

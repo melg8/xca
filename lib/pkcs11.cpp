@@ -178,7 +178,7 @@ void pkcs11::login(const unsigned char *pin, unsigned long pinlen, bool so)
 		pk11error("C_Login", rv);
 }
 
-class pinPadLoginThread: public QThread
+class pinPadLoginThread final: public QThread
 {
 	bool so;
 	pkcs11 *p11;
@@ -189,7 +189,7 @@ class pinPadLoginThread: public QThread
 		so = _so;
 		p11 = _p11;
 	}
-	void run()
+    void run() final
 	{
 		try {
 			p11->login(NULL, 0, so);

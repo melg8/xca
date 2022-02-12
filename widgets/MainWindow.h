@@ -31,13 +31,13 @@ class QProgressBar;
 class DHgen;
 class Help;
 
-class tipMenu : public QMenu
+class tipMenu final: public QMenu
 {
 	Q_OBJECT
 
     public:
 	tipMenu(QString n, QWidget *w) : QMenu(n, w) {}
-	bool event (QEvent * e)
+    bool event (QEvent * e) final
 	{
 
         if (e->type() == QEvent::ToolTip && activeAction() &&
@@ -83,7 +83,7 @@ class MainWindow final: public QMainWindow, public Ui::MainWindow
 		NIDlist *read_nidlist(QString name);
 		QLabel *statusLabel;
 		QString homedir;
-		void keyPressEvent(QKeyEvent *e);
+        void keyPressEvent(QKeyEvent *e) final;
 		void update_history_menu();
 
 	public:
@@ -105,8 +105,8 @@ class MainWindow final: public QMainWindow, public Ui::MainWindow
 		void importAnything(QString file);
 		void importAnything(const QStringList &files);
 		void importMulti(pki_multi *multi, int force);
-		void dropEvent(QDropEvent *event);
-		void dragEnterEvent(QDragEnterEvent *event);
+        void dropEvent(QDropEvent *event) final;
+        void dragEnterEvent(QDragEnterEvent *event) final ;
 		void initResolver();
 
 	public slots:
@@ -125,14 +125,14 @@ class MainWindow final: public QMainWindow, public Ui::MainWindow
 		void changeDbPass();
 		void openURLs(QStringList &files);
 		void openURLs();
-		void changeEvent(QEvent *event);
+        void changeEvent(QEvent *event) final;
 		void exportIndex();
 		void exportIndexHierarchy();
 		void openRemoteSqlDB();
 		void generateDHparamDone();
 
 	protected slots:
-		void closeEvent(QCloseEvent * event);
+        void closeEvent(QCloseEvent * event) final;
 
 	private slots:
 		void setOptions();

@@ -12,7 +12,7 @@
 
 class QMouseEvent;
 
-class DoubleClickLabel : public QLabel
+class DoubleClickLabel: public QLabel
 {
   Q_OBJECT
 
@@ -22,7 +22,7 @@ class DoubleClickLabel : public QLabel
 	void setClickText(QString s);
 
   protected:
-	void mouseDoubleClickEvent ( QMouseEvent * e );
+    void mouseDoubleClickEvent ( QMouseEvent * e ) override;
 
   signals:
 	void doubleClicked(QString text);

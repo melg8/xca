@@ -16,26 +16,26 @@
 class QModelIndex;
 class QContextMenuEvent;
 
-class db_key: public db_base
+class db_key final: public db_base
 {
 	Q_OBJECT
 
 	protected:
-		virtual dbheaderList getHeaders();
+        dbheaderList getHeaders() final;
 	public:
 		db_key();
 		QList<pki_key*> getUnusedKeys();
 		QList<pki_key*> getAllKeys();
-		pki_base *newPKI(enum pki_type type = none);
-		void inToCont(pki_base *pki);
-		void remFromCont(const QModelIndex &idx);
-		pki_base* insert(pki_base *item);
+        pki_base *newPKI(enum pki_type type = none) final;
+        void inToCont(pki_base *pki) final;
+        void remFromCont(const QModelIndex &idx) final;
+        pki_base* insert(pki_base *item) final;
 		void setOwnPass(QModelIndex idx, enum pki_key::passType);
-		void loadContainer();
+        void loadContainer() final;
 		pki_key *newKey(const keyjob &task, const QString &name);
-		int exportFlags(const QModelIndex &index) const;
+        int exportFlags(const QModelIndex &index) const final;
 		void exportItem(const QModelIndex &index,
-			const pki_export *xport, XFile &file) const;
+            const pki_export *xport, XFile &file) const final;
 
 	signals:
 		void delKey(pki_key *delkey);

@@ -11,7 +11,7 @@
 #include "XcaTreeView.h"
 #include "lib/db_temp.h"
 
-class TempTreeView: public XcaTreeView
+class TempTreeView final: public XcaTreeView
 {
 	Q_OBJECT
 
@@ -25,10 +25,10 @@ class TempTreeView: public XcaTreeView
     public:
 	TempTreeView(QWidget *parent) : XcaTreeView(parent) { }
 	void fillContextMenu(QMenu *menu, QMenu *subExport,
-			const QModelIndex &index, QModelIndexList indexes);
-	void showPki(pki_base *pki);
+            const QModelIndex &index, QModelIndexList indexes) final;
+    void showPki(pki_base *pki) final;
 	bool alterTemp(pki_temp *temp);
-	ExportDialog *exportDialog(const QModelIndexList &index);
+    ExportDialog *exportDialog(const QModelIndexList &index) final;
 
    public slots:
 	void certFromTemp();

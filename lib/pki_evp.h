@@ -47,31 +47,31 @@ class pki_evp final: public pki_key
 		pki_evp(EVP_PKEY *pkey);
         ~pki_evp() final;
 
-		void generate(const keyjob &task);
+        void generate(const keyjob &task) final;
 		void setOwnPass(enum passType);
 		void set_evp_key(EVP_PKEY *pkey);
 		void encryptKey(const char *password = NULL);
 		void bogusEncryptKey();
-		EVP_PKEY *decryptKey() const;
+        EVP_PKEY *decryptKey() const final;
         EVP_PKEY *priv2pub(EVP_PKEY* privateKey);
 		static QString removeTypeFromIntName(QString n);
-		void fromPEMbyteArray(const QByteArray &ba, const QString &name);
-		void fload(const QString &fname);
-		bool pem(BioByteArray &);
+        void fromPEMbyteArray(const QByteArray &ba, const QString &name) final;
+        void fload(const QString &fname) final;
+        bool pem(BioByteArray &) final;
 		EVP_PKEY *load_ssh_ed25519_privatekey(const QByteArray &ba,
 						const pass_info &p);
-		void writeDefault(const QString &dirname) const;
+        void writeDefault(const QString &dirname) const final;
 		void writeKey(XFile &file, const EVP_CIPHER *enc,
 				pem_password_cb *cb, bool pem) const;
 		void writePKCS8(XFile &file, const EVP_CIPHER *enc,
 				pem_password_cb *cb, bool pem) const;
 		void writePVKprivate(XFile &file, pem_password_cb *cb) const;
-		bool verify_priv(EVP_PKEY *pkey) const;
-		QVariant getIcon(const dbheader *hd) const;
+        bool verify_priv(EVP_PKEY *pkey) const final;
+        QVariant getIcon(const dbheader *hd) const final;
 		bool sqlUpdatePrivateKey();
-		QSqlError insertSqlData();
-		QSqlError deleteSqlData();
-		void restoreSql(const QSqlRecord &rec);
+        QSqlError insertSqlData() final;
+        QSqlError deleteSqlData() final;
+        void restoreSql(const QSqlRecord &rec) final;
 };
 
 #endif

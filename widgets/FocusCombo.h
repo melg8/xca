@@ -10,11 +10,11 @@
 
 #include <QComboBox>
 
-class focusCombo : public QComboBox
+class focusCombo final: public QComboBox
 {
     public:
 	focusCombo(QWidget *parent) : QComboBox(parent) { }
-	void hidePopup()
+    void hidePopup() final
 	{
 		QComboBox::hidePopup();
 		emit highlighted(currentIndex());

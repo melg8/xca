@@ -13,7 +13,7 @@
 
 class pki_key;
 
-class CertExtend: public QDialog, public Ui::CertExtend
+class CertExtend final: public QDialog, public Ui::CertExtend
 {
 	Q_OBJECT
 
@@ -24,7 +24,7 @@ class CertExtend: public QDialog, public Ui::CertExtend
 
    public slots:
 	void on_applyTime_clicked();
-	void accept();
+    void accept() final;
 
 };
 #endif

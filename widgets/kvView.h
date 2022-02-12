@@ -28,7 +28,7 @@ public:
     virtual void addKey(QString &) {}
 };
 
-class comboDelegate : public kvDelegate
+class comboDelegate final: public kvDelegate
 {
 	QStringList keys;
 
@@ -38,27 +38,28 @@ public:
 	{
 		keys = k;
 	}
-	void addKey(QString &key)
+    void addKey(QString &key) final
 	{
 		if (!key.isEmpty() && (keys.count() == 0 || !keys.contains(key)))
 			keys << key;
 	}
 	QWidget *createEditor(QWidget *parent,
 		const QStyleOptionViewItem &option,
-		const QModelIndex &index) const;
-	void setEditorData(QWidget *editor, const QModelIndex &index) const;
+        const QModelIndex &index) const final;
+    void setEditorData(QWidget *editor,
+                       const QModelIndex &index) const final;
 	void setModelData(QWidget *editor, QAbstractItemModel *model,
-			const QModelIndex &index) const;
+            const QModelIndex &index) const final;
 	void updateEditorGeometry(QWidget *editor,
 		const QStyleOptionViewItem &option,
-		const QModelIndex &index) const
+        const QModelIndex &index) const final
 	{
 		(void)index;
 		editor->setGeometry(option.rect);
 	}
 };
 
-class lineDelegate : public kvDelegate
+class lineDelegate final: public kvDelegate
 {
 	Q_OBJECT
 
@@ -71,13 +72,13 @@ public:
 	}
 	QWidget *createEditor(QWidget *parent,
 		const QStyleOptionViewItem &option,
-		const QModelIndex &index) const;
-	void setEditorData(QWidget *editor, const QModelIndex &index) const;
+        const QModelIndex &index) const final;
+    void setEditorData(QWidget *editor, const QModelIndex &index) const final;
 	void setModelData(QWidget *editor, QAbstractItemModel *model,
-			const QModelIndex &index) const;
-	void updateEditorGeometry(QWidget *editor,
+            const QModelIndex &index) const final;
+    void updateEditorGeometry(QWidget *editor ,
 		const QStyleOptionViewItem &option,
-		const QModelIndex &index) const
+        const QModelIndex &index) const final
 	{
 		(void)index;
 		editor->setGeometry(option.rect);
@@ -87,7 +88,7 @@ signals:
 };
 
 
-class kvmodel: public QAbstractTableModel
+class kvmodel final: public QAbstractTableModel
 {
 	QStringList items;
 	QStringList header;
@@ -97,34 +98,35 @@ public:
 	kvmodel(QStringList &heads);
 	QStringList getRow(int i);
 	void addRow(const QStringList &newrow);
-	Qt::ItemFlags flags(const QModelIndex &index) const
+    Qt::ItemFlags flags(const QModelIndex &index) const final
 	{
 		return QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
 	}
 	QModelIndex index(int row, int column,
-			const QModelIndex &parent = QModelIndex()) const
+            const QModelIndex &parent = QModelIndex()) const final
 	{
 		(void)parent;
 		return createIndex(row, column, row*myCols +column);
 	}
-	QVariant data(const QModelIndex &index, int role) const;
+    QVariant data(const QModelIndex &index, int role) const final;
 	QVariant headerData(int section, Qt::Orientation orientation,
-                int role) const;
+                int role) const final;
 	bool insertRows(int row, int count,
-				const QModelIndex &parent = QModelIndex());
+                const QModelIndex &parent = QModelIndex()) final;
 	bool removeRows(int row, int count,
-				const QModelIndex & parent = QModelIndex());
-	int rowCount(const QModelIndex &parent) const
+                const QModelIndex & parent = QModelIndex()) final;
+    int rowCount(const QModelIndex &parent) const final
 	{
 		(void)parent;
 		return items.count()/myCols;
 	}
-	int columnCount(const QModelIndex &parent) const
+    int columnCount(const QModelIndex &parent) const final
 	{
 		(void)parent;
 		return myCols;
 	}
-	bool setData(const QModelIndex &index, const QVariant &value, int role);
+    bool setData(const QModelIndex &index,
+                 const QVariant &value, int role) final;
 	void moveRow(int oldi, int newi);
 };
 

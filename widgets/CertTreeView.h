@@ -11,7 +11,7 @@
 #include "X509SuperTreeView.h"
 #include "lib/db_x509.h"
 
-class CertTreeView: public X509SuperTreeView
+class CertTreeView final: public X509SuperTreeView
 {
 	Q_OBJECT
 
@@ -23,8 +23,8 @@ class CertTreeView: public X509SuperTreeView
     public:
 	CertTreeView(QWidget *parent) : X509SuperTreeView(parent) { }
 	void fillContextMenu(QMenu *menu, QMenu *subExport,
-			const QModelIndex &index, QModelIndexList indexes);
-	ExportDialog *exportDialog(const QModelIndexList &index);
+            const QModelIndex &index, QModelIndexList indexes) final;
+    ExportDialog *exportDialog(const QModelIndexList &index) final;
 
     public slots:
 	void changeView();

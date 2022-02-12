@@ -14,7 +14,7 @@
 #include <QDialog>
 #include <QSqlDatabase>
 
-class OpenDb: public QDialog, public Ui::OpenDb
+class OpenDb final: public QDialog, public Ui::OpenDb
 {
 	Q_OBJECT
     private:
@@ -34,7 +34,7 @@ class OpenDb: public QDialog, public Ui::OpenDb
 	static void setLastRemote(const QString &db);
 
     public slots:
-	int exec();
+    int exec() final;
 	void driver_selected();
 };
 

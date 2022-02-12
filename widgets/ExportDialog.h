@@ -35,7 +35,7 @@ class ExportDialog final: public QDialog, public Ui::ExportDialog
 	void on_fileBut_clicked();
 	void on_exportFormat_activated(int);
 	void on_exportFormat_highlighted(int index);
-	void accept();
+    void accept() final;
 };
 
 #endif

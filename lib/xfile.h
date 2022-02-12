@@ -20,12 +20,12 @@
 
 #include <openssl/bio.h>
 
-class XFile : public QFile
+class XFile final: public QFile
 {
 	Q_OBJECT
 
 	public:
-		bool open(OpenMode flags)
+        bool open(OpenMode flags) final
 		{
 			bool o = QFile::open(flags | Unbuffered);
 			if (error()) {

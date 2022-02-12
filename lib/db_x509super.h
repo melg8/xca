@@ -18,7 +18,7 @@ class db_x509name: public db_base
 	Q_OBJECT
 
 	protected:
-		dbheaderList getHeaders();
+        dbheaderList getHeaders() override;
 	public:
 		db_x509name(const char *classname);
 };
@@ -28,8 +28,8 @@ class db_x509super: public db_x509name
 	Q_OBJECT
 
 	protected:
-		dbheaderList getHeaders();
-		void loadContainer();
+        dbheaderList getHeaders() override;
+        void loadContainer() override;
 	public:
 		db_x509super(const char *classname);
 		pki_key *findKey(pki_x509super *ref);

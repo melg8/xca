@@ -12,7 +12,7 @@
 #include "lib/db_key.h"
 
 class QAction;
-class KeyTreeView: public XcaTreeView
+class KeyTreeView final: public XcaTreeView
 {
 	Q_OBJECT
 
@@ -24,9 +24,9 @@ class KeyTreeView: public XcaTreeView
     public:
 	KeyTreeView(QWidget *parent) : XcaTreeView(parent) { }
 	void fillContextMenu(QMenu *menu, QMenu *subExport,
-			const QModelIndex &index, QModelIndexList indexes);
-	void showPki(pki_base *pki);
-	ExportDialog *exportDialog(const QModelIndexList &indexes);
+            const QModelIndex &index, QModelIndexList indexes) final;
+    void showPki(pki_base *pki) final;
+    ExportDialog *exportDialog(const QModelIndexList &indexes) final;
 
    public slots:
 	void resetOwnPass();

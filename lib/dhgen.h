@@ -13,7 +13,7 @@
 #include <QString>
 #include <QThread>
 
-class DHgen: public QThread
+class DHgen final: public QThread
 {
 	QString fname;
 	int bits;
@@ -25,6 +25,6 @@ class DHgen: public QThread
 	errorEx error() const { return err; }
 
     protected:
-	void run();
+    void run() final;
 };
 #endif
