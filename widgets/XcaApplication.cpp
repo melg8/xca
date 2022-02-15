@@ -174,7 +174,7 @@ bool XcaApplication::eventFilter(QObject *watched, QEvent *ev)
             dynamic_cast<XcaTreeView*>(watched->parent()) : nullptr;
 
 		if ((watched == mainw || treeview) &&
-		    me->button() == Qt::MidButton &&
+            me->button() == Qt::MiddleButton &&
 		    QApplication::clipboard()->supportsSelection())
 		{
 			mainw->pastePem();
