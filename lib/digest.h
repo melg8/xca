@@ -20,6 +20,7 @@ class digest
     public:
 	static const QList<int> all_digests;
 
+    digest() = default;
 	digest(int nid);
 	digest(const EVP_MD *md);
 	digest(const QString &name);

@@ -142,34 +142,34 @@ pki_crl *db_crl::newCrl(const crljob &task)
 		crl->pkiSource = generated;
 
 		foreach(x509rev rev, cert->getRevList())
-			crl->addRev(rev, task.withReason);
+            crl->addRev(rev, task.settings.withReason);
 
-		if (task.authKeyId) {
+        if (task.settings.authKeyId) {
 			crl->addV3ext(e.create(NID_authority_key_identifier,
 				"keyid,issuer", &ext_ctx));
 		}
-		if (task.subAltName) {
+        if (task.settings.subAltName) {
 			if (cert->hasExtension(NID_subject_alt_name)) {
 				crl->addV3ext(e.create(NID_issuer_alt_name,
 					"issuer:copy", &ext_ctx));
 			}
 		}
-		if (task.setCrlNumber) {
-			crl->setCrlNumber(task.crlNumber);
-			cert->setCrlNumber(task.crlNumber);
+        if (task.settings.setCrlNumber) {
+            crl->setCrlNumber(task.settings.crlNumber);
+            cert->setCrlNumber(task.settings.crlNumber);
 		}
 		crl->setIssuer(cert);
-		crl->setLastUpdate(task.lastUpdate);
-		crl->setNextUpdate(task.nextUpdate);
-		crl->sign(cert->getRefKey(), task.hashAlgo.MD());
+        crl->setLastUpdate(task.settings.lastUpdate);
+        crl->setNextUpdate(task.settings.nextUpdate);
+        crl->sign(cert->getRefKey(), task.settings.hashAlgo.MD());
 
 		Transaction;
 		if (!TransBegin())
 			throw errorEx(tr("Failed to initiate DB transaction"));
-		cert->setCrlExpire(task.nextUpdate);
+        cert->setCrlExpire(task.settings.nextUpdate);
 		SQL_PREPARE(q, "UPDATE authority set crlNo=?, crlExpire=? WHERE item=?");
 		q.bindValue(0, (uint)cert->getCrlNumber().getLong());
-		q.bindValue(1, task.nextUpdate.toPlain());
+        q.bindValue(1, task.settings.nextUpdate.toPlain());
 		q.bindValue(2, cert->getSqlItemId());
 		AffectedItems(cert->getSqlItemId());
 		q.exec();

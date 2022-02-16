@@ -19,31 +19,40 @@
 
 #include "digest.h"
 
-class crljob
-{
-    public:
-	pki_x509 *issuer;
+struct CrlJobSettings {
     bool withReason;
     bool authKeyId;
     bool subAltName;
     bool setCrlNumber;
     a1int crlNumber;
-	int crlDays;
     digest hashAlgo;
     a1time lastUpdate;
     a1time nextUpdate;
+};
+
+[[nodiscard]] static CrlJobSettings CrlJobSettingsFrom(
+        pki_x509 *issuer) noexcept {
+    return CrlJobSettings {
+        true, true, true,
+        issuer->getCrlNumber().getLong() > 0,
+        a1int(issuer->getCrlNumber().getLong() + 1UL),
+        digest::getDefault(),
+        a1time{},
+        a1time{}.addDays(issuer->getCrlDays())
+    };
+}
+
+
+class crljob
+{
+    public:
+    pki_x509 *issuer;
+    CrlJobSettings settings;
+    int crlDays;
 
 	crljob(pki_x509 *x) : issuer(x),
-		withReason(true),
-		authKeyId(true),
-		subAltName(true),
-		setCrlNumber(issuer->getCrlNumber().getLong() > 0),
-		crlNumber(issuer->getCrlNumber()),
-		crlDays(issuer->getCrlDays()),
-		hashAlgo(digest::getDefault()),
-		nextUpdate(lastUpdate.addDays(crlDays))
-	{
-		crlNumber++;
+        settings(CrlJobSettingsFrom(issuer)),
+        crlDays(issuer->getCrlDays()) {
 	}
 	crljob() = delete;
 };

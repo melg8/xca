@@ -27,12 +27,14 @@
     };
 }
 
-NewCrl::NewCrl(const crljob &j, const NewCrlOptions &options, QWidget *w)
+NewCrl::NewCrl(const CrlJobSettings &j,
+               const NewCrlOptions &options, QWidget *w)
 	: QWidget(w ? w : mainwin), task(j)
 {
 	setupUi(this);
     dateBox->setTitle(options.title);
-	validNumber->setText(QString::number(task.crlDays));
+    validNumber->setText(QString::number(
+                             task.lastUpdate.daysTo(task.nextUpdate)));
 	validRange->setCurrentIndex(0);
 	on_applyTime_clicked();
 	nextUpdate->setEndDate(true);
@@ -51,9 +53,9 @@ NewCrl::NewCrl(const crljob &j, const NewCrlOptions &options, QWidget *w)
 	authKeyId->setChecked(task.authKeyId);
 }
 
-crljob NewCrl::getCrlJob() const
+CrlJobSettings NewCrl::getCrlJob() const
 {
-	crljob t = task;
+    CrlJobSettings t = task;
 	t.withReason = revocationReasons->isChecked();
 	t.authKeyId = authKeyId->isChecked();
 	t.subAltName = subAltName->isChecked();
@@ -78,14 +80,16 @@ NewCrl::~NewCrl()
 
 void NewCrl::newCrl(QWidget *parent, pki_x509 *issuer)
 {
-	crljob task(issuer);
-    NewCrl *widget = new NewCrl(task, NewCrlOptionsFrom(issuer));
+    crljob task(issuer);
+    NewCrl *widget = new NewCrl(task.settings, NewCrlOptionsFrom(issuer));
 	XcaDialog *dlg = new XcaDialog(parent, revocation, widget,
 				tr("Create CRL"), QString(), "crlgenerate");
 	if (dlg->exec()) {
 		db_crl *db = Database.model<db_crl>();
-		if (db)
-			db->newCrl(widget->getCrlJob());
+        if (db) {
+            task.settings = widget->getCrlJob();
+            db->newCrl(task);
+        }
 	}
 	delete dlg;
 }

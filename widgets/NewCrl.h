@@ -23,11 +23,12 @@ class NewCrl final: public QWidget, public Ui::NewCrl
 {
 	Q_OBJECT
 
-	crljob task;
+    CrlJobSettings task;
    public:
-    NewCrl(const crljob &task, const NewCrlOptions &options, QWidget *w = nullptr);
+    NewCrl(const CrlJobSettings &task,
+           const NewCrlOptions &options, QWidget *w = nullptr);
     ~NewCrl() final;
-	crljob getCrlJob() const;
+    CrlJobSettings getCrlJob() const;
 	static void newCrl(QWidget *parent, pki_x509 *issuer);
 
    public slots:
