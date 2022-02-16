@@ -13,13 +13,19 @@
 
 class pki_key;
 
+struct NewCrlOptions {
+    QString title = {};
+    QList<int> possible_hash_nids = {};
+    bool has_sub_alt_name = false;
+};
+
 class NewCrl final: public QWidget, public Ui::NewCrl
 {
 	Q_OBJECT
 
 	crljob task;
    public:
-	NewCrl(const crljob &task, QWidget *w = nullptr);
+    NewCrl(const crljob &task, const NewCrlOptions &options, QWidget *w = nullptr);
     ~NewCrl() final;
 	crljob getCrlJob() const;
 	static void newCrl(QWidget *parent, pki_x509 *issuer);

@@ -18,24 +18,30 @@
 #include <QCheckBox>
 #include <QMessageBox>
 
-NewCrl::NewCrl(const crljob &j, QWidget *w)
+[[nodiscard]] static NewCrlOptions NewCrlOptionsFrom(
+        const pki_x509 *issuer) noexcept {
+    return {
+       issuer->getIntName(),
+       issuer->getRefKey()->possibleHashNids(),
+       issuer->hasExtension(NID_subject_alt_name)
+    };
+}
+
+NewCrl::NewCrl(const crljob &j, const NewCrlOptions &options, QWidget *w)
 	: QWidget(w ? w : mainwin), task(j)
 {
-	pki_x509 *issuer = task.issuer;
-	pki_key *key = issuer->getRefKey();
-
 	setupUi(this);
-	dateBox->setTitle(issuer->getIntName());
+    dateBox->setTitle(options.title);
 	validNumber->setText(QString::number(task.crlDays));
 	validRange->setCurrentIndex(0);
 	on_applyTime_clicked();
 	nextUpdate->setEndDate(true);
 
-	hashAlgo->setupHashes(key->possibleHashNids());
+    hashAlgo->setupHashes(options.possible_hash_nids);
 	hashAlgo->setCurrent(task.hashAlgo);
 
 	crlNumber->setText(task.crlNumber.toDec());
-	if (issuer->hasExtension(NID_subject_alt_name)) {
+    if (options.has_sub_alt_name) {
 		subAltName->setEnabled(true);
 		subAltName->setChecked(task.subAltName);
 	} else {
@@ -73,7 +79,7 @@ NewCrl::~NewCrl()
 void NewCrl::newCrl(QWidget *parent, pki_x509 *issuer)
 {
 	crljob task(issuer);
-	NewCrl *widget = new NewCrl(task);
+    NewCrl *widget = new NewCrl(task, NewCrlOptionsFrom(issuer));
 	XcaDialog *dlg = new XcaDialog(parent, revocation, widget,
 				tr("Create CRL"), QString(), "crlgenerate");
 	if (dlg->exec()) {

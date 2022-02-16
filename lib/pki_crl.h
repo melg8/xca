@@ -23,15 +23,15 @@ class crljob
 {
     public:
 	pki_x509 *issuer;
-	bool withReason;
-	bool authKeyId;
-	bool subAltName;
-	bool setCrlNumber;
-	a1int crlNumber;
+    bool withReason;
+    bool authKeyId;
+    bool subAltName;
+    bool setCrlNumber;
+    a1int crlNumber;
 	int crlDays;
     digest hashAlgo;
-	a1time lastUpdate;
-	a1time nextUpdate;
+    a1time lastUpdate;
+    a1time nextUpdate;
 
 	crljob(pki_x509 *x) : issuer(x),
 		withReason(true),
