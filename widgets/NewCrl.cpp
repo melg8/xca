@@ -27,7 +27,7 @@
     };
 }
 
-NewCrl::NewCrl(const CrlJobSettings &j,
+NewCrlWidget::NewCrlWidget(const CrlJobSettings &j,
                const NewCrlOptions &options, QWidget *w)
 	: QWidget(w ? w : mainwin), task(j)
 {
@@ -53,7 +53,7 @@ NewCrl::NewCrl(const CrlJobSettings &j,
 	authKeyId->setChecked(task.authKeyId);
 }
 
-CrlJobSettings NewCrl::getCrlJob() const
+CrlJobSettings NewCrlWidget::getCrlJob() const
 {
     CrlJobSettings t = task;
 	t.withReason = revocationReasons->isChecked();
@@ -67,13 +67,13 @@ CrlJobSettings NewCrl::getCrlJob() const
 	return t;
 }
 
-void NewCrl::on_applyTime_clicked()
+void NewCrlWidget::on_applyTime_clicked()
 {
 	nextUpdate->setDiff(lastUpdate, validNumber->text().toInt(),
 					validRange->currentIndex());
 }
 
-NewCrl::~NewCrl()
+NewCrlWidget::~NewCrlWidget()
 {
 	qDebug() << "NewCrl::~NewCrl() -- DELETED";
 }
@@ -81,9 +81,9 @@ NewCrl::~NewCrl()
 void NewCrl::newCrl(QWidget *parent, pki_x509 *issuer)
 {
     crljob task(issuer);
-    NewCrl *widget = new NewCrl(task.settings, NewCrlOptionsFrom(issuer));
+    NewCrlWidget *widget = new NewCrlWidget(task.settings, NewCrlOptionsFrom(issuer));
 	XcaDialog *dlg = new XcaDialog(parent, revocation, widget,
-				tr("Create CRL"), QString(), "crlgenerate");
+                QObject::tr("Create CRL"), QString(), "crlgenerate");
 	if (dlg->exec()) {
 		db_crl *db = Database.model<db_crl>();
         if (db) {

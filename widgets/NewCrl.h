@@ -19,19 +19,24 @@ struct NewCrlOptions {
     bool has_sub_alt_name = false;
 };
 
-class NewCrl final: public QWidget, public Ui::NewCrl
+class NewCrlWidget final: public QWidget, public Ui::NewCrl
 {
 	Q_OBJECT
 
     CrlJobSettings task;
    public:
-    NewCrl(const CrlJobSettings &task,
+    NewCrlWidget(const CrlJobSettings &task,
            const NewCrlOptions &options, QWidget *w = nullptr);
-    ~NewCrl() final;
+    ~NewCrlWidget() final;
     CrlJobSettings getCrlJob() const;
-	static void newCrl(QWidget *parent, pki_x509 *issuer);
 
    public slots:
 	void on_applyTime_clicked();
 };
+
+class NewCrl {
+   public:
+    static void newCrl(QWidget *parent, pki_x509 *issuer);
+};
+
 #endif
