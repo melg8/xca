@@ -10,6 +10,8 @@
 #define __PKI_CRL_H
 
 #include <openssl/bio.h>
+
+#include "crl_job_settings.h"
 #include "pki_x509.h"
 #include "x509name.h"
 
@@ -19,16 +21,6 @@
 
 #include "digest.h"
 
-struct CrlJobSettings {
-    bool withReason;
-    bool authKeyId;
-    bool subAltName;
-    bool setCrlNumber;
-    a1int crlNumber;
-    digest hashAlgo;
-    a1time lastUpdate;
-    a1time nextUpdate;
-};
 
 [[nodiscard]] static CrlJobSettings CrlJobSettingsFrom(
         pki_x509 *issuer) noexcept {
