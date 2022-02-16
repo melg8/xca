@@ -61,10 +61,10 @@ if(SPHINX)
 	OUTPUT ${D}/rst/database_schema.sql
 	COMMAND ${CMAKE_COMMAND} -E make_directory ${D}/rst/_static
 	COMMAND ${CMAKE_COMMAND}
-		-D SRC=${PROJECT_SOURCE_DIR}/lib/database_schema.cpp
+                -D SRC=${PROJECT_SOURCE_DIR}/lib/database_schema.h
 		-D DST=${D}/rst/database_schema.sql
 		-P ${PROJECT_SOURCE_DIR}/cmake/database_schema.cmake
-	DEPENDS ${PROJECT_SOURCE_DIR}/lib/database_schema.cpp
+        DEPENDS ${PROJECT_SOURCE_DIR}/lib/database_schema.h
 	COMMENT "Generating database schema SQL documentation"
   )
   add_custom_command(
