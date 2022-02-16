@@ -8,7 +8,8 @@
 #ifndef __NEWCRL_H
 #define __NEWCRL_H
 
-#include "lib/pki_crl.h"
+class pki_x509;
+class QWidget;
 
 class NewCrl {
    public:
