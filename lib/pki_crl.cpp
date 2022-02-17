@@ -15,7 +15,7 @@
 pki_crl::pki_crl(const QString name )
 	:pki_x509name(name)
 {
-	crl = X509_CRL_new();
+    crl_ = X509_CRL_new();
 	pki_openssl_error();
 	pkiType=revocation;
 }
@@ -41,8 +41,8 @@ void pki_crl::fromPEM_BIO(BIO *bio, const QString &name)
 	X509_CRL *_crl;
     _crl = PEM_read_bio_X509_CRL(bio, nullptr, nullptr, nullptr);
 	openssl_error(name);
-	X509_CRL_free(crl);
-	crl = _crl;
+    X509_CRL_free(crl_);
+    crl_ = _crl;
 }
 
 QString pki_crl::getMsg(msg_type msg) const
@@ -145,13 +145,13 @@ void pki_crl::fload(const QString &fname)
 			X509_CRL_free(_crl);
 		throw errorEx(tr("Unable to load the revocation list in file %1. Tried PEM and DER formatted CRL.").arg(fname));
 	}
-	X509_CRL_free(crl);
-	crl = _crl;
+    X509_CRL_free(crl_);
+    crl_ = _crl;
 }
 
 QString pki_crl::getSigAlg() const
 {
-	return QString(OBJ_nid2ln(X509_CRL_get_signature_nid(crl)));
+    return QString(OBJ_nid2ln(X509_CRL_get_signature_nid(crl_)));
 }
 
 void pki_crl::createCrl(const QString d, pki_x509 *iss)
@@ -159,8 +159,8 @@ void pki_crl::createCrl(const QString d, pki_x509 *iss)
 	setIntName(d);
 	if (!iss)
 		my_error(tr("No issuer given"));
-	X509_CRL_set_version(crl, 1); /* version 2 CRL */
-    X509_CRL_set_issuer_name(crl,
+    X509_CRL_set_version(crl_, 1); /* version 2 CRL */
+    X509_CRL_set_issuer_name(crl_,
                              const_cast<X509_NAME*>(iss->getSubject().get0()));
 	setIssuer(iss);
 	pki_openssl_error();
@@ -168,26 +168,26 @@ void pki_crl::createCrl(const QString d, pki_x509 *iss)
 
 a1int pki_crl::getVersion()
 {
-	return a1int(X509_CRL_get_version(crl));
+    return a1int(X509_CRL_get_version(crl_));
 }
 
 void pki_crl::setLastUpdate(const a1time &a)
 {
 	a1time t(a);
-	X509_CRL_set_lastUpdate(crl, t.get_utc());
+    X509_CRL_set_lastUpdate(crl_, t.get_utc());
 	pki_openssl_error();
 }
 
 void pki_crl::setNextUpdate(const a1time &a)
 {
 	a1time t(a);
-	X509_CRL_set_nextUpdate(crl, t.get_utc());
+    X509_CRL_set_nextUpdate(crl_, t.get_utc());
 	pki_openssl_error();
 }
 
 pki_crl::~pki_crl()
 {
-	X509_CRL_free(crl);
+    X509_CRL_free(crl_);
 	pki_openssl_error();
 }
 
@@ -196,27 +196,27 @@ void pki_crl::d2i(QByteArray &ba)
 	X509_CRL *c = (X509_CRL*)d2i_bytearray(D2I_VOID(d2i_X509_CRL), ba);
 	pki_openssl_error();
 	if (c) {
-		X509_CRL_free(crl);
-		crl = c;
+        X509_CRL_free(crl_);
+        crl_ = c;
 	}
 	pki_openssl_error();
 }
 
 QByteArray pki_crl::i2d() const
 {
-	return i2d_bytearray(I2D_VOID(i2d_X509_CRL), crl);
+    return i2d_bytearray(I2D_VOID(i2d_X509_CRL), crl_);
 }
 
 void pki_crl::addRev(const x509rev &xrev, bool withReason)
 {
-	X509_CRL_add0_revoked(crl, xrev.get(withReason));
+    X509_CRL_add0_revoked(crl_, xrev.get(withReason));
 	pki_openssl_error();
 }
 
 void pki_crl::addV3ext(const x509v3ext &e)
 {
 	X509_EXTENSION *ext = e.get();
-	X509_CRL_add_ext(crl, ext, -1);
+    X509_CRL_add_ext(crl_, ext, -1);
 	X509_EXTENSION_free(ext);
 	pki_openssl_error();
 }
@@ -224,7 +224,7 @@ void pki_crl::addV3ext(const x509v3ext &e)
 extList pki_crl::extensions() const
 {
 	extList el;
-	el.setStack(X509_CRL_get0_extensions(crl));
+    el.setStack(X509_CRL_get0_extensions(crl_));
 	pki_openssl_error();
 	return el;
 }
@@ -243,9 +243,9 @@ void pki_crl::sign(pki_key *key, const digest &digest)
 	EVP_PKEY *pkey;
 	if (!key || key->isPubKey())
 		return;
-	X509_CRL_sort(crl);
+    X509_CRL_sort(crl_);
 	pkey = key->decryptKey();
-	X509_CRL_sign(crl, pkey, digest.MD());
+    X509_CRL_sign(crl_, pkey, digest.MD());
 	EVP_PKEY_free(pkey);
 	pki_openssl_error();
 }
@@ -262,9 +262,9 @@ void pki_crl::writeCrl(XFile &file, bool pem) const
 	BioByteArray b;
 	if (pem) {
 		b += PEM_comment();
-		PEM_write_bio_X509_CRL(b, crl);
+        PEM_write_bio_X509_CRL(b, crl_);
 	} else {
-		i2d_X509_CRL_bio(b, crl);
+        i2d_X509_CRL_bio(b, crl_);
 	}
 	pki_openssl_error();
 	file.write(b);
@@ -272,22 +272,22 @@ void pki_crl::writeCrl(XFile &file, bool pem) const
 
 bool pki_crl::pem(BioByteArray &b)
 {
-	return PEM_write_bio_X509_CRL(b, crl);
+    return PEM_write_bio_X509_CRL(b, crl_);
 }
 
 a1time pki_crl::getLastUpdate() const
 {
-	return a1time(X509_CRL_get0_lastUpdate(crl));
+    return a1time(X509_CRL_get0_lastUpdate(crl_));
 }
 
 a1time pki_crl::getNextUpdate() const
 {
-	return a1time(X509_CRL_get0_nextUpdate(crl));
+    return a1time(X509_CRL_get0_nextUpdate(crl_));
 }
 
 int pki_crl::numRev() const
 {
-	STACK_OF(X509_REVOKED) *st = X509_CRL_get_REVOKED(crl);
+    STACK_OF(X509_REVOKED) *st = X509_CRL_get_REVOKED(crl_);
 
 	return st ? sk_X509_REVOKED_num(st) : 0;
 }
@@ -296,7 +296,7 @@ x509revList pki_crl::getRevList()
 {
 	x509revList ret;
 	int i, num = numRev();
-	STACK_OF(X509_REVOKED) *st = X509_CRL_get_REVOKED(crl);
+    STACK_OF(X509_REVOKED) *st = X509_CRL_get_REVOKED(crl_);
 
 	for (i=0; i<num; i++) {
 		x509rev r(sk_X509_REVOKED_value(st, i));
@@ -308,7 +308,7 @@ x509revList pki_crl::getRevList()
 
 x509name pki_crl::getSubject() const
 {
-	return x509name(X509_CRL_get_issuer(crl));
+    return x509name(X509_CRL_get_issuer(crl_));
 }
 
 bool pki_crl::verify(pki_x509 *issuer)
@@ -320,7 +320,7 @@ bool pki_crl::verify(pki_x509 *issuer)
 	pki_key *key = issuer->getPubKey();
 	if (!key)
 		return false;
-	int ret = X509_CRL_verify(crl, key->getPubKey());
+    int ret = X509_CRL_verify(crl_, key->getPubKey());
 	pki_ign_openssl_error();
 	if (ret != 1) {
 		delete key;
@@ -338,7 +338,7 @@ void pki_crl::setCrlNumber(a1int num)
 {
 	ASN1_INTEGER *tmpser = num.get();
 	pki_openssl_error();
-	X509_CRL_add1_ext_i2d(crl, NID_crl_number, tmpser, 0, 0);
+    X509_CRL_add1_ext_i2d(crl_, NID_crl_number, tmpser, 0, 0);
 	ASN1_INTEGER_free(tmpser);
 	pki_openssl_error();
 }
@@ -355,7 +355,7 @@ bool pki_crl::getCrlNumber(a1int *num) const
 {
 	int j;
 	ASN1_INTEGER *i;
-    i = (ASN1_INTEGER *)X509_CRL_get_ext_d2i(crl, NID_crl_number, &j, nullptr);
+    i = (ASN1_INTEGER *)X509_CRL_get_ext_d2i(crl_, NID_crl_number, &j, nullptr);
 	pki_openssl_error();
 	if (j == -1)
 		return false;
@@ -451,10 +451,10 @@ void pki_crl::print(BioByteArray &bba, enum print_opt opt) const
 	pki_x509name::print(bba, opt);
 	switch (opt) {
 	case print_openssl_txt:
-		X509_CRL_print(bba, crl);
+        X509_CRL_print(bba, crl_);
 		break;
 	case print_pem:
-		PEM_write_bio_X509_CRL(bba, crl);
+        PEM_write_bio_X509_CRL(bba, crl_);
 		break;
 	case print_coloured:
 		break;

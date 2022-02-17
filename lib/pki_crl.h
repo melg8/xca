@@ -52,10 +52,9 @@ class crljob
 class pki_crl final: public pki_x509name
 {
 		Q_OBJECT
-	friend class pki_x509;
 	protected:
 		QVariant issuerSqlId;
-		X509_CRL *crl;
+        X509_CRL *crl_;
 		extList extensions() const;
         void collect_properties(QMap<QString, QString> &prp) const final;
 	public:
