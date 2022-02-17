@@ -104,7 +104,7 @@ class db_base: public QAbstractItemModel
 		}
         void insertChild(pki_base *child, pki_base *parent = nullptr);
 		int rownumber(const pki_base *child) const;
-		void createSuccess(const pki_base *pki) const;
+        static void createSuccess(const pki_base *pki);
 		bool columnHidden(int col) const;
 		virtual void saveHeaderState();
 		void initHeaderView(QHeaderView *hv);

@@ -53,7 +53,7 @@ pki_base *db_base::newPKI(enum pki_type type)
 	return new pki_base();
 }
 
-void db_base::createSuccess(const pki_base *pki) const
+void db_base::createSuccess(const pki_base *pki)
 {
 	if (!pki)
 		return;
