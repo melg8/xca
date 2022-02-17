@@ -14,6 +14,7 @@
 #include "crl_job_settings.h"
 #include "pki_x509.h"
 #include "x509name.h"
+#include "ssl_crl.h"
 
 #define VIEW_crls_num 6
 #define VIEW_crls_issuer 7
@@ -54,7 +55,7 @@ class pki_crl final: public pki_x509name
 		Q_OBJECT
 	protected:
 		QVariant issuerSqlId;
-        X509_CRL *crl_;
+        SslCrl crl_;
 		extList extensions() const;
         void collect_properties(QMap<QString, QString> &prp) const final;
 	public:
@@ -66,7 +67,6 @@ class pki_crl final: public pki_x509name
         void writeDefault(const QString &dirname) const final;
 		void createCrl(const QString d, pki_x509 *iss);
 		void addRev(const x509rev &rev, bool withReason=true);
-		void addExt(int nid, QString value);
 		void addV3ext(const x509v3ext &e);
 		void sign(pki_key *key, const digest &digest);
 		void writeCrl(XFile &file, bool pem = true) const;
