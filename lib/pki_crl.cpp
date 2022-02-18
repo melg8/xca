@@ -15,7 +15,6 @@
 pki_crl::pki_crl(const QString name )
 	:pki_x509name(name)
 {
-    crl_.crl_ = X509_CRL_new();
 	pki_openssl_error();
 	pkiType=revocation;
 }
@@ -41,8 +40,8 @@ void pki_crl::fromPEM_BIO(BIO *bio, const QString &name)
 	X509_CRL *_crl;
     _crl = PEM_read_bio_X509_CRL(bio, nullptr, nullptr, nullptr);
 	openssl_error(name);
-    X509_CRL_free(crl_.crl_);
-    crl_.crl_ = _crl;
+    crl_ = _crl;
+    openssl_error(name);
 }
 
 QString pki_crl::getMsg(msg_type msg) const
@@ -145,8 +144,7 @@ void pki_crl::fload(const QString &fname)
 			X509_CRL_free(_crl);
 		throw errorEx(tr("Unable to load the revocation list in file %1. Tried PEM and DER formatted CRL.").arg(fname));
 	}
-    X509_CRL_free(crl_.crl_);
-    crl_.crl_ = _crl;
+    crl_ = _crl;
 }
 
 QString pki_crl::getSigAlg() const
@@ -159,9 +157,8 @@ void pki_crl::createCrl(const QString d, pki_x509 *iss)
 	setIntName(d);
 	if (!iss)
 		my_error(tr("No issuer given"));
-    X509_CRL_set_version(crl_.crl_, 1); /* version 2 CRL */
-    X509_CRL_set_issuer_name(crl_.crl_,
-                             const_cast<X509_NAME*>(iss->getSubject().get0()));
+    crl_.SetVersion2();
+    crl_.SetIssuerName(iss->getSubject().get0());
 	setIssuer(iss);
 	pki_openssl_error();
 }
@@ -185,9 +182,7 @@ void pki_crl::setNextUpdate(const a1time &a)
 	pki_openssl_error();
 }
 
-pki_crl::~pki_crl()
-{
-    X509_CRL_free(crl_.crl_);
+pki_crl::~pki_crl() {
 	pki_openssl_error();
 }
 
@@ -195,10 +190,7 @@ void pki_crl::d2i(QByteArray &ba)
 {
 	X509_CRL *c = (X509_CRL*)d2i_bytearray(D2I_VOID(d2i_X509_CRL), ba);
 	pki_openssl_error();
-	if (c) {
-        X509_CRL_free(crl_.crl_);
-        crl_.crl_ = c;
-	}
+    crl_ = c;
 	pki_openssl_error();
 }
 
@@ -243,9 +235,9 @@ void pki_crl::sign(pki_key *key, const digest &digest)
 	EVP_PKEY *pkey;
 	if (!key || key->isPubKey())
 		return;
-    X509_CRL_sort(crl_.crl_);
-	pkey = key->decryptKey();
-    X509_CRL_sign(crl_.crl_, pkey, digest.MD());
+    pkey = key->decryptKey();
+
+    crl_.SignSortedCrl(pkey, digest.MD());
 	EVP_PKEY_free(pkey);
 	pki_openssl_error();
 }
