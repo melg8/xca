@@ -230,14 +230,18 @@ bool pki_crl::visible() const
 	return extensions().search(limitPattern);
 }
 
-void pki_crl::sign(pki_key *key, const digest &digest)
+void pki_crl::sign(EVP_PKEY *pkey, const EVP_MD *md) {
+    crl_.SignSortedCrl(pkey, md);
+}
+
+void pki_crl::sign(pki_key *key, const EVP_MD *md)
 {
 	EVP_PKEY *pkey;
 	if (!key || key->isPubKey())
 		return;
     pkey = key->decryptKey();
 
-    crl_.SignSortedCrl(pkey, digest.MD());
+    sign(pkey, md);
 	EVP_PKEY_free(pkey);
 	pki_openssl_error();
 }

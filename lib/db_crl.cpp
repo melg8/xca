@@ -137,12 +137,14 @@ pki_crl *db_crl::newCrl(const crljob &task)
         X509V3_set_ctx_nodb(&ext_ctx)
 		XSqlQuery q;
 
+        const auto rev_list = cert->getRevList();
 		crl = new pki_crl();
 		crl->createCrl(cert->getIntName(), cert);
 		crl->pkiSource = generated;
 
-		foreach(x509rev rev, cert->getRevList())
+        foreach(x509rev rev, rev_list) {
             crl->addRev(rev, task.settings.withReason);
+        }
 
         if (task.settings.authKeyId) {
 			crl->addV3ext(e.create(NID_authority_key_identifier,
@@ -156,12 +158,16 @@ pki_crl *db_crl::newCrl(const crljob &task)
 		}
         if (task.settings.setCrlNumber) {
             crl->setCrlNumber(task.settings.crlNumber);
-            cert->setCrlNumber(task.settings.crlNumber);
 		}
-		crl->setIssuer(cert);
+
         crl->setLastUpdate(task.settings.lastUpdate);
         crl->setNextUpdate(task.settings.nextUpdate);
         crl->sign(cert->getRefKey(), task.settings.hashAlgo.MD());
+
+        crl->setIssuer(cert);
+        if (task.settings.setCrlNumber) {
+            cert->setCrlNumber(task.settings.crlNumber);
+        }
 
 		Transaction;
 		if (!TransBegin())

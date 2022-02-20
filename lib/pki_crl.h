@@ -68,7 +68,7 @@ class pki_crl final: public pki_x509name
 		void createCrl(const QString d, pki_x509 *iss);
 		void addRev(const x509rev &rev, bool withReason=true);
 		void addV3ext(const x509v3ext &e);
-		void sign(pki_key *key, const digest &digest);
+        void sign(pki_key *key, const EVP_MD *md);
 		void writeCrl(XFile &file, bool pem = true) const;
 		pki_x509 *getIssuer() const;
 		QString getIssuerName() const;
@@ -101,6 +101,7 @@ class pki_crl final: public pki_x509name
         void restoreSql(const QSqlRecord &rec) final;
 		QStringList icsVEVENT() const;
         void print(BioByteArray &b, enum print_opt opt) const final;
+        void sign(EVP_PKEY *pkey, const EVP_MD *md);
 };
 
 #endif
