@@ -14,10 +14,11 @@ stdenv.mkDerivation rec {
     gcc
     clang_13
     gdb
+    flawfinder
     ninja
   ];
 
-  buildInputs = with pkgs; [ gcc qt5.full openssl_1_1 ];
+  buildInputs = with pkgs; [ sphinx gcc qt5.full openssl_1_1 ];
 
   configurePhase = "cmake -G Ninja -DCMAKE_INSTALL_PREFIX=$out -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .";
 
