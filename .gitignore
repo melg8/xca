@@ -7,4 +7,5 @@
 ui_*.h
 moc_*
 xca
+build
 misc/variables.wxi
