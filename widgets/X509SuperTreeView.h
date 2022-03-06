@@ -3,7 +3,7 @@
 
 #include "XcaTreeView.h"
 
-#include "lib/db_x509req.h"
+#include "lib/db_x_509_req.h"
 
 class X509SuperTreeView : public XcaTreeView {
   Q_OBJECT

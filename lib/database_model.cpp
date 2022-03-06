@@ -1,7 +1,7 @@
 #include "database_model.h"
 
-#include "PwDialogCore.h"
-#include "XcaWarningCore.h"
+#include "pw_dialog_core.h"
+#include "xca_warning_core.h"
 
 #include "db_base.h"
 #include "entropy.h"
@@ -12,15 +12,15 @@
 #include "pki_multi.h"
 #include "pki_scard.h"
 #include "pki_temp.h"
-#include "pki_x509req.h"
+#include "pki_x_509_req.h"
 #include "settings.h"
 #include "sql.h"
 
 #include "db_crl.h"
 #include "db_key.h"
 #include "db_temp.h"
-#include "db_x509.h"
-#include "db_x509req.h"
+#include "db_x_509.h"
+#include "db_x_509_req.h"
 
 #include <QDebug>
 #include <QDir>

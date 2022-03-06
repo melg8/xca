@@ -7,7 +7,7 @@
 #include <QVariant>
 #include <typeinfo>
 
-#include "XcaWarningCore.h"
+#include "xca_warning_core.h"
 
 #include "base.h"
 #include "sql.h"

@@ -1,7 +1,7 @@
 #include "validity.h"
 
 #include <QDateTime>
-#include "lib/asn1time.h"
+#include "lib/asn_1_time.h"
 #include "lib/func.h"
 
 Validity::Validity(QWidget* parent) : QDateTimeEdit(parent) {

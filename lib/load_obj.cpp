@@ -3,11 +3,11 @@
 #include "pki_crl.h"
 #include "pki_evp.h"
 #include "pki_multi.h"
-#include "pki_pkcs12.h"
-#include "pki_pkcs7.h"
+#include "pki_pkcs_12.h"
+#include "pki_pkcs_7.h"
 #include "pki_temp.h"
-#include "pki_x509.h"
-#include "pki_x509req.h"
+#include "pki_x_509.h"
+#include "pki_x_509_req.h"
 
 load_base::load_base() {
   filter = QObject::tr("All files ( * )");

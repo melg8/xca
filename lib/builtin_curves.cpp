@@ -3,7 +3,7 @@
 #ifndef OPENSSL_NO_EC
 #include "exception.h"
 #include "func.h"
-#include "opensc-pkcs11.h"
+#include "opensc_pkcs_11.h"
 
 #include <openssl/ec.h>
 #include <openssl/evp.h>

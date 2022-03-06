@@ -20,11 +20,11 @@
 #include "XcaWarning.h"
 #include "lib/db_key.h"
 #include "lib/db_temp.h"
-#include "lib/db_x509.h"
-#include "lib/db_x509req.h"
+#include "lib/db_x_509.h"
+#include "lib/db_x_509_req.h"
 #include "lib/func.h"
 #include "lib/oid.h"
-#include "lib/x509name.h"
+#include "lib/x_509_name.h"
 #include "v3ext.h"
 
 void NewX509::setupExplicitDN(NIDlist my_dn_nid = NIDlist()) {

@@ -5,11 +5,11 @@
 #include <QMenu>
 #include "ui_MainWindow.h"
 
-#include "lib/Passwd.h"
-#include "lib/XcaProgress.h"
+#include "lib/passwd.h"
+#include "lib/xca_progress.h"
 #include "lib/database_model.h"
-#include "lib/dbhistory.h"
-#include "lib/dhgen.h"
+#include "lib/db_history.h"
+#include "lib/dh_gen.h"
 #include "lib/main.h"
 #include "lib/oid.h"
 

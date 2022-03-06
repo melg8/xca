@@ -12,7 +12,7 @@
 #include <QDebug>
 #include <QDir>
 #include "func.h"
-#include "xfile.h"
+#include "x_file.h"
 
 /* Entropy sources for XCA
  *

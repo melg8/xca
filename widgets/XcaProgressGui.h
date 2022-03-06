@@ -1,7 +1,7 @@
 #ifndef XCA_PROGRESS_GUI_H
 #define XCA_PROGRESS_GUI_H
 
-#include "lib/XcaProgress.h"
+#include "lib/xca_progress.h"
 
 #include "lib/base.h"
 #include "lib/main.h"

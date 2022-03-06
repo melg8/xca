@@ -4,7 +4,7 @@
 #include <QDialog>
 #include "ui_PwDialog.h"
 
-#include "lib/PwDialogCore.h"
+#include "lib/pw_dialog_core.h"
 #include "lib/pass_info.h"
 
 class PwDialog final : public QDialog, public Ui::PwDialog {

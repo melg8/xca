@@ -9,8 +9,8 @@
 #include "lib/pki_crl.h"
 #include "lib/pki_evp.h"
 #include "lib/pki_multi.h"
-#include "lib/pki_pkcs12.h"
-#include "lib/pki_pkcs7.h"
+#include "lib/pki_pkcs_12.h"
+#include "lib/pki_pkcs_7.h"
 #include "lib/pki_scard.h"
 #include "lib/pki_temp.h"
 

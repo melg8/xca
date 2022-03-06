@@ -1,7 +1,7 @@
 #include "func.h"
 
-#include "XcaWarningCore.h"
-#include "asn1time.h"
+#include "xca_warning_core.h"
+#include "asn_1_time.h"
 #include "exception.h"
 #include "settings.h"
 

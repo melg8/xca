@@ -3,7 +3,7 @@
 
 #include <QStringList>
 #include "lib/builtin_curves.h"
-#include "lib/pkcs11_lib.h"
+#include "lib/pkcs_11_lib.h"
 #include "lib/pki_key.h"
 #include "ui_NewKey.h"
 

@@ -15,8 +15,8 @@
 #include <QMessageBox>
 
 #include "MainWindow.h"
-#include "lib/x509v3ext.h"
-#include "lib/BioByteArray.h"
+#include "lib/x_509_v_3_ext.h"
+#include "lib/bio_byte_array.h"
 #include "lib/func.h"
 
 x509v3ext NewX509::getBasicConstraints()

@@ -3,7 +3,7 @@
 
 #include <QDateTimeEdit>
 
-#include <lib/asn1time.h>
+#include <lib/asn_1_time.h>
 
 class Validity final : public QDateTimeEdit {
   Q_OBJECT

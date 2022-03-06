@@ -8,7 +8,7 @@
 #include "MainWindow.h"
 #include "XcaWarning.h"
 #include "lib/base.h"
-#include "lib/dbhistory.h"
+#include "lib/db_history.h"
 
 DbMap OpenDb::getDatabases() {
   QStringList list = QSqlDatabase::drivers();

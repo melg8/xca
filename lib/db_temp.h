@@ -1,7 +1,7 @@
 #ifndef DB_TEMP_H
 #define DB_TEMP_H
 
-#include "db_x509super.h"
+#include "db_x_509_super.h"
 
 class pki_temp;
 

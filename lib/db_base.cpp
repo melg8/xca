@@ -1,6 +1,6 @@
 #include "db_base.h"
 
-#include "XcaWarningCore.h"
+#include "xca_warning_core.h"
 #include "exception.h"
 #include "func.h"
 

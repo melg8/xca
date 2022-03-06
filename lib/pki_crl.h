@@ -4,8 +4,8 @@
 #include <openssl/bio.h>
 
 #include "crl_job_settings.h"
-#include "pki_x509.h"
-#include "x509name.h"
+#include "pki_x_509.h"
+#include "x_509_name.h"
 
 #define VIEW_crls_num 6
 #define VIEW_crls_issuer 7

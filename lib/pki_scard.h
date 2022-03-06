@@ -5,7 +5,7 @@
 #include <openssl/pem.h>
 #include <QString>
 
-#include "pkcs11.h"
+#include "pkcs_11.h"
 #include "pki_key.h"
 
 #define VIEW_tokens_card_manufacturer 10

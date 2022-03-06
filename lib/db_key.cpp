@@ -4,13 +4,13 @@
 
 #include "main.h"
 #include "pki_scard.h"
-#include "pki_x509super.h"
+#include "pki_x_509_super.h"
 
 #include "exception.h"
-#include "pkcs11.h"
+#include "pkcs_11.h"
 
-#include "PwDialogCore.h"
-#include "XcaWarningCore.h"
+#include "pw_dialog_core.h"
+#include "xca_warning_core.h"
 
 db_key::db_key() : db_base("keys") {
   sqlHashTable = "public_keys";

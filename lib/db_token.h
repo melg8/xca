@@ -3,7 +3,7 @@
 
 #include "db_base.h"
 
-#include "pkcs11_lib.h"
+#include "pkcs_11_lib.h"
 
 class pki_scard;
 class db_token final : public db_base {

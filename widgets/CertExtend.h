@@ -1,7 +1,7 @@
 #ifndef CERT_EXTEND_H
 #define CERT_EXTEND_H
 
-#include "lib/pki_x509.h"
+#include "lib/pki_x_509.h"
 #include "ui_CertExtend.h"
 
 class pki_key;

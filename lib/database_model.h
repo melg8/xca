@@ -8,7 +8,7 @@
 #include <QStringList>
 
 #include "db_base.h"
-#include "lib/Passwd.h"
+#include "lib/passwd.h"
 #include "sql.h"
 
 typedef QMap<QString, QString> DbMap;

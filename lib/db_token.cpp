@@ -1,6 +1,6 @@
 #include "db_token.h"
 
-#include "XcaWarningCore.h"
+#include "xca_warning_core.h"
 #include "exception.h"
 #include "pki_scard.h"
 #include "sql.h"

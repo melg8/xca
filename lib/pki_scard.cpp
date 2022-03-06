@@ -8,15 +8,15 @@
 
 #include "pki_scard.h"
 #include "pass_info.h"
-#include "pk11_attribute.h"
+#include "pk_11_attribute.h"
 #include "exception.h"
 #include "db_base.h"
-#include "pkcs11.h"
-#include "x509name.h"
+#include "pkcs_11.h"
+#include "x_509_name.h"
 #include "func.h"
-#include "XcaProgress.h"
+#include "xca_progress.h"
 
-#include "XcaWarningCore.h"
+#include "xca_warning_core.h"
 
 #include <QThread>
 

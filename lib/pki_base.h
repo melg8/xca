@@ -3,15 +3,15 @@
 
 #include <QObject>
 
-#include "BioByteArray.h"
-#include "asn1time.h"
+#include "bio_byte_array.h"
+#include "asn_1_time.h"
 #include "base.h"
-#include "headerlist.h"
-#include "pkcs11_lib.h"
+#include "header_list.h"
+#include "pkcs_11_lib.h"
 #include "pki_export.h"
 #include "pki_lookup.h"
 #include "sql.h"
-#include "xfile.h"
+#include "x_file.h"
 
 #include <QByteArray>
 #include <QRegExp>

@@ -10,8 +10,8 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QLineEdit>
-#include "lib/x509name.h"
-#include "lib/db_x509super.h"
+#include "lib/x_509_name.h"
+#include "lib/db_x_509_super.h"
 #include "lib/base.h"
 #include "clicklabel.h"
 #include "OidResolver.h"

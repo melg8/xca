@@ -5,7 +5,7 @@
 #include <openssl/pem.h>
 #include <QProgressBar>
 #include <QString>
-#include "Passwd.h"
+#include "passwd.h"
 #include "pki_key.h"
 
 #define VIEW_private_ownpass 9

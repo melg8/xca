@@ -3,7 +3,7 @@
 
 #include <QMessageBox>
 
-#include "lib/XcaWarningCore.h"
+#include "lib/xca_warning_core.h"
 
 class xcaWarningBox : public QMessageBox {
  public:

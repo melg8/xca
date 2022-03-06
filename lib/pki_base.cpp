@@ -1,9 +1,9 @@
 #include "pki_base.h"
 
-#include "XcaWarningCore.h"
+#include "xca_warning_core.h"
 #include "exception.h"
 #include "func.h"
-#include "xfile.h"
+#include "x_file.h"
 
 #include <openssl/evp.h>
 #include <openssl/md5.h>

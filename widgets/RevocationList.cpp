@@ -3,8 +3,8 @@
 #include "Help.h"
 #include "MainWindow.h"
 #include "NewCrl.h"
-#include "lib/asn1int.h"
-#include "lib/pki_x509.h"
+#include "lib/asn_1_int.h"
+#include "lib/pki_x_509.h"
 
 enum revCol { Cnumber, Cserial, Cdate, Creason, CiDate, Cmax };
 

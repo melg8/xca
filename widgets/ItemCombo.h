@@ -6,8 +6,8 @@
 
 #include "lib/pki_base.h"
 #include "lib/pki_temp.h"
-#include "lib/pki_x509.h"
-#include "lib/pki_x509req.h"
+#include "lib/pki_x_509.h"
+#include "lib/pki_x_509_req.h"
 
 template <class T>
 class itemCombo : public QComboBox {

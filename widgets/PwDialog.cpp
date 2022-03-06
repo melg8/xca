@@ -1,7 +1,7 @@
 #include "PwDialog.h"
 
 #include "XcaWarning.h"
-#include "lib/Passwd.h"
+#include "lib/passwd.h"
 #include "lib/base.h"
 #include "lib/exception.h"
 #include "lib/func.h"

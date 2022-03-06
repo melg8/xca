@@ -19,9 +19,9 @@
 
 #include <openssl/err.h>
 
-#include "lib/Passwd.h"
+#include "lib/passwd.h"
 #include "lib/database_model.h"
-#include "lib/dhgen.h"
+#include "lib/dh_gen.h"
 #include "lib/entropy.h"
 #include "lib/exception.h"
 #include "lib/load_obj.h"

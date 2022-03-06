@@ -5,7 +5,7 @@
 #include "ui_RevocationList.h"
 
 #include <QModelIndex>
-#include "lib/x509rev.h"
+#include "lib/x_509_rev.h"
 #include "ui_Revoke.h"
 
 class pki_x509;

@@ -2,7 +2,7 @@
 
 #include "lib/base.h"
 #include "lib/func.h"
-#include "lib/pkcs11_lib.h"
+#include "lib/pkcs_11_lib.h"
 
 #include <QComboBox>
 #include <QFile>

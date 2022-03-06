@@ -1,8 +1,8 @@
 #ifndef CRL_JOB_SETTINGS_H
 #define CRL_JOB_SETTINGS_H
 
-#include "asn1int.h"
-#include "asn1time.h"
+#include "asn_1_int.h"
+#include "asn_1_time.h"
 #include "digest.h"
 
 struct CrlJobSettings {

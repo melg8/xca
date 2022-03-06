@@ -1,14 +1,14 @@
 #include "pki_evp.h"
 
-#include "BioByteArray.h"
-#include "XcaProgress.h"
+#include "bio_byte_array.h"
+#include "xca_progress.h"
 #include "entropy.h"
 #include "func.h"
 #include "openssl_compat.h"
 #include "pass_info.h"
 
-#include "PwDialogCore.h"
-#include "XcaWarningCore.h"
+#include "pw_dialog_core.h"
+#include "xca_warning_core.h"
 
 #include <openssl/err.h>
 #include <openssl/evp.h>

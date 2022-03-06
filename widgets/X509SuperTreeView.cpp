@@ -3,7 +3,7 @@
 #include "CertDetail.h"
 #include "MainWindow.h"
 #include "lib/database_model.h"
-#include "lib/db_x509super.h"
+#include "lib/db_x_509_super.h"
 
 #include <QAbstractItemModel>
 #include <QAbstractItemView>

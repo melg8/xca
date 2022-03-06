@@ -5,7 +5,7 @@
 
 #include "pki_export.h"
 #include "pki_key.h"
-#include "xfile.h"
+#include "x_file.h"
 
 class QModelIndex;
 class QContextMenuEvent;

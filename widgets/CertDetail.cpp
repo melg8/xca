@@ -10,7 +10,7 @@
 #include "OidResolver.h"
 #include "clicklabel.h"
 #include "distname.h"
-#include "lib/XcaWarningCore.h"
+#include "lib/xca_warning_core.h"
 #include "lib/func.h"
 
 CertDetail::CertDetail(QWidget* w)

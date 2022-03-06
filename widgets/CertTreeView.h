@@ -2,7 +2,7 @@
 #define CERT_TREE_VIEW_H
 
 #include "X509SuperTreeView.h"
-#include "lib/db_x509.h"
+#include "lib/db_x_509.h"
 
 class CertTreeView final : public X509SuperTreeView {
   Q_OBJECT

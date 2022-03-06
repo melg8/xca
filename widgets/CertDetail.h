@@ -4,8 +4,8 @@
 #include <QDialog>
 #include "ui_CertDetail.h"
 
-#include "lib/pki_x509.h"
-#include "lib/pki_x509req.h"
+#include "lib/pki_x_509.h"
+#include "lib/pki_x_509_req.h"
 
 class pki_x509;
 

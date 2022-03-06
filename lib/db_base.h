@@ -8,7 +8,7 @@
 #include "base.h"
 #include "pki_base.h"  // <------------|
 // TODO(melg): fix headers dependency  |-- if swapped - doesn't compile.
-#include "headerlist.h"  // <----------|
+#include "header_list.h"  // <----------|
 
 #include <QHash>
 #include <QStringList>

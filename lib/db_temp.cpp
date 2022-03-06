@@ -2,7 +2,7 @@
 
 #include <QDir>
 #include <QFileInfo>
-#include "XcaWarningCore.h"
+#include "xca_warning_core.h"
 #include "func.h"
 #include "load_obj.h"
 #include "pki_temp.h"

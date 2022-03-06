@@ -3,7 +3,7 @@
 #include <QDebug>
 #include <QString>
 
-#include "XcaWarningCore.h"
+#include "xca_warning_core.h"
 #include "base.h"
 #include "settings.h"
 

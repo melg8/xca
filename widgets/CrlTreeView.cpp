@@ -10,7 +10,7 @@
 #include "lib/database_model.h"
 #include "lib/db_crl.h"
 #include "lib/load_obj.h"
-#include "lib/pki_x509.h"
+#include "lib/pki_x_509.h"
 
 void CrlTreeView::showPki(pki_base* pki) {
   CrlDetail::showCrl(this, dynamic_cast<pki_crl*>(pki));

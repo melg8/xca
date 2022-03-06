@@ -9,7 +9,7 @@
 #include "MainWindow.h"
 #include "clicklabel.h"
 #include "distname.h"
-#include "lib/pkcs11.h"
+#include "lib/pkcs_11.h"
 #include "lib/pki_evp.h"
 
 class keyListItem {

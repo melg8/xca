@@ -1,10 +1,10 @@
 #ifndef PKI_TEMP_H
 #define PKI_TEMP_H
 
-#include "asn1time.h"
+#include "asn_1_time.h"
 #include "pki_base.h"
-#include "pki_x509super.h"
-#include "x509name.h"
+#include "pki_x_509_super.h"
+#include "x_509_name.h"
 
 #define D5 "-----"
 #define PEM_STRING_XCA_TEMPLATE "XCA TEMPLATE"

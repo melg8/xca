@@ -1,7 +1,7 @@
 #ifndef DB_CRL_H
 #define DB_CRL_H
 
-#include "db_x509super.h"
+#include "db_x_509_super.h"
 
 #include "pki_crl.h"
 

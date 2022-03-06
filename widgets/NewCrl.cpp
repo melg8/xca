@@ -2,7 +2,7 @@
 
 #include "lib/database_model.h"
 #include "lib/db_crl.h"
-#include "lib/pki_x509.h"
+#include "lib/pki_x_509.h"
 
 #include "XcaDialog.h"
 #include "new_crl_widget.h"

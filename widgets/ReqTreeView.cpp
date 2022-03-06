@@ -6,7 +6,7 @@
 #include "ExportDialog.h"
 #include "MainWindow.h"
 #include "lib/load_obj.h"
-#include "lib/pki_x509req.h"
+#include "lib/pki_x_509_req.h"
 
 void ReqTreeView::fillContextMenu(QMenu* menu,
                                   QMenu* subExport,
