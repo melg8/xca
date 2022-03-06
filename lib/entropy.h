@@ -1,5 +1,5 @@
-#ifndef __ENTROPY_H
-#define __ENTROPY_H
+#ifndef ENTROPY_H
+#define ENTROPY_H
 
 #include <QByteArray>
 #include <QElapsedTimer>
@@ -25,4 +25,4 @@ class Entropy {
   static QString makeSalt(void);
 };
 
-#endif
+#endif  // ENTROPY_H

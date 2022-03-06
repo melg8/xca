@@ -1,5 +1,5 @@
-#ifndef __BASE_H
-#define __BASE_H
+#ifndef BASE_H
+#define BASE_H
 
 #define QT_NO_CAST_TO_ASCII 1
 #define OPENSSL_NO_STDIO 1
@@ -33,4 +33,4 @@
 #error "What kind of system is this?"
 #endif
 
-#endif
+#endif  // BASE_H

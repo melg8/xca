@@ -1,5 +1,5 @@
-#ifndef __XCAAPPLICATION_H
-#define __XCAAPPLICATION_H
+#ifndef XCA_APPLICATION_H
+#define XCA_APPLICATION_H
 
 #include <QApplication>
 #include <QLocale>
@@ -43,4 +43,5 @@ class XcaApplication final : public QApplication {
   void switchLanguage(QAction* a);
   void quit();
 };
-#endif
+
+#endif  // XCA_APPLICATION_H

@@ -1,5 +1,5 @@
-#ifndef __XCATREEVIEW_H
-#define __XCATREEVIEW_H
+#ifndef XCA_TREE_VIEW_H
+#define XCA_TREE_VIEW_H
 
 #include <QTreeView>
 
@@ -81,4 +81,5 @@ class XcaTreeView : public QTreeView {
   void showItem(const QModelIndex& index);
   void showItem(const QString& name);
 };
-#endif
+
+#endif  // XCA_TREE_VIEW_H

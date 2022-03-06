@@ -1,5 +1,5 @@
-#ifndef __KEYDETAIL_H
-#define __KEYDETAIL_H
+#ifndef KEY_DETAIL_H
+#define KEY_DETAIL_H
 
 #include "ui_KeyDetail.h"
 
@@ -21,4 +21,4 @@ class KeyDetail : public QDialog, public Ui::KeyDetail {
   void itemChanged(pki_base* pki);
 };
 
-#endif
+#endif  // KEY_DETAIL_H

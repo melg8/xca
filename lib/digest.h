@@ -1,5 +1,5 @@
-#ifndef __DIGEST_H
-#define __DIGEST_H
+#ifndef DIGEST_H
+#define DIGEST_H
 
 #include <openssl/evp.h>
 
@@ -28,4 +28,4 @@ class digest {
   static const digest getDefault();
 };
 
-#endif
+#endif  // DIGEST_H

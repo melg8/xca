@@ -1,5 +1,5 @@
-#ifndef __X509NAME_H
-#define __X509NAME_H
+#ifndef X_509_NAME_H
+#define X_509_NAME_H
 
 #include <openssl/x509.h>
 #include <QString>
@@ -43,4 +43,4 @@ class x509name {
   bool search(const QRegExp& pattern) const;
 };
 
-#endif
+#endif  // X_509_NAME_H

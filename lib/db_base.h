@@ -1,5 +1,5 @@
-#ifndef __DB_BASE_H
-#define __DB_BASE_H
+#ifndef DB_BASE_H
+#define DB_BASE_H
 
 #include <QAbstractItemModel>
 
@@ -124,4 +124,4 @@ class db_base : public QAbstractItemModel {
   void pkiChanged(pki_base* pki) const;
 };
 
-#endif
+#endif  // DB_BASE_H

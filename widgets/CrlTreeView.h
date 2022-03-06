@@ -1,5 +1,5 @@
-#ifndef __CRLTREEVIEW_H
-#define __CRLTREEVIEW_H
+#ifndef CRL_TREE_VIEW_H
+#define CRL_TREE_VIEW_H
 
 #include "XcaTreeView.h"
 #include "lib/db_crl.h"
@@ -22,4 +22,4 @@ class CrlTreeView final : public XcaTreeView {
   void load();
 };
 
-#endif
+#endif  // CRL_TREE_VIEW_H

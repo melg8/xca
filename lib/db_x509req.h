@@ -1,5 +1,5 @@
-#ifndef __DB_X509REQ_H
-#define __DB_X509REQ_H
+#ifndef DB_X_509_REQ_H
+#define DB_X_509_REQ_H
 
 #include "db_x509super.h"
 
@@ -29,4 +29,4 @@ class db_x509req final : public db_x509super {
   void newItem() final;
 };
 
-#endif
+#endif  // DB_X_509_REQ_H

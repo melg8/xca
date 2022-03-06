@@ -1,5 +1,5 @@
-#ifndef __BUILTIN_EC_CURVES_H
-#define __BUILTIN_EC_CURVES_H
+#ifndef BUILTIN_CURVES_H
+#define BUILTIN_CURVES_H
 
 #include "base.h"
 
@@ -37,4 +37,4 @@ class builtin_curves : public QList<builtin_curve> {
   }
 };
 
-#endif
+#endif  // BUILTIN_CURVES_H

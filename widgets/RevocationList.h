@@ -1,5 +1,5 @@
-#ifndef __REVOCATIONLIST_H
-#define __REVOCATIONLIST_H
+#ifndef REVOCATION_LIST_H
+#define REVOCATION_LIST_H
 
 #include <QDialog>
 #include "ui_RevocationList.h"
@@ -41,4 +41,5 @@ class Revocation : public QDialog, public Ui::Revoke {
   x509rev getRevocation();
   void setRevocation(x509rev r);
 };
-#endif
+
+#endif  // REVOCATION_LIST_H

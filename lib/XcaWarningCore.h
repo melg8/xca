@@ -1,5 +1,5 @@
-#ifndef __XCAWARNINGCORE_H
-#define __XCAWARNINGCORE_H
+#ifndef XCA_WARNINGCORE_H
+#define XCA_WARNINGCORE_H
 
 #include "base.h"
 #include "exception.h"
@@ -73,4 +73,4 @@ class xcaWarning {
   }
 };
 
-#endif
+#endif  // XCA_WARNINGCORE_H

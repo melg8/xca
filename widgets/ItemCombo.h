@@ -1,5 +1,5 @@
-#ifndef __ITEMCOMBO_H
-#define __ITEMCOMBO_H
+#ifndef ITEM_COMBO_H
+#define ITEM_COMBO_H
 
 #include <QComboBox>
 #include <QList>
@@ -33,4 +33,5 @@ typedef class itemCombo<pki_temp> itemComboTemp;
 typedef class itemCombo<pki_x509req> itemComboReq;
 typedef class itemCombo<pki_x509> itemComboCert;
 typedef class itemCombo<pki_key> itemComboKey;
-#endif
+
+#endif  // ITEM_COMBO_H

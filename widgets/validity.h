@@ -1,5 +1,5 @@
-#ifndef __VALIDITY_H
-#define __VALIDITY_H
+#ifndef VALIDITY_H
+#define VALIDITY_H
 
 #include <QDateTimeEdit>
 
@@ -31,4 +31,4 @@ class Validity final : public QDateTimeEdit {
   void localTime(int);
 };
 
-#endif
+#endif  // VALIDITY_H

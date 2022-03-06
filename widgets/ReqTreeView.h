@@ -1,5 +1,5 @@
-#ifndef __REQTREEVIEW_H
-#define __REQTREEVIEW_H
+#ifndef REQ_TREE_VIEW_H
+#define REQ_TREE_VIEW_H
 
 #include "X509SuperTreeView.h"
 
@@ -25,4 +25,5 @@ class ReqTreeView final : public X509SuperTreeView {
   void unmarkSigned();
   void load();
 };
-#endif
+
+#endif  // REQ_TREE_VIEW_H

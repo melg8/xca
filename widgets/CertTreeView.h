@@ -1,5 +1,5 @@
-#ifndef __CERTTREEVIEW_H
-#define __CERTTREEVIEW_H
+#ifndef CERT_TREE_VIEW_H
+#define CERT_TREE_VIEW_H
 
 #include "X509SuperTreeView.h"
 #include "lib/db_x509.h"
@@ -34,4 +34,5 @@ class CertTreeView final : public X509SuperTreeView {
   void unRevoke();
   void load();
 };
-#endif
+
+#endif  // CERT_TREE_VIEW_H

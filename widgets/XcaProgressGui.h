@@ -1,5 +1,5 @@
-#ifndef __XCAPROGRESSGUI_H
-#define __XCAPROGRESSGUI_H
+#ifndef XCA_PROGRESS_GUI_H
+#define XCA_PROGRESS_GUI_H
 
 #include "lib/XcaProgress.h"
 
@@ -42,4 +42,4 @@ class XcaProgressGui final : public XcaProgress_i {
   }
 };
 
-#endif
+#endif  // XCA_PROGRESS_GUI_H

@@ -1,5 +1,5 @@
-#ifndef PKI_PKCS7_H
-#define PKI_PKCS7_H
+#ifndef PKI_PKCS_7_H
+#define PKI_PKCS_7_H
 
 #include <QString>
 #include "pki_multi.h"
@@ -32,4 +32,4 @@ class pki_pkcs7 final : public pki_multi {
   void fload(const QString& name) final;
 };
 
-#endif  // PKI_PKCS7_H
+#endif  // PKI_PKCS_7_H

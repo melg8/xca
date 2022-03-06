@@ -1,5 +1,5 @@
-#ifndef __DISTNAME_H
-#define __DISTNAME_H
+#ifndef DISTNAME_H
+#define DISTNAME_H
 
 #include <QGridLayout>
 #include <QWidget>
@@ -23,4 +23,4 @@ class DistName : public QWidget {
   QLineEdit* namehash;
 };
 
-#endif
+#endif  // DISTNAME_H

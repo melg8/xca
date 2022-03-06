@@ -1,5 +1,5 @@
-#ifndef __PKI_EXCEPTION_H
-#define __PKI_EXCEPTION_H
+#ifndef EXCEPTION_H
+#define EXCEPTION_H
 
 #include <QObject>
 #include <QSqlError>
@@ -25,4 +25,4 @@ class errorEx {
   bool isEmpty() const { return msg.isEmpty(); }
 };
 
-#endif
+#endif  // EXCEPTION_H

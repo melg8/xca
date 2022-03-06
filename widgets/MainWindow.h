@@ -1,5 +1,5 @@
-#ifndef __MAINWINDOW_H
-#define __MAINWINDOW_H
+#ifndef MAIN_WINDOW_H
+#define MAIN_WINDOW_H
 
 #include <QMainWindow>
 #include <QMenu>
@@ -131,4 +131,4 @@ class MainWindow final : public QMainWindow, public Ui::MainWindow {
   void open_database(QAction* a);
 };
 
-#endif
+#endif  // MAIN_WINDOW_H

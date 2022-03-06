@@ -1,5 +1,5 @@
-#ifndef __TEMPTREEVIEW_H
-#define __TEMPTREEVIEW_H
+#ifndef TEMP_TREE_VIEW_H
+#define TEMP_TREE_VIEW_H
 
 #include "XcaTreeView.h"
 
@@ -33,4 +33,5 @@ class TempTreeView final : public XcaTreeView {
   void newReq(pki_temp*);
   void newCert(pki_temp*);
 };
-#endif
+
+#endif  // TEMP_TREE_VIEW_H

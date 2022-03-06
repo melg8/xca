@@ -1,5 +1,5 @@
-#ifndef __PWDIALOG_H
-#define __PWDIALOG_H
+#ifndef PW_DIALOG_H
+#define PW_DIALOG_H
 
 #include <QDialog>
 #include "ui_PwDialog.h"
@@ -37,4 +37,5 @@ class PwDialogUI final : public PwDialogUI_i {
                            bool write = false,
                            bool abort = false) final;
 };
-#endif
+
+#endif  // PW_DIALOG_H

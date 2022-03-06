@@ -1,5 +1,5 @@
-#ifndef __PASS_INFO_H
-#define __PASS_INFO_H
+#ifndef PASS_INFO_H
+#define PASS_INFO_H
 
 #include <QObject>
 
@@ -39,4 +39,4 @@ class pass_info : public QObject {
   void setPin();
 };
 
-#endif
+#endif  // PASS_INFO_H

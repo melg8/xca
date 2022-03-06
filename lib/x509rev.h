@@ -1,5 +1,5 @@
-#ifndef __X509REV_H
-#define __X509REV_H
+#ifndef X_509_REV_H
+#define X_509_REV_H
 
 #include <openssl/x509.h>
 #include <QSqlError>
@@ -84,4 +84,4 @@ class x509revList : public QList<x509rev> {
   bool sqlUpdate(QVariant caId);
 };
 
-#endif
+#endif  // X_509_REV_H

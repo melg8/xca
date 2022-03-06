@@ -1,5 +1,5 @@
-#ifndef __X509V3EXT_H
-#define __X509V3EXT_H
+#ifndef X_509_V_3_EXT_H
+#define X_509_V_3_EXT_H
 
 #include <openssl/x509.h>
 #include <openssl/x509v3.h>
@@ -69,4 +69,5 @@ class extList : public QList<x509v3ext> {
   void genGenericConf(QString* adv);
   bool search(const QRegExp& pattern);
 };
-#endif
+
+#endif  // X_509_V_3_EXT_H

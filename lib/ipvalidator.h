@@ -1,5 +1,5 @@
-#ifndef __IPVALIDATOR_H
-#define __IPVALIDATOR_H
+#ifndef IP_VALIDATOR_H
+#define IP_VALIDATOR_H
 
 #include <QRegExp>
 #include <QString>
@@ -40,4 +40,4 @@ class ipValidator final : public QValidator {
   void fixup(QString& input) const final { input = input.toLower(); }
 };
 
-#endif
+#endif  // IP_VALIDATOR_H

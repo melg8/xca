@@ -1,5 +1,5 @@
-#ifndef __PWDIALOGCORE_H
-#define __PWDIALOGCORE_H
+#ifndef PW_DIALOG_CORE_H
+#define PW_DIALOG_CORE_H
 
 #include <QByteArray>
 #include "Passwd.h"
@@ -27,4 +27,4 @@ class PwDialogCore {
   static void setGui(PwDialogUI_i* p);
 };
 
-#endif
+#endif  // PW_DIALOG_CORE_H

@@ -1,5 +1,5 @@
-#ifndef __HEADERLIST_H
-#define __HEADERLIST_H
+#ifndef HEADER_LIST_H
+#define HEADER_LIST_H
 
 #include "func.h"
 #include "pki_base.h"
@@ -247,4 +247,4 @@ class dbheaderList : public QList<dbheader*> {
   }
 };
 
-#endif
+#endif  // HEADER_LIST_H

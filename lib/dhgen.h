@@ -1,5 +1,5 @@
-#ifndef __DHGEN_H
-#define __DHGEN_H
+#ifndef DH_GEN_H
+#define DH_GEN_H
 
 #include <QThread>
 
@@ -20,4 +20,4 @@ class DHgen final : public QThread {
  protected:
   void run() final;
 };
-#endif
+#endif  // DH_GEN_H

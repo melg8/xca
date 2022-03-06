@@ -1,5 +1,5 @@
-#ifndef PKI_X509REQ_H
-#define PKI_X509REQ_H
+#ifndef PKI_X_509_REQ_H
+#define PKI_X_509_REQ_H
 
 #include <openssl/pem.h>
 #include <openssl/x509.h>
@@ -67,4 +67,4 @@ class pki_x509req final : public pki_x509super {
 
 Q_DECLARE_METATYPE(pki_x509req*)
 
-#endif  // PKI_X509REQ_H
+#endif  // PKI_X_509_REQ_H

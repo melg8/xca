@@ -1,5 +1,5 @@
-#ifndef PKI_PKCS12_H
-#define PKI_PKCS12_H
+#ifndef PKI_PKCS_12_H
+#define PKI_PKCS_12_H
 
 #include "pki_multi.h"
 
@@ -25,4 +25,4 @@ class pki_pkcs12 : public pki_multi {
   void writePKCS12(XFile& file) const;
 };
 
-#endif  // PKI_PKCS12_H
+#endif  // PKI_PKCS_12_H

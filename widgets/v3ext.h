@@ -1,5 +1,5 @@
-#ifndef __V3EXT_H
-#define __V3EXT_H
+#ifndef V3_EXT_H
+#define V3_EXT_H
 
 #include <QDialog>
 #include "ui_v3ext.h"
@@ -37,4 +37,4 @@ class v3ext : public QDialog, public Ui::v3ext {
   void setupLineEdit(const QString& s, QLineEdit* l);
 };
 
-#endif
+#endif  // V3_EXT_H

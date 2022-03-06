@@ -1,5 +1,5 @@
-#ifndef __CLICKLABEL_H
-#define __CLICKLABEL_H
+#ifndef CLICK_LABEL_H
+#define CLICK_LABEL_H
 
 #include <QLabel>
 
@@ -41,4 +41,4 @@ class CopyLabel : public DoubleClickLabel {
   CopyLabel(QWidget* parent);
 };
 
-#endif
+#endif  // CLICK_LABEL_H

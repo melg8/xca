@@ -1,5 +1,5 @@
-#ifndef __IMPORTMULTI_H
-#define __IMPORTMULTI_H
+#ifndef IMPORT_MULTI_H
+#define IMPORT_MULTI_H
 
 #include <QDialog>
 #include "ui_ImportMulti.h"
@@ -41,4 +41,4 @@ class ImportMulti final : public QDialog, private Ui::ImportMulti {
   void on_renameToken_clicked();
 };
 
-#endif
+#endif  // IMPORT_MULTI_H

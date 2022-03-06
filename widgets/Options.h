@@ -1,5 +1,5 @@
-#ifndef __OPTIONS_H
-#define __OPTIONS_H
+#ifndef OPTIONS_H
+#define OPTIONS_H
 
 #include <QDialog>
 #include "lib/base.h"
@@ -33,4 +33,4 @@ class Options final : public QDialog, public Ui::Options {
   void addLib(QString);
 };
 
-#endif
+#endif  // OPTIONS_H

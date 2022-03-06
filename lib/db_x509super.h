@@ -1,5 +1,5 @@
-#ifndef __DB_X509SUPER_H
-#define __DB_X509SUPER_H
+#ifndef DB_X_509_SUPER_H
+#define DB_X_509_SUPER_H
 
 #include "pki_x509super.h"
 
@@ -32,4 +32,4 @@ class db_x509super : public db_x509name {
   void toTemplate(QModelIndex index);
 };
 
-#endif
+#endif  // DB_X_509_SUPER_H

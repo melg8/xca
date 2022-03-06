@@ -1,5 +1,5 @@
-#ifndef __X_FILE_H
-#define __X_FILE_H
+#ifndef X_FILE_H
+#define X_FILE_H
 
 #define _CRT_SECURE_NO_WARNINGS
 
@@ -45,4 +45,4 @@ class XFile final : public QFile {
   bool open_read() { return open(ReadOnly); }
 };
 
-#endif
+#endif  // X_FILE_H

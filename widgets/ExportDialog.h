@@ -1,5 +1,5 @@
-#ifndef __EXPORTDIALOG_H
-#define __EXPORTDIALOG_H
+#ifndef EXPORT_DIALOG_H
+#define EXPORT_DIALOG_H
 
 #include <QDialog>
 #include "ui_ExportDialog.h"
@@ -36,4 +36,4 @@ class ExportDialog final : public QDialog, public Ui::ExportDialog {
   void accept() final;
 };
 
-#endif
+#endif  // EXPORT_DIALOG_H

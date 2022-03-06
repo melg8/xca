@@ -1,5 +1,5 @@
-#ifndef __KVVIEW_H
-#define __KVVIEW_H
+#ifndef KV_VIEW_H
+#define KV_VIEW_H
 
 #include <QItemDelegate>
 
@@ -141,4 +141,4 @@ class kvView final : public QTableView {
   void deleteCurrentRow();
 };
 
-#endif
+#endif  // KV_VIEW_H

@@ -1,5 +1,5 @@
-#ifndef __XCA_PKCS11_LIB_H
-#define __XCA_PKCS11_LIB_H
+#ifndef XCA_PKCS_11_LIB_H
+#define XCA_PKCS_11_LIB_H
 
 #include <QLibrary>
 
@@ -98,4 +98,5 @@ class pkcs11_lib_list final : public QAbstractListModel {
 [[noreturn]] void pk11error(const QString& fmt, int r);
 [[noreturn]] void pk11error(const slotid& slot, const QString& func, int rv);
 const char* pk11errorString(unsigned long rv);
-#endif
+
+#endif  // XCA_PKCS_11_LIB_H

@@ -1,5 +1,5 @@
-#ifndef __XCADIALOG_H__
-#define __XCADIALOG_H__
+#ifndef XCA_DIALOG_H
+#define XCA_DIALOG_H
 
 #include <QDialog>
 #include "ui_XcaDialog.h"
@@ -20,4 +20,4 @@ class XcaDialog : public QDialog, public Ui::XcaDialog {
   void aboutDialog(const QPixmap& left);
 };
 
-#endif
+#endif  // XCA_DIALOG_H

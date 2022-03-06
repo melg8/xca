@@ -1,5 +1,5 @@
-#ifndef __ASN1TIME_H
-#define __ASN1TIME_H
+#ifndef ASN_1_TIME_H
+#define ASN_1_TIME_H
 
 #include <QDateTime>
 
@@ -48,4 +48,4 @@ class a1time : public QDateTime {
   qint64 age() const;
 };
 
-#endif
+#endif  // ASN_1_TIME_H

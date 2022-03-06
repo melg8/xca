@@ -1,5 +1,5 @@
-#ifndef __HASH_BOX_H
-#define __HASH_BOX_H
+#ifndef HASH_BOX_H
+#define HASH_BOX_H
 
 #include <QComboBox>
 
@@ -21,4 +21,4 @@ class hashBox : public QComboBox {
   void setDefaultHash();
 };
 
-#endif
+#endif  // HASH_BOX_H

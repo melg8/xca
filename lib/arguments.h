@@ -1,5 +1,5 @@
-#ifndef __ARGUMENTS_H
-#define __ARGUMENTS_H
+#ifndef ARGUMENTS_H
+#define ARGUMENTS_H
 
 #include <getopt.h>
 
@@ -61,4 +61,4 @@ class arguments {
   bool needDb() const;
 };
 
-#endif
+#endif  // ARGUMENTS_H

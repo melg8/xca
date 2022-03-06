@@ -1,5 +1,5 @@
-#ifndef __DB_TOKEN_H
-#define __DB_TOKEN_H
+#ifndef DB_TOKEN_H
+#define DB_TOKEN_H
 
 #include "db_base.h"
 
@@ -19,4 +19,4 @@ class db_token final : public db_base {
   void rename_token_in_database(pki_scard* token);
 };
 
-#endif
+#endif  // DB_TOKEN_H

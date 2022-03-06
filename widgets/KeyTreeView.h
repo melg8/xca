@@ -1,5 +1,5 @@
-#ifndef __KEYTREEVIEW_H
-#define __KEYTREEVIEW_H
+#ifndef KEY_TREE_VIEW_H
+#define KEY_TREE_VIEW_H
 
 #include "XcaTreeView.h"
 
@@ -33,4 +33,4 @@ class KeyTreeView final : public XcaTreeView {
   void clipboardFormat(QAction*);
 };
 
-#endif
+#endif  // KEY_TREE_VIEW_H

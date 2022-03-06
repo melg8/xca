@@ -1,5 +1,5 @@
-#ifndef __PKI_BASE_H
-#define __PKI_BASE_H
+#ifndef PKI_BASE_H
+#define PKI_BASE_H
 
 #include <QObject>
 
@@ -163,4 +163,5 @@ class pki_base : public QObject {
 };
 
 Q_DECLARE_METATYPE(pki_base*)
-#endif
+
+#endif  // PKI_BASE_H

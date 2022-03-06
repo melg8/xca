@@ -1,5 +1,5 @@
-#ifndef __MAIN_H
-#define __MAIN_H
+#ifndef MAIN_H
+#define MAIN_H
 
 #include <QString>
 
@@ -14,4 +14,4 @@ extern char segv_data[1024];
 pki_multi* probeAnything(const QString&, int* ret = nullptr);
 int exportIndex(const QString& fname, bool hierarchy);
 
-#endif
+#endif  // MAIN_H

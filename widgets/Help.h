@@ -1,5 +1,5 @@
-#ifndef __HELP_H
-#define __HELP_H
+#ifndef HELP_H
+#define HELP_H
 
 #include "ui_Help.h"
 
@@ -26,4 +26,4 @@ class Help final : public QWidget, public Ui::Help {
   void content();
 };
 
-#endif
+#endif  // HELP_H

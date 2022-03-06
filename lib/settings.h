@@ -1,5 +1,5 @@
-#ifndef __SETTINGS_H
-#define __SETTINGS_H
+#ifndef SETTINGS_H
+#define SETTINGS_H
 
 #include <QMap>
 #include <QString>
@@ -72,4 +72,4 @@ class settings {
 
 extern settings Settings;
 
-#endif
+#endif  // SETTINGS_H

@@ -1,5 +1,5 @@
-#ifndef __NEWKEY_H
-#define __NEWKEY_H
+#ifndef NEW_KEY_H
+#define NEW_KEY_H
 
 #include <QStringList>
 #include "lib/builtin_curves.h"
@@ -24,4 +24,4 @@ class NewKey final : public QDialog, public Ui::NewKey {
   void on_keyType_currentIndexChanged(int);
 };
 
-#endif
+#endif  // NEW_KEY_H

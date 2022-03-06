@@ -1,5 +1,5 @@
-#ifndef __PASSWD_H
-#define __PASSWD_H
+#ifndef PASSWD_H
+#define PASSWD_H
 
 #include <QByteArray>
 
@@ -19,4 +19,4 @@ class Passwd : public QByteArray {
   }
 };
 
-#endif
+#endif  // PASSWD_H

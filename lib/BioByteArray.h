@@ -1,5 +1,5 @@
-#ifndef __BIOBYTEARRAY_H
-#define __BIOBYTEARRAY_H
+#ifndef BIO_BYTE_ARRAY_H
+#define BIO_BYTE_ARRAY_H
 
 #include <QByteArray>
 #include <QString>
@@ -37,4 +37,4 @@ class BioByteArray {
   BioByteArray& operator+=(const QByteArray& qba);
 };
 
-#endif
+#endif  // BIO_BYTE_ARRAY_H

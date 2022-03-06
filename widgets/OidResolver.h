@@ -1,5 +1,5 @@
-#ifndef __OID_RESOLVER_H
-#define __OID_RESOLVER_H
+#ifndef OID_RESOLVER_H
+#define OID_RESOLVER_H
 
 #include <QWidget>
 #include "ui_OidResolver.h"
@@ -14,4 +14,4 @@ class OidResolver : public QWidget, public Ui::OidResolver {
   void searchOid(QString s);
 };
 
-#endif
+#endif  // OID_RESOLVER_H

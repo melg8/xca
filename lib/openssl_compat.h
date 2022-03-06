@@ -1,5 +1,5 @@
-#ifndef __OPENSS_COMPAT_XCA_H
-#define __OPENSS_COMPAT_XCA_H
+#ifndef OPENSS_COMPAT_XCA_H
+#define OPENSS_COMPAT_XCA_H
 
 /* This header equalizes a lot of OpenSSL 1.1.0 vs. 1.1.1
    API clashes by defining some macros if OpenSSL < 1.1.1
@@ -30,4 +30,4 @@ static inline int EVP_DigestVerify(EVP_MD_CTX* ctx,
 }
 #endif
 
-#endif
+#endif  // OPENSS_COMPAT_XCA_H

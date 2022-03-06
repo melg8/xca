@@ -1,5 +1,5 @@
-#ifndef __CERTDETAIL_H
-#define __CERTDETAIL_H
+#ifndef CERT_DETAIL_H
+#define CERT_DETAIL_H
 
 #include <QDialog>
 #include "ui_CertDetail.h"
@@ -33,4 +33,4 @@ class CertDetail final : public QDialog, public Ui::CertDetail {
   void showIssuer();
 };
 
-#endif
+#endif  // CERT_DETAIL_H

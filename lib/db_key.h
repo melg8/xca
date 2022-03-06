@@ -1,5 +1,5 @@
-#ifndef __DB_KEY_H
-#define __DB_KEY_H
+#ifndef DB_KEY_H
+#define DB_KEY_H
 
 #include "db_base.h"
 
@@ -38,4 +38,4 @@ class db_key final : public db_base {
   void keyDone(pki_key* nkey);
 };
 
-#endif
+#endif  // DB_KEY_H

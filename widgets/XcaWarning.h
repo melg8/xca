@@ -1,5 +1,5 @@
-#ifndef __XCAWARNING_H
-#define __XCAWARNING_H
+#ifndef XCA_WARNING_H
+#define XCA_WARNING_H
 
 #include <QMessageBox>
 
@@ -30,4 +30,5 @@ class xcaWarningGui final : public QObject, public xcaWarning_i {
   void sqlerror(QSqlError err) final;
   void error(const QString& msg) final;
 };
-#endif
+
+#endif  // XCA_WARNING_H

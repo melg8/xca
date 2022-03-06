@@ -1,5 +1,5 @@
-#ifndef __XCAHEADERVIEW_H
-#define __XCAHEADERVIEW_H
+#ifndef XCA_HEADER_VIEW_H
+#define XCA_HEADER_VIEW_H
 
 #include <QHeaderView>
 
@@ -14,4 +14,4 @@ class XcaHeaderView final : public QHeaderView {
   void resetMoves();
 };
 
-#endif
+#endif  // XCA_HEADER_VIEW_H

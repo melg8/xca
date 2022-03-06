@@ -1,5 +1,5 @@
-#ifndef __OID_H
-#define __OID_H
+#ifndef OID_H
+#define OID_H
 
 class QString;
 #include <QList>
@@ -18,4 +18,4 @@ extern QMap<QString, int> oid_lower_map;
 
 void initOIDs();
 
-#endif
+#endif  // OID_H

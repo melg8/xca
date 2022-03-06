@@ -1,5 +1,5 @@
-#ifndef __DATABASE_MODEL_H
-#define __DATABASE_MODEL_H
+#ifndef DATABASE_MODEL_H
+#define DATABASE_MODEL_H
 
 #include <QDebug>
 #include <QList>
@@ -111,4 +111,4 @@ class xca_db {
 
 extern xca_db Database;
 
-#endif
+#endif  // DATABASE_MODEL_H

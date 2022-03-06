@@ -1,5 +1,5 @@
-#ifndef __FUNC_H
-#define __FUNC_H
+#ifndef FUNC_H
+#define FUNC_H
 
 #include <QByteArray>
 #include <QMap>
@@ -82,4 +82,5 @@ QString appendXcaComment(QString current, QString msg);
 const char* version_str(bool html);
 
 void migrateOldPaths();
-#endif
+
+#endif  // FUNC_H

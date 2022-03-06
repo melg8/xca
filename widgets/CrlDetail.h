@@ -1,5 +1,5 @@
-#ifndef __CRLDETAIL_H
-#define __CRLDETAIL_H
+#ifndef CRL_DETAIL_H
+#define CRL_DETAIL_H
 
 #include "ui_CrlDetail.h"
 
@@ -21,4 +21,4 @@ class CrlDetail : public QDialog, public Ui::CrlDetail {
   void showIssuer();
 };
 
-#endif
+#endif  // CRL_DETAIL_H

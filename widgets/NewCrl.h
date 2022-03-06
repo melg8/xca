@@ -1,5 +1,5 @@
-#ifndef __NEWCRL_H
-#define __NEWCRL_H
+#ifndef NEW_CRL_H
+#define NEW_CRL_H
 
 class pki_x509;
 class QWidget;
@@ -9,4 +9,4 @@ class NewCrl {
   static void newCrl(QWidget* parent, pki_x509* issuer);
 };
 
-#endif
+#endif  // NEW_CRL_H

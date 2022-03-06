@@ -1,5 +1,5 @@
-#ifndef __OPENDB_H
-#define __OPENDB_H
+#ifndef OPEN_DB_H
+#define OPEN_DB_H
 
 #include "lib/database_model.h"
 
@@ -30,4 +30,4 @@ class OpenDb final : public QDialog, public Ui::OpenDb {
   void driver_selected();
 };
 
-#endif
+#endif  // OPEN_DB_H

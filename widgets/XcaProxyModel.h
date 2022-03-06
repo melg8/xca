@@ -1,5 +1,5 @@
-#ifndef __XCAPROXYMODEL_H
-#define __XCAPROXYMODEL_H
+#ifndef XCA_PROXY_MODEL_H
+#define XCA_PROXY_MODEL_H
 
 #include <QSortFilterProxyModel>
 
@@ -16,4 +16,4 @@ class XcaProxyModel final : public QSortFilterProxyModel {
   QVariant data(const QModelIndex& index, int role) const final;
 };
 
-#endif
+#endif  // XCA_PROXY_MODEL_H

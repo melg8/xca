@@ -1,5 +1,5 @@
-#ifndef __XCAPROGRESS_H
-#define __XCAPROGRESS_H
+#ifndef XCA_PROGRESS_H
+#define XCA_PROGRESS_H
 
 #include <QString>
 
@@ -35,4 +35,4 @@ class XcaProgress {
   static void setGui(XcaProgress_i* p);
 };
 
-#endif
+#endif  // XCA_PROGRESS_H

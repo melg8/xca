@@ -1,5 +1,5 @@
-#ifndef __PKI_PKCS11_ATTRIBUTE_H
-#define __PKI_PKCS11_ATTRIBUTE_H
+#ifndef PKI_PKCS11_ATTRIBUTE_H
+#define PKI_PKCS11_ATTRIBUTE_H
 
 #include <openssl/bn.h>
 #include <stdlib.h>
@@ -190,4 +190,5 @@ class pk11_attlist {
   void copy(const pk11_attlist& a);
   void reset();
 };
-#endif
+
+#endif  // PKI_PKCS11_ATTRIBUTE_H

@@ -1,5 +1,5 @@
-#ifndef __DB_X509_H
-#define __DB_X509_H
+#ifndef DB_X509_H
+#define DB_X509_H
 
 #include "db_x509super.h"
 
@@ -66,4 +66,4 @@ class db_x509 : public db_x509super {
   void newCert(pki_x509req*);
 };
 
-#endif
+#endif  // DB_X509_H

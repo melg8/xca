@@ -1,5 +1,5 @@
-#ifndef __FOCUSCOMBO_H
-#define __FOCUSCOMBO_H
+#ifndef FOCUS_COMBO_H
+#define FOCUS_COMBO_H
 
 #include <QComboBox>
 
@@ -22,4 +22,4 @@ class focusCombo final : public QComboBox {
   }
 };
 
-#endif
+#endif  // FOCUS_COMBO_H

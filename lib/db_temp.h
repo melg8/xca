@@ -1,5 +1,5 @@
-#ifndef __DB_TEMP_H
-#define __DB_TEMP_H
+#ifndef DB_TEMP_H
+#define DB_TEMP_H
 
 #include "db_x509super.h"
 
@@ -22,4 +22,4 @@ class db_temp final : public db_x509name {
                   XFile& file) const final;
 };
 
-#endif
+#endif  // DB_TEMP_H

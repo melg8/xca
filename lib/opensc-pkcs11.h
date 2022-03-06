@@ -50,8 +50,8 @@
    then none of the API changes above take place, and the API is the
    one defined by the PKCS #11 standard.  */
 
-#ifndef PKCS11_H
-#define PKCS11_H 1
+#ifndef OPENSC_PKCS_11_H
+#define OPENSC_PKCS_11_H
 
 #if defined(__cplusplus)
 extern "C" {
@@ -1338,4 +1338,4 @@ typedef struct ck_c_initialize_args* CK_C_INITIALIZE_ARGS_PTR;
 }
 #endif
 
-#endif /* PKCS11_H */
+#endif  // OPENSC_PKCS_11_H

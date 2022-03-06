@@ -1,5 +1,5 @@
-#ifndef PKI_X509SUPER_H
-#define PKI_X509SUPER_H
+#ifndef PKI_X_509_SUPER_H
+#define PKI_X_509_SUPER_H
 
 #include "pki_base.h"
 
@@ -58,4 +58,4 @@ class pki_x509super : public pki_x509name {
   void restoreSql(const QSqlRecord& rec) override;
 };
 
-#endif  // PKI_X509SUPER_H
+#endif  // PKI_X_509_SUPER_H

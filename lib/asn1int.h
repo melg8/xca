@@ -1,5 +1,5 @@
-#ifndef __ASN1INTEGER_H
-#define __ASN1INTEGER_H
+#ifndef ASN_1_INT_H
+#define ASN_1_INT_H
 
 #include <QString>
 
@@ -43,4 +43,4 @@ class a1int {
   operator QString() const;
 };
 
-#endif
+#endif  // ASN_1_INT_H

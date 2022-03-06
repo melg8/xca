@@ -1,5 +1,5 @@
-#ifndef __SQL_H
-#define __SQL_H
+#ifndef SQL_H
+#define SQL_H
 
 #include <QList>
 #include <QtSql>
@@ -67,4 +67,4 @@ class XSqlQuery : public QSqlQuery {
   void location(const char* f, int l);
 };
 
-#endif
+#endif  // SQL_H

@@ -1,5 +1,5 @@
-#ifndef __NEWX509_H
-#define __NEWX509_H
+#ifndef NEW_X_509_H
+#define NEW_X_509_H
 
 #include <openssl/x509v3.h>
 #include <QListWidget>
@@ -146,4 +146,4 @@ class NewX509 final : public QDialog, public Ui::NewX509 {
   void checkAuthInfAcc(const QString& text);
 };
 
-#endif
+#endif  // NEW_X_509_H

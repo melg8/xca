@@ -1,5 +1,5 @@
-#ifndef __DB_CRL_H
-#define __DB_CRL_H
+#ifndef DB_CRL_H
+#define DB_CRL_H
 
 #include "db_x509super.h"
 
@@ -24,4 +24,4 @@ class db_crl final : public db_x509name {
                    XFile& file) const final;
 };
 
-#endif
+#endif  // DB_CRL_H

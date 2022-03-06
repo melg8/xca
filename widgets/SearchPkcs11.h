@@ -1,5 +1,5 @@
-#ifndef __SEARCHPKCS11DIALOG_H
-#define __SEARCHPKCS11DIALOG_H
+#ifndef SEARCH_PKCS_11_DIALOG_H
+#define SEARCH_PKCS_11_DIALOG_H
 
 #include <QThread>
 
@@ -54,4 +54,4 @@ class SearchPkcs11 final : public QDialog, public Ui::SearchPkcs11 {
   void addLib(QString);
 };
 
-#endif
+#endif  // SEARCH_PKCS_11_DIALOG_H

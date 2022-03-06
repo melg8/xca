@@ -1,5 +1,5 @@
-#ifndef __XCA_PKCS11_H
-#define __XCA_PKCS11_H
+#ifndef XCA_PKCS_11_H
+#define XCA_PKCS_11_H
 
 #include <QList>
 #include <QString>
@@ -137,4 +137,4 @@ class pkcs11 {
               unsigned long m);
 };
 
-#endif
+#endif  // XCA_PKCS_11_H

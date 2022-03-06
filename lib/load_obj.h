@@ -1,5 +1,5 @@
-#ifndef __LOAD_OBJ_H
-#define __LOAD_OBJ_H
+#ifndef LOAD_OBJ_H
+#define LOAD_OBJ_H
 
 #include <QStringList>
 
@@ -73,4 +73,4 @@ class load_pem final : public load_base {
   pki_base* newItem() final;
 };
 
-#endif
+#endif  // LOAD_OBJ_H

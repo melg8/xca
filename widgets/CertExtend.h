@@ -1,5 +1,5 @@
-#ifndef __CERTEXTEND_H
-#define __CERTEXTEND_H
+#ifndef CERT_EXTEND_H
+#define CERT_EXTEND_H
 
 #include "lib/pki_x509.h"
 #include "ui_CertExtend.h"
@@ -19,4 +19,4 @@ class CertExtend final : public QDialog, public Ui::CertExtend {
   void accept() final;
 };
 
-#endif
+#endif  // CERT_EXTEND_H

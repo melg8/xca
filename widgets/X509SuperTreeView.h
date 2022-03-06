@@ -1,5 +1,5 @@
-#ifndef __X509SUPERTREEVIEW_H
-#define __X509SUPERTREEVIEW_H
+#ifndef X_509_SUPER_TREE_VIEW_H
+#define X_509_SUPER_TREE_VIEW_H
 
 #include "XcaTreeView.h"
 
@@ -30,4 +30,5 @@ class X509SuperTreeView : public XcaTreeView {
   void toTemplate();
   void toOpenssl();
 };
-#endif
+
+#endif  // X_509_SUPER_TREE_VIEW_H

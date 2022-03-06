@@ -1,5 +1,5 @@
-#ifndef __DBHISTORY_H
-#define __DBHISTORY_H
+#ifndef DB_HISTORY_H
+#define DB_HISTORY_H
 
 #include <QString>
 #include <QStringList>
@@ -17,4 +17,4 @@ class dbhistory {
   static QString getLastRemote();
 };
 
-#endif
+#endif  // DB_HISTORY_H
