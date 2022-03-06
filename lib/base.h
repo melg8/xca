@@ -1,10 +1,3 @@
-/* vi: set sw=4 ts=4:
- *
- * Copyright (C) 2001 - 2014 Christian Hohnstaedt.
- *
- * All rights reserved.
- */
-
 #ifndef __BASE_H
 #define __BASE_H
 
@@ -27,8 +20,8 @@
 
 #define nativeSeparator(s) QDir::toNativeSeparators(s)
 
-#define ARRAY_SIZE(x) (sizeof(x)/sizeof((x)[0]))
-#define MIN(a,b) ((a)<(b)) ? (a) : (b)
+#define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
+#define MIN(a, b) ((a) < (b)) ? (a) : (b)
 
 #if Q_BYTE_ORDER == Q_BIG_ENDIAN
 #define xhtonl(x) (x)
@@ -37,7 +30,7 @@
 #define xhtonl(x) (__builtin_bswap32(x))
 #define xntohl(x) (__builtin_bswap32(x))
 #else
-	# error "What kind of system is this?"
+#error "What kind of system is this?"
 #endif
 
 #endif

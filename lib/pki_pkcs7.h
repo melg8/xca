@@ -1,12 +1,5 @@
-/* vi: set sw=4 ts=4:
- *
- * Copyright (C) 2001 - 2020 Christian Hohnstaedt.
- *
- * All rights reserved.
- */
-
-#ifndef __PKI_PKCS7_H
-#define __PKI_PKCS7_H
+#ifndef PKI_PKCS7_H
+#define PKI_PKCS7_H
 
 #include <QString>
 #include "pki_multi.h"
@@ -15,28 +8,28 @@
 
 class pki_x509;
 
-class pki_pkcs7 final: public pki_multi
-{
-		Q_OBJECT
+class pki_pkcs7 final : public pki_multi {
+  Q_OBJECT
 
-	friend class pki_x509;
+  friend class pki_x509;
 
-	protected:
-		PKCS7 *p7;
-		void signBio(pki_x509 *crt, BIO *bio);
-		void encryptBio(pki_x509 *crt, BIO *bio);
-		void append_certs(PKCS7 *myp7, const QString &name);
+ protected:
+  PKCS7* p7;
+  void signBio(pki_x509* crt, BIO* bio);
+  void encryptBio(pki_x509* crt, BIO* bio);
+  void append_certs(PKCS7* myp7, const QString& name);
 
-	public:
-		pki_pkcs7(const QString &name = QString());
-        ~pki_pkcs7() final;
+ public:
+  pki_pkcs7(const QString& name = QString());
+  ~pki_pkcs7() final;
 
-        void signFile(pki_x509 *crt, const QString &name);
-		void signCert(pki_x509 *crt, pki_x509 *contCert);
-        void encryptFile(pki_x509 *crt, const QString &name);
-		void writeP7(XFile &file, bool PEM);
-        void fromPEM_BIO(BIO *bio, const QString &name) final;
-        void fromPEMbyteArray(const QByteArray &, const QString &) final;
-        void fload(const QString &name) final;
+  void signFile(pki_x509* crt, const QString& name);
+  void signCert(pki_x509* crt, pki_x509* contCert);
+  void encryptFile(pki_x509* crt, const QString& name);
+  void writeP7(XFile& file, bool PEM);
+  void fromPEM_BIO(BIO* bio, const QString& name) final;
+  void fromPEMbyteArray(const QByteArray&, const QString&) final;
+  void fload(const QString& name) final;
 };
-#endif
+
+#endif  // PKI_PKCS7_H

@@ -1,68 +1,57 @@
-/* vi: set sw=4 ts=4:
- *
- * Copyright (C) 2011 Christian Hohnstaedt.
- *
- * All rights reserved.
- */
-
 #ifndef __SEARCHPKCS11DIALOG_H
 #define __SEARCHPKCS11DIALOG_H
 
 #include <QThread>
+
 #include "ui_SearchPkcs11.h"
 
 class SearchPkcs11;
-class searchThread final: public QThread
-{
-	Q_OBJECT
+class searchThread final : public QThread {
+  Q_OBJECT
 
-   protected:
-	QString dirname;
-	QStringList ext;
-	bool recursive;
-	bool keepOnRunning;
+ protected:
+  QString dirname;
+  QStringList ext;
+  bool recursive;
+  bool keepOnRunning;
 
-	bool checkLib(QString file);
+  bool checkLib(QString file);
 
-   public:
-	searchThread(QString _dir, const QStringList _ext, bool _recursive);
-	void search(QString mydir);
-    void run() final
-	{
-		search(dirname);
-	}
+ public:
+  searchThread(QString _dir, const QStringList _ext, bool _recursive);
+  void search(QString mydir);
+  void run() final { search(dirname); }
 
-   public slots:
-	void cancelSearch();
+ public slots:
+  void cancelSearch();
 
-   signals:
-	void updateCurrFile(QString f);
-	void updateLibs(QString f);
+ signals:
+  void updateCurrFile(QString f);
+  void updateLibs(QString f);
 };
 
-class SearchPkcs11 final: public QDialog, public Ui::SearchPkcs11
-{
-	Q_OBJECT
+class SearchPkcs11 final : public QDialog, public Ui::SearchPkcs11 {
+  Q_OBJECT
 
-   protected:
-	void searchDir(QString dirname, bool subdirs);
-	searchThread *searching;
+ protected:
+  void searchDir(QString dirname, bool subdirs);
+  searchThread* searching;
 
-   public:
-	SearchPkcs11(QWidget *parent, const QString &fname);
-    ~SearchPkcs11() final;
+ public:
+  SearchPkcs11(QWidget* parent, const QString& fname);
+  ~SearchPkcs11() final;
 
-   public slots:
-	void on_search_clicked();
-	void on_fileBut_clicked();
-	void buttonPress(QAbstractButton *but);
-	void loadItem(QListWidgetItem *lib);
-	void updateLibs(QString f);
-	void updateCurrFile(QString f);
-	void finishSearch();
+ public slots:
+  void on_search_clicked();
+  void on_fileBut_clicked();
+  void buttonPress(QAbstractButton* but);
+  void loadItem(QListWidgetItem* lib);
+  void updateLibs(QString f);
+  void updateCurrFile(QString f);
+  void finishSearch();
 
-   signals:
-	void addLib(QString);
+ signals:
+  void addLib(QString);
 };
 
 #endif

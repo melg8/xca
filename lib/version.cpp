@@ -1,14 +1,5 @@
-/* vi: set sw=4 ts=4:
- *
- * Copyright (C) 2018 Christian Hohnstaedt.
- *
- * All rights reserved.
- * Compiles much faster than MW_help.cpp
- * and needs to get recompiled every time
- */
-
-#include "local.h"
 #include "func.h"
+#include "local.h"
 
 #define VERSION XCA_VERSION
 
@@ -18,9 +9,8 @@
 #define COMMITHASH GIT_COMMIT_REV
 #endif
 
-const char *version_str(bool html)
-{
-	return html ?
-		"<b>" VERSION "-dev</b><br/>commit: <b>" COMMITHASH "</b>" :
-		VERSION "-dev\ncommit: " COMMITHASH;
+// TODO(melg): add proper header with function declaration.
+const char* version_str(bool html) {
+  return html ? "<b>" VERSION "-dev</b><br/>commit: <b>" COMMITHASH "</b>"
+              : VERSION "-dev\ncommit: " COMMITHASH;
 }

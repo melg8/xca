@@ -1,10 +1,3 @@
-/* vi: set sw=4 ts=4:
- *
- * Copyright (C) 2006 - 2020 Christian Hohnstaedt.
- *
- * All rights reserved.
- */
-
 #ifndef __CRLTREEVIEW_H
 #define __CRLTREEVIEW_H
 
@@ -13,23 +6,20 @@
 
 class pki_x509;
 
-class CrlTreeView final: public XcaTreeView
-{
-	Q_OBJECT
+class CrlTreeView final : public XcaTreeView {
+  Q_OBJECT
 
-	db_crl *crls() const
-	{
-		return dynamic_cast<db_crl*>(basemodel);
-	}
+  db_crl* crls() const { return dynamic_cast<db_crl*>(basemodel); }
 
-    public:
-	CrlTreeView(QWidget *parent) : XcaTreeView(parent) { }
-    void showPki(pki_base *pki) final;
-    ExportDialog *exportDialog(const QModelIndexList &index) final;
+ public:
+  CrlTreeView(QWidget* parent) : XcaTreeView(parent) {}
+  void showPki(pki_base* pki) final;
+  ExportDialog* exportDialog(const QModelIndexList& index) final;
 
-    public slots:
-	void newItem(pki_x509 *cert);
-	void newItem();
-	void load();
+ public slots:
+  void newItem(pki_x509* cert);
+  void newItem();
+  void load();
 };
+
 #endif

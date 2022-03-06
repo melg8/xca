@@ -1,24 +1,18 @@
-/* vi: set sw=4 ts=4:
- *
- * Copyright (C) 2015 Christian Hohnstaedt.
- *
- * All rights reserved.
- */
+#include "entropy.h"
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <string.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
-#include <QDir>
-#include <QDebug>
 #include <openssl/rand.h>
+#include <QDebug>
+#include <QDir>
 #include "func.h"
 #include "xfile.h"
-#include "entropy.h"
 
 /* Entropy sources for XCA
  *
@@ -54,150 +48,130 @@
 
 #undef DEBUG_ENTROPY
 
-#define pool_siz (sizeof(pool)/sizeof(pool[0]))
+#define pool_siz (sizeof(pool) / sizeof(pool[0]))
 unsigned char Entropy::pool[512];
 unsigned Entropy::pool_pos = 0;
 QElapsedTimer Entropy::timer;
 unsigned Entropy::seed_strength = 0;
 
-QString Entropy::makeSalt(void)
-{
-	QString s = "T";
-	unsigned char rand[8];
+QString Entropy::makeSalt(void) {
+  QString s = "T";
+  unsigned char rand[8];
 
-	Entropy::get(rand, sizeof rand);
-	for (unsigned i=0; i< sizeof rand; i++)
-		s += QString("%1").arg(rand[i]);
-	return s;
+  Entropy::get(rand, sizeof rand);
+  for (unsigned i = 0; i < sizeof rand; i++) s += QString("%1").arg(rand[i]);
+  return s;
 }
 
-
-void Entropy::add(int rand)
-{
-	unsigned char entropy = (rand ^ timer.elapsed()) & 0xff;
-	pool[pool_pos++ % pool_siz] = entropy;
+void Entropy::add(int rand) {
+  unsigned char entropy = (rand ^ timer.elapsed()) & 0xff;
+  pool[pool_pos++ % pool_siz] = entropy;
 }
 
-void Entropy::add_buf(const unsigned char *buf, int buflen)
-{
-	RAND_seed(buf, buflen);
-	seed_strength += buflen;
+void Entropy::add_buf(const unsigned char* buf, int buflen) {
+  RAND_seed(buf, buflen);
+  seed_strength += buflen;
 }
 
-int Entropy::get(unsigned char *buf, int num)
-{
-	seed_rng();
-	return RAND_bytes(buf, num);
+int Entropy::get(unsigned char* buf, int num) {
+  seed_rng();
+  return RAND_bytes(buf, num);
 }
 
-void Entropy::seed_rng()
-{
-	if (pool_pos > pool_siz)
-		pool_pos = pool_siz;
+void Entropy::seed_rng() {
+  if (pool_pos > pool_siz) pool_pos = pool_siz;
 
-	RAND_seed(pool, pool_pos);
-	seed_strength += pool_pos;
+  RAND_seed(pool, pool_pos);
+  seed_strength += pool_pos;
 
 #if !defined(Q_OS_WIN32)
-	random_from_file("/dev/urandom", 32);
+  random_from_file("/dev/urandom", 32);
 #endif
 #ifdef DEBUG_ENTROPY
-	{
-		QDebug dbg = qDebug();
-		dbg << QString("Seeding %1 bytes:").arg(pool_pos);
-		for (unsigned i=0; i<pool_pos; i++)
-			dbg << pool[i];
-	}
-	qDebug("Entropy strength: %d", seed_strength);
+  {
+    QDebug dbg = qDebug();
+    dbg << QString("Seeding %1 bytes:").arg(pool_pos);
+    for (unsigned i = 0; i < pool_pos; i++) dbg << pool[i];
+  }
+  qDebug("Entropy strength: %d", seed_strength);
 #endif
-	pool_pos = 0;
+  pool_pos = 0;
 }
 
-int Entropy::random_from_file(QString fname, unsigned amount, int weakness)
-{
-	char buf[256];
-	int fd, sum;
+int Entropy::random_from_file(QString fname, unsigned amount, int weakness) {
+  char buf[256];
+  int fd, sum;
 
-	/* OpenSSL: RAND_load_file() is blocking
-	 * and does not support wchar_t */
-	XFile file(fname);
-	try {
-		file.open_read();
-	} catch (errorEx &e) {
-		qDebug() << "random_from_file" << fname << e.getString();
-		return 0;
-	}
-	fd = file.handle();
-	if (fd == -1)
-		return 0;
+  /* OpenSSL: RAND_load_file() is blocking
+   * and does not support wchar_t */
+  XFile file(fname);
+  try {
+    file.open_read();
+  } catch (errorEx& e) {
+    qDebug() << "random_from_file" << fname << e.getString();
+    return 0;
+  }
+  fd = file.handle();
+  if (fd == -1) return 0;
 #if !defined(Q_OS_WIN32)
-	if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1)
-		return 0;
+  if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1) return 0;
 #endif
-	for (sum=0; amount > 0;) {
-		int len = read(fd, buf, amount > sizeof buf ?
-					sizeof buf : amount);
-		if (len > 0) {
-			RAND_seed(buf, len);
-			seed_strength += len / weakness;
-			amount -= len;
-			sum += len;
-		}
-		if (len == -1) {
-			if (errno != EWOULDBLOCK)
-				qWarning("Error '%s' while reading '%s'\n",
-					strerror(errno), CCHAR(fname));
-			len = 0;
-		}
-		if (len == 0)
-			break;
-	}
+  for (sum = 0; amount > 0;) {
+    int len = read(fd, buf, amount > sizeof buf ? sizeof buf : amount);
+    if (len > 0) {
+      RAND_seed(buf, len);
+      seed_strength += len / weakness;
+      amount -= len;
+      sum += len;
+    }
+    if (len == -1) {
+      if (errno != EWOULDBLOCK)
+        qWarning("Error '%s' while reading '%s'\n", strerror(errno),
+                 CCHAR(fname));
+      len = 0;
+    }
+    if (len == 0) break;
+  }
 #ifdef DEBUG_ENTROPY
-	qDebug("Entropy from file '%s' = %d bytes", CCHAR(fname), sum);
+  qDebug("Entropy from file '%s' = %d bytes", CCHAR(fname), sum);
 #endif
-	return sum;
+  return sum;
 }
 
-unsigned Entropy::strength()
-{
-	return seed_strength;
-}
+unsigned Entropy::strength() { return seed_strength; }
 
-Entropy::Entropy()
-{
-	timer.start();
+Entropy::Entropy() {
+  timer.start();
 
-	rnd = getUserSettingsDir() + "/.rnd";
-	random_from_file(rnd, 1024, 128);
-	QFile::remove(rnd); // don't use it again
+  rnd = getUserSettingsDir() + "/.rnd";
+  random_from_file(rnd, 1024, 128);
+  QFile::remove(rnd);  // don't use it again
 
-	RAND_poll();
-	seed_strength += 8;
+  RAND_poll();
+  seed_strength += 8;
 
 #if !defined(Q_OS_WIN32)
-	random_from_file("/dev/random", 32);
-	random_from_file("/dev/hwrng", 32);
+  random_from_file("/dev/random", 32);
+  random_from_file("/dev/hwrng", 32);
 #endif
 }
 
-Entropy::~Entropy()
-{
+Entropy::~Entropy() {
 #define RAND_BUF_SIZE 1024
-	unsigned char buf[RAND_BUF_SIZE];
+  unsigned char buf[RAND_BUF_SIZE];
 
-	if (RAND_bytes(buf, RAND_BUF_SIZE) == 1) {
-		XFile file(rnd);
-		try {
-			file.open_key();
-			file.write((char*)buf, RAND_BUF_SIZE);
-		} catch (errorEx &e) {
-			qDebug() << "random_from_file" << rnd
-				 << e.getString();
-		}
-		file.close();
-	}
-	memset(buf, 0, RAND_BUF_SIZE);
+  if (RAND_bytes(buf, RAND_BUF_SIZE) == 1) {
+    XFile file(rnd);
+    try {
+      file.open_key();
+      file.write((char*)buf, RAND_BUF_SIZE);
+    } catch (errorEx& e) {
+      qDebug() << "random_from_file" << rnd << e.getString();
+    }
+    file.close();
+  }
+  memset(buf, 0, RAND_BUF_SIZE);
 #ifdef DEBUG_ENTROPY
-	qDebug("Seed strength: %d", seed_strength);
+  qDebug("Seed strength: %d", seed_strength);
 #endif
 }

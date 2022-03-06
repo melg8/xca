@@ -1,11 +1,3 @@
-/* vi: set sw=4 ts=4:
- *
- * Copyright (C) 2001 - 2007 Christian Hohnstaedt.
- *
- * All rights reserved.
- */
-
-
 #ifndef __DB_TEMP_H
 #define __DB_TEMP_H
 
@@ -13,20 +5,21 @@
 
 class pki_temp;
 
-class db_temp final: public db_x509name
-{
-	Q_OBJECT
-    protected:
-	QList<pki_temp*> predefs;
+class db_temp final : public db_x509name {
+  Q_OBJECT
+ protected:
+  QList<pki_temp*> predefs;
 
-    public:
-	db_temp();
-    ~db_temp() final;
-    pki_base *newPKI(enum pki_type type = none) final;
-	void fillContextMenu(QMenu *menu, const QModelIndex &index);
-	QList<pki_temp*> getPredefs() const;
-	bool alterTemp(pki_temp *temp);
-	void exportItem(const QModelIndex &index,
-            const pki_export *, XFile &file) const final;
+ public:
+  db_temp();
+  ~db_temp() final;
+  pki_base* newPKI(enum pki_type type = none) final;
+  void fillContextMenu(QMenu* menu, const QModelIndex& index);
+  QList<pki_temp*> getPredefs() const;
+  bool alterTemp(pki_temp* temp);
+  void exportItem(const QModelIndex& index,
+                  const pki_export*,
+                  XFile& file) const final;
 };
+
 #endif

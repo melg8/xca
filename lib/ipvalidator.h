@@ -1,16 +1,9 @@
-/* vi: set sw=4 ts=4:
- *
- * Copyright (C) 2018 Christian Hohnstaedt.
- *
- * All rights reserved.
- */
-
 #ifndef __IPVALIDATOR_H
 #define __IPVALIDATOR_H
 
-#include <QStringList>
 #include <QRegExp>
 #include <QString>
+#include <QStringList>
 #include <QValidator>
 
 /* Validating IPv4/6 is not as trivial as thought.
@@ -24,34 +17,27 @@
  *   So we reduce the validation on windows to the RegEx
  */
 #if !defined(Q_OS_WIN32)
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
 #include <arpa/inet.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <sys/types.h>
 
-[[nodiscard]] static bool IsValidIp(const QString &input) noexcept {
-    unsigned char buf[sizeof(struct in6_addr)];
-    return inet_pton(AF_INET, CCHAR(input), buf) == 1 ||
-           inet_pton(AF_INET6, CCHAR(input), buf) == 1;
+[[nodiscard]] static bool IsValidIp(const QString& input) noexcept {
+  unsigned char buf[sizeof(struct in6_addr)];
+  return inet_pton(AF_INET, CCHAR(input), buf) == 1 ||
+         inet_pton(AF_INET6, CCHAR(input), buf) == 1;
 }
 #else
-[[nodiscard]] static bool IsValidIp(const QString &) noexcept {
-    return true;
-}
+[[nodiscard]] static bool IsValidIp(const QString&) noexcept { return true; }
 #endif
 
-class ipValidator final: public QValidator
-{
-    public:
-    QValidator::State validate(QString &input, int&) const final
-	{
-		if (!QRegExp("[0-9a-fA-F:\\.]*").exactMatch(input))
-            return Invalid;
-        return IsValidIp(input) ? Acceptable : Intermediate;
-	}
-    void fixup(QString &input) const final
-	{
-		input = input.toLower();
-	}
+class ipValidator final : public QValidator {
+ public:
+  QValidator::State validate(QString& input, int&) const final {
+    if (!QRegExp("[0-9a-fA-F:\\.]*").exactMatch(input)) return Invalid;
+    return IsValidIp(input) ? Acceptable : Intermediate;
+  }
+  void fixup(QString& input) const final { input = input.toLower(); }
 };
+
 #endif

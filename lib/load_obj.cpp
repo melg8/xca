@@ -1,180 +1,125 @@
-/* vi: set sw=4 ts=4:
- *
- * Copyright (C) 2001 - 2020 Christian Hohnstaedt.
- *
- * All rights reserved.
- */
-
 #include "load_obj.h"
-#include "pki_x509.h"
-#include "pki_evp.h"
-#include "pki_x509req.h"
-#include "pki_pkcs7.h"
-#include "pki_pkcs12.h"
-#include "pki_multi.h"
-#include "pki_temp.h"
+
 #include "pki_crl.h"
+#include "pki_evp.h"
+#include "pki_multi.h"
+#include "pki_pkcs12.h"
+#include "pki_pkcs7.h"
+#include "pki_temp.h"
+#include "pki_x509.h"
+#include "pki_x509req.h"
 
-load_base::load_base()
-{
-	filter = QObject::tr("All files ( * )");
-	caption = "";
+load_base::load_base() {
+  filter = QObject::tr("All files ( * )");
+  caption = "";
 }
 
-pki_base *load_base::loadItem(const QString &s)
-{
-	pki_base *pki = newItem();
-	if (!pki)
-        return nullptr;
-	try {
-		pki->fload(s);
-		openssl_error();
-	}
-	catch (errorEx &err){
-		delete pki;
-		throw err;
-	}
-	pki->pkiSource = imported;
-	pki->autoIntName(s);
-	pki->setFilename(s);
-	return pki;
+pki_base* load_base::loadItem(const QString& s) {
+  pki_base* pki = newItem();
+  if (!pki) return nullptr;
+  try {
+    pki->fload(s);
+    openssl_error();
+  } catch (errorEx& err) {
+    delete pki;
+    throw err;
+  }
+  pki->pkiSource = imported;
+  pki->autoIntName(s);
+  pki->setFilename(s);
+  return pki;
 }
 
-pki_base * load_base::newItem()
-{
-    return nullptr;
-}
+pki_base* load_base::newItem() { return nullptr; }
 
-load_base::~load_base()
-{
-}
+load_base::~load_base() {}
 
 /* Keys */
-load_key::load_key()
-	:load_base()
-{
-	filter = QObject::tr("PKI Keys ( *.pem *.der *.key );; "
-			"PKCS#8 Keys ( *.p8 *.pk8 );; "
-			"Microsoft PVK Keys ( *.pvk );; "
-			"SSH Public Keys ( *.pub );;") + filter;
-	caption = QObject::tr("Import RSA key");
+load_key::load_key() : load_base() {
+  filter = QObject::tr(
+               "PKI Keys ( *.pem *.der *.key );; "
+               "PKCS#8 Keys ( *.p8 *.pk8 );; "
+               "Microsoft PVK Keys ( *.pvk );; "
+               "SSH Public Keys ( *.pub );;") +
+           filter;
+  caption = QObject::tr("Import RSA key");
 }
 
-pki_base * load_key::newItem()
-{
-	return new pki_evp();
-}
+pki_base* load_key::newItem() { return new pki_evp(); }
 
 /* Requests */
-load_req::load_req()
-	:load_base()
-{
-	filter = QObject::tr("PKCS#10 CSR ( *.pem *.der *.csr );; ") + filter;
-	caption = QObject::tr("Import Request");
+load_req::load_req() : load_base() {
+  filter = QObject::tr("PKCS#10 CSR ( *.pem *.der *.csr );; ") + filter;
+  caption = QObject::tr("Import Request");
 }
 
-pki_base * load_req::newItem()
-{
-	return new pki_x509req();
-}
+pki_base* load_req::newItem() { return new pki_x509req(); }
 
 /* Certificates */
-load_cert::load_cert()
-	:load_base()
-{
-	filter = QObject::tr("Certificates ( *.pem *.der *.crt *.cer );;") + filter;
-	caption = QObject::tr("Import X.509 Certificate");
+load_cert::load_cert() : load_base() {
+  filter = QObject::tr("Certificates ( *.pem *.der *.crt *.cer );;") + filter;
+  caption = QObject::tr("Import X.509 Certificate");
 }
 
-pki_base * load_cert::newItem()
-{
-	return new pki_x509();
-}
+pki_base* load_cert::newItem() { return new pki_x509(); }
 
 /* PKCS#7 Certificates */
-load_pkcs7::load_pkcs7()
-	:load_base()
-{
-	filter = QObject::tr("PKCS#7 data ( *.p7s *.p7m *.p7b );;") + filter;
-	caption = QObject::tr("Import PKCS#7 Certificates");
+load_pkcs7::load_pkcs7() : load_base() {
+  filter = QObject::tr("PKCS#7 data ( *.p7s *.p7m *.p7b );;") + filter;
+  caption = QObject::tr("Import PKCS#7 Certificates");
 }
 
-pki_base * load_pkcs7::newItem()
-{
-	return new pki_pkcs7();
-}
+pki_base* load_pkcs7::newItem() { return new pki_pkcs7(); }
 
 /* PKCS#12 Certificates */
-load_pkcs12::load_pkcs12()
-	:load_base()
-{
-	filter = QObject::tr("PKCS#12 Certificates ( *.p12 *.pfx );;") + filter;
-	caption = QObject::tr("Import PKCS#12 Private Certificate");
+load_pkcs12::load_pkcs12() : load_base() {
+  filter = QObject::tr("PKCS#12 Certificates ( *.p12 *.pfx );;") + filter;
+  caption = QObject::tr("Import PKCS#12 Private Certificate");
 }
 
-pki_base * load_pkcs12::loadItem(const QString &s)
-{
-	pki_base *p12 = new pki_pkcs12(s);
-	return p12;
+pki_base* load_pkcs12::loadItem(const QString& s) {
+  pki_base* p12 = new pki_pkcs12(s);
+  return p12;
 }
 
 /* Templates */
-load_temp::load_temp()
-	:load_base()
-{
-	filter = QObject::tr("XCA templates ( *.xca );;") + filter;
-	caption = QObject::tr("Import XCA Templates");
+load_temp::load_temp() : load_base() {
+  filter = QObject::tr("XCA templates ( *.xca );;") + filter;
+  caption = QObject::tr("Import XCA Templates");
 }
 
-pki_base * load_temp::newItem()
-{
-	return new pki_temp();
-}
+pki_base* load_temp::newItem() { return new pki_temp(); }
 
 /* CRLs */
-load_crl::load_crl()
-	:load_base()
-{
-	filter = QObject::tr("Revocation lists ( *.pem *.der *.crl );;") + filter;
-	caption = QObject::tr("Import Certificate Revocation List");
+load_crl::load_crl() : load_base() {
+  filter = QObject::tr("Revocation lists ( *.pem *.der *.crl );;") + filter;
+  caption = QObject::tr("Import Certificate Revocation List");
 }
 
-pki_base * load_crl::newItem()
-{
-	return new pki_crl();
-}
+pki_base* load_crl::newItem() { return new pki_crl(); }
 
 /* Database */
-load_db::load_db()
-	:load_base()
-{
-	filter = QObject::tr("XCA Databases ( *.xdb );;") + filter;
-	caption = QObject::tr("Open XCA Database");
+load_db::load_db() : load_base() {
+  filter = QObject::tr("XCA Databases ( *.xdb );;") + filter;
+  caption = QObject::tr("Open XCA Database");
 }
 
 /* Shared library */
-load_pkcs11::load_pkcs11()
-	:load_base()
-{
+load_pkcs11::load_pkcs11() : load_base() {
 #if defined(Q_OS_WIN32)
-	filter = QObject::tr("PKCS#11 library ( *.dll );;") + filter;
+  filter = QObject::tr("PKCS#11 library ( *.dll );;") + filter;
 #elif defined(Q_OS_MAC)
-	filter = QObject::tr("PKCS#11 library ( *.dylib *.so );;") + filter;
+  filter = QObject::tr("PKCS#11 library ( *.dylib *.so );;") + filter;
 #else
-	filter = QObject::tr("PKCS#11 library ( *.so );;") + filter;
+  filter = QObject::tr("PKCS#11 library ( *.so );;") + filter;
 #endif
-	caption = QObject::tr("Open PKCS#11 shared library");
+  caption = QObject::tr("Open PKCS#11 shared library");
 }
 
 /* General PEM loader */
-load_pem::load_pem()
-	:load_base()
-{
-	filter = QObject::tr("PEM files ( *.pem );;") + filter;
-	caption = QObject::tr("Load PEM encoded file");
+load_pem::load_pem() : load_base() {
+  filter = QObject::tr("PEM files ( *.pem );;") + filter;
+  caption = QObject::tr("Load PEM encoded file");
 }
 
-pki_base *load_pem::newItem()
-{
-	return new pki_multi();
-}
+pki_base* load_pem::newItem() { return new pki_multi(); }

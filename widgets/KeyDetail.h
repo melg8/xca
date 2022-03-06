@@ -1,10 +1,3 @@
-/* vi: set sw=4 ts=4:
- *
- * Copyright (C) 2001 - 2009 Christian Hohnstaedt.
- *
- * All rights reserved.
- */
-
 #ifndef __KEYDETAIL_H
 #define __KEYDETAIL_H
 
@@ -13,19 +6,19 @@
 class pki_key;
 class pki_base;
 
-class KeyDetail: public QDialog, public Ui::KeyDetail
-{
-	Q_OBJECT
+class KeyDetail : public QDialog, public Ui::KeyDetail {
+  Q_OBJECT
 
-	QVariant keySqlId;
+  QVariant keySqlId;
 
-    public:
-	KeyDetail(QWidget *w = nullptr);
-    void setKey(pki_key *pKey);
-    void setupFingerprints(pki_key *pKey);
-    static void showKey(QWidget *parent, pki_key *pKey, bool ro = false);
+ public:
+  KeyDetail(QWidget* w = nullptr);
+  void setKey(pki_key* pKey);
+  void setupFingerprints(pki_key* pKey);
+  static void showKey(QWidget* parent, pki_key* pKey, bool ro = false);
 
-    public slots:
-	void itemChanged(pki_base *pki);
+ public slots:
+  void itemChanged(pki_base* pki);
 };
+
 #endif
