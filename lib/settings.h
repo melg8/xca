@@ -11,7 +11,7 @@ class svalue {
  private:
   settings* setting;
   QString key;
-  QString get() const;
+  [[nodiscard]] QString get() const;
   void set(const QString& val);
 
  public:

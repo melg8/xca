@@ -43,7 +43,9 @@ class keytype {
       : type(t), name(n), mech(m), curve(c), length(l) {}
   keytype() : type(-1), name(QString()), mech(0), curve(false), length(true) {}
   bool isValid() { return type != -1; }
-  QString traditionalPemName() const { return name + " PRIVATE KEY"; }
+  [[nodiscard]] QString traditionalPemName() const {
+    return name + " PRIVATE KEY";
+  }
   static const keytype byType(int type) {
     foreach (const keytype t, types()) {
       if (t.type == type) return t;
@@ -100,9 +102,9 @@ class keyjob {
         .arg(isEC() ? OBJ_obj2QString(OBJ_nid2obj(ec_nid))
                     : QString::number(size));
   }
-  bool isToken() const { return slot.lib != nullptr; }
-  bool isEC() const { return ktype.type == EVP_PKEY_EC; }
-  bool isED25519() const {
+  [[nodiscard]] bool isToken() const { return slot.lib != nullptr; }
+  [[nodiscard]] bool isEC() const { return ktype.type == EVP_PKEY_EC; }
+  [[nodiscard]] bool isED25519() const {
 #ifdef EVP_PKEY_ED25519
     return ktype.type == EVP_PKEY_ED25519;
 #else

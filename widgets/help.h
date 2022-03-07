@@ -18,7 +18,7 @@ class Help final : public QWidget, public Ui::Help {
   Help();
   ~Help() final;
   void register_ctxhelp_button(QDialog* dlg, const QString& help_ctx) const;
-  QList<QHelpLink> url_by_ctx(const QString& ctx) const;
+  [[nodiscard]] QList<QHelpLink> url_by_ctx(const QString& ctx) const;
 
  public slots:
   void contexthelp();

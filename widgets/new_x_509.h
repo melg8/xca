@@ -109,12 +109,12 @@ class NewX509 final : public QDialog, public Ui::NewX509 {
   int validateExtensions(QString nconf, QString& result);
   int do_validateExtensions();
   void undo_validateExtensions();
-  enum pki_source getPkiSource() const;
-  QList<pki_x509req*> getAllRequests() const;
-  QList<pki_x509*> getAllIssuers() const;
-  QList<pki_temp*> getAllTempsAndPredefs() const;
-  QList<pki_key*> getUnusedKeys() const;
-  QList<pki_key*> getAllKeys() const;
+  [[nodiscard]] enum pki_source getPkiSource() const;
+  [[nodiscard]] QList<pki_x509req*> getAllRequests() const;
+  [[nodiscard]] QList<pki_x509*> getAllIssuers() const;
+  [[nodiscard]] QList<pki_temp*> getAllTempsAndPredefs() const;
+  [[nodiscard]] QList<pki_key*> getUnusedKeys() const;
+  [[nodiscard]] QList<pki_key*> getAllKeys() const;
 
  public slots:
   void on_fromReqCB_clicked();

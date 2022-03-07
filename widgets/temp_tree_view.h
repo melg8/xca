@@ -8,7 +8,9 @@
 class TempTreeView final : public XcaTreeView {
   Q_OBJECT
 
-  db_temp* temps() const { return dynamic_cast<db_temp*>(basemodel); }
+  [[nodiscard]] db_temp* temps() const {
+    return dynamic_cast<db_temp*>(basemodel);
+  }
 
   bool runTempDlg(pki_temp* temp);
 

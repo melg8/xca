@@ -8,8 +8,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#include "passwd.h"
 #include "base.h"
+#include "passwd.h"
 
 #define COL_CYAN "\x1b[0;36m"
 #define COL_BLUE "\x1b[0;94m"

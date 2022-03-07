@@ -48,19 +48,25 @@ class tkInfo {
       if (token_info.serialNumber[i] == 0) token_info.serialNumber[i] = ' ';
     }
   }
-  QString label() const { return UTF8QSTRING(token_info.label, 32); }
-  QString manufacturerID() const {
+  [[nodiscard]] QString label() const {
+    return UTF8QSTRING(token_info.label, 32);
+  }
+  [[nodiscard]] QString manufacturerID() const {
     return UTF8QSTRING(token_info.manufacturerID, 32);
   }
-  QString model() const { return UTF8QSTRING(token_info.model, 16); }
-  QString serial() const { return ASCIIQSTRING(token_info.serialNumber, 16); }
-  bool protAuthPath() const {
+  [[nodiscard]] QString model() const {
+    return UTF8QSTRING(token_info.model, 16);
+  }
+  [[nodiscard]] QString serial() const {
+    return ASCIIQSTRING(token_info.serialNumber, 16);
+  }
+  [[nodiscard]] bool protAuthPath() const {
     return !!(token_info.flags & CKF_PROTECTED_AUTHENTICATION_PATH);
   }
-  bool tokenInitialized() const {
+  [[nodiscard]] bool tokenInitialized() const {
     return !!(token_info.flags & CKF_TOKEN_INITIALIZED);
   }
-  QString pinInfo() const {
+  [[nodiscard]] QString pinInfo() const {
     return QObject::tr("Required PIN size: %1 - %2")
         .arg(token_info.ulMinPinLen)
         .arg(token_info.ulMaxPinLen);
@@ -85,7 +91,7 @@ class pkcs11 {
   CK_RV tokenInfo(const slotid& slot, tkInfo* tkinfo);
   tkInfo tokenInfo(const slotid& slot);
   tkInfo tokenInfo() { return tokenInfo(p11slot); }
-  QString driverInfo(const slotid& slot) const {
+  [[nodiscard]] QString driverInfo(const slotid& slot) const {
     return slot.lib->driverInfo();
   }
   static slotidList getSlotList() { return libraries.getSlotList(); }

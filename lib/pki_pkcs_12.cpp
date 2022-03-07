@@ -3,11 +3,11 @@
 #include "pki_evp.h"
 #include "pki_x_509.h"
 
-#include "pw_dialog_core.h"
-#include "xca_warning_core.h"
 #include "exception.h"
 #include "func.h"
 #include "pass_info.h"
+#include "pw_dialog_core.h"
+#include "xca_warning_core.h"
 
 #include <openssl/err.h>
 #include <openssl/pkcs12.h>

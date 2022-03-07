@@ -5,13 +5,13 @@
 #include <QMenu>
 #include "ui_main_window.h"
 
-#include "lib/passwd.h"
-#include "lib/xca_progress.h"
 #include "lib/database_model.h"
 #include "lib/db_history.h"
 #include "lib/dh_gen.h"
 #include "lib/main.h"
 #include "lib/oid.h"
+#include "lib/passwd.h"
+#include "lib/xca_progress.h"
 
 #include <QHelpEvent>
 #include <QList>
@@ -60,7 +60,7 @@ class MainWindow final : public QMainWindow, public Ui::MainWindow {
   void checkDB();
   XcaProgress* dhgenProgress;
   DHgen* dhgen;
-  const QList<QStringList> getTranslators() const;
+  [[nodiscard]] const QList<QStringList> getTranslators() const;
   QList<XcaTreeView*> views;
   dbhistory history;
   void exportIndex(const QString& fname, bool hierarchy) const;

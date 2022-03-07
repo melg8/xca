@@ -8,7 +8,9 @@
 class ReqTreeView final : public X509SuperTreeView {
   Q_OBJECT
 
-  db_x509req* reqs() const { return dynamic_cast<db_x509req*>(basemodel); }
+  [[nodiscard]] db_x509req* reqs() const {
+    return dynamic_cast<db_x509req*>(basemodel);
+  }
 
  public:
   ReqTreeView(QWidget* parent) : X509SuperTreeView(parent) {}

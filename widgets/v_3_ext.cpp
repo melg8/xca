@@ -8,10 +8,10 @@
 #include <QMessageBox>
 #include <QStringList>
 #include <QValidator>
-#include "xca_warning.h"
 #include "lib/exception.h"
 #include "lib/ip_validator.h"
 #include "lib/x_509_v_3_ext.h"
+#include "xca_warning.h"
 
 #include <openssl/err.h>
 

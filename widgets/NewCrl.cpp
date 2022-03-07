@@ -4,8 +4,8 @@
 #include "lib/db_crl.h"
 #include "lib/pki_x_509.h"
 
-#include "xca_dialog.h"
 #include "new_crl_widget.h"
+#include "xca_dialog.h"
 
 [[nodiscard]] static NewCrlOptions NewCrlOptionsFrom(
     const pki_x509* issuer) noexcept {

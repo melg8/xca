@@ -3,9 +3,9 @@
 
 #include <QObject>
 
-#include "bio_byte_array.h"
 #include "asn_1_time.h"
 #include "base.h"
+#include "bio_byte_array.h"
 #include "header_list.h"
 #include "pkcs_11_lib.h"
 #include "pki_export.h"
@@ -60,7 +60,7 @@ class pki_base : public QObject {
   pki_base* parent;
   void my_error(const QString& error) const;
   QString filename;
-  virtual QByteArray PEM_comment() const;
+  [[nodiscard]] virtual QByteArray PEM_comment() const;
   virtual void collect_properties(QMap<QString, QString>&) const;
   QList<pki_base*> childItems;
 
@@ -82,35 +82,37 @@ class pki_base : public QObject {
   pki_base(const pki_base* p);
   ~pki_base() override;
 
-  QList<pki_base*> getChildItems() const;
+  [[nodiscard]] QList<pki_base*> getChildItems() const;
   void clear();
-  QString getIntName() const { return desc; }
+  [[nodiscard]] QString getIntName() const { return desc; }
   void setFilename(const QString& s) { filename = s; }
-  QString getFilename() const { return filename; }
+  [[nodiscard]] QString getFilename() const { return filename; }
   void inheritFilename(pki_base* pki) const { pki->setFilename(getFilename()); }
-  virtual QString comboText() const;
+  [[nodiscard]] virtual QString comboText() const;
   virtual void print(BioByteArray& b, enum print_opt opt) const;
-  QString getUnderlinedName() const;
+  [[nodiscard]] QString getUnderlinedName() const;
   void setIntName(const QString& d) { desc = d; }
   virtual void autoIntName(const QString& file);
-  QString getComment() const { return comment; }
+  [[nodiscard]] QString getComment() const { return comment; }
   void setComment(const QString& c) { comment = c; }
-  QVariant getSqlItemId() const { return sqlItemId; }
-  enum pki_type getType() const { return pkiType; }
-  QString getTypeString() const;
-  QString i2d_b64() const { return QString::fromLatin1(i2d().toBase64()); }
-  a1time getInsertionDate() const { return insertion_date; }
-  virtual QByteArray i2d() const;
+  [[nodiscard]] QVariant getSqlItemId() const { return sqlItemId; }
+  [[nodiscard]] enum pki_type getType() const { return pkiType; }
+  [[nodiscard]] QString getTypeString() const;
+  [[nodiscard]] QString i2d_b64() const {
+    return QString::fromLatin1(i2d().toBase64());
+  }
+  [[nodiscard]] a1time getInsertionDate() const { return insertion_date; }
+  [[nodiscard]] virtual QByteArray i2d() const;
   virtual bool compare(const pki_base*) const;
-  virtual QString getMsg(msg_type msg) const;
-  virtual const char* getClassName() const;
+  [[nodiscard]] virtual QString getMsg(msg_type msg) const;
+  [[nodiscard]] virtual const char* getClassName() const;
 
   /* Tree View management */
   void setParent(pki_base* p);
-  pki_base* getParent() const;
+  [[nodiscard]] pki_base* getParent() const;
   pki_base* child(int row);
   void insert(pki_base* item);
-  int childCount() const;
+  [[nodiscard]] int childCount() const;
   void takeChild(pki_base* pki);
   pki_base* takeFirst();
   int indexOf(const pki_base* child) const;
@@ -136,9 +138,9 @@ class pki_base : public QObject {
   virtual QVariant getIcon(const dbheader* hd) const;
   virtual QVariant column_tooltip(const dbheader* hd) const;
   virtual a1time column_a1time(const dbheader* hd) const;
-  virtual bool visible() const;
+  [[nodiscard]] virtual bool visible() const;
   int isVisible();
-  bool childVisible() const;
+  [[nodiscard]] bool childVisible() const;
 
   /* SQL management methods */
   QSqlError insertSql();
@@ -146,14 +148,15 @@ class pki_base : public QObject {
   QSqlError deleteSql();
   virtual QSqlError deleteSqlData() { return QSqlError(); }
   virtual void restoreSql(const QSqlRecord& rec);
-  QSqlError sqlItemNotFound(QVariant sqlId) const;
-  unsigned hash() const;
-  QString pki_source_name() const;
-  QString get_dump_filename(const QString& dirname, const QString& ext) const;
+  [[nodiscard]] QSqlError sqlItemNotFound(QVariant sqlId) const;
+  [[nodiscard]] unsigned hash() const;
+  [[nodiscard]] QString pki_source_name() const;
+  [[nodiscard]] QString get_dump_filename(const QString& dirname,
+                                          const QString& ext) const;
   void selfComment(QString msg);
-  QStringList icsVEVENT(const a1time& expires,
-                        const QString& summary,
-                        const QString& description) const;
+  [[nodiscard]] QStringList icsVEVENT(const a1time& expires,
+                                      const QString& summary,
+                                      const QString& description) const;
   operator QString() const {
     return QString("(%1[%2]:%3)")
         .arg(getClassName())

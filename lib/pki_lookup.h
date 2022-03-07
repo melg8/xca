@@ -16,7 +16,7 @@ class pki_base;
 class pki_lookup {
  private:
   QHash<quint64, pki_base*> lookup;
-  pki_base* get(quint64 id) const {
+  [[nodiscard]] pki_base* get(quint64 id) const {
     if (id > 0 && !lookup.keys().contains(id))
       qCritical("pki_lookup: ID %u not found", (unsigned)id);
     return lookup[id];

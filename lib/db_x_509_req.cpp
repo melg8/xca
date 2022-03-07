@@ -1,8 +1,8 @@
 #include "db_x_509_req.h"
 
-#include "xca_warning_core.h"
 #include "pki_temp.h"
 #include "pki_x_509_req.h"
+#include "xca_warning_core.h"
 
 // TODO(melg8): drop UI dependencies.
 #include "widgets/new_x_509.h"

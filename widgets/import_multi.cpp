@@ -3,8 +3,6 @@
 #include "cert_detail.h"
 #include "crl_detail.h"
 #include "key_detail.h"
-#include "main_window.h"
-#include "xca_warning.h"
 #include "lib/pki_base.h"
 #include "lib/pki_crl.h"
 #include "lib/pki_evp.h"
@@ -13,6 +11,8 @@
 #include "lib/pki_pkcs_7.h"
 #include "lib/pki_scard.h"
 #include "lib/pki_temp.h"
+#include "main_window.h"
+#include "xca_warning.h"
 
 #include <QInputDialog>
 #include <QLabel>

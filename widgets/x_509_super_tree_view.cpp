@@ -1,9 +1,9 @@
 #include "x_509_super_tree_view.h"
 
 #include "cert_detail.h"
-#include "main_window.h"
 #include "lib/database_model.h"
 #include "lib/db_x_509_super.h"
+#include "main_window.h"
 
 #include <QAbstractItemModel>
 #include <QAbstractItemView>

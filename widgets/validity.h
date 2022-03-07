@@ -17,7 +17,7 @@ class Validity final : public QDateTimeEdit {
  public:
   Validity(QWidget* parent);
   ~Validity() final;
-  a1time getDate() const;
+  [[nodiscard]] a1time getDate() const;
   void setDate(const a1time& a);
   void setDiff(const Validity* start, int number, int range);
   void hideTime(bool hide);

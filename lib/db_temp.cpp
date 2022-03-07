@@ -2,10 +2,10 @@
 
 #include <QDir>
 #include <QFileInfo>
-#include "xca_warning_core.h"
 #include "func.h"
 #include "load_obj.h"
 #include "pki_temp.h"
+#include "xca_warning_core.h"
 
 db_temp::db_temp() : db_x509name("templates") {
   /* XCA loads templates from private space ($HOME/.local/)

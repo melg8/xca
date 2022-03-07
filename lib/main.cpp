@@ -5,7 +5,6 @@
 #include <QDebug>
 #include <QDir>
 
-#include "xca_warning_core.h"
 #include "arguments.h"
 #include "database_model.h"
 #include "db_x_509.h"
@@ -19,6 +18,7 @@
 #include "widgets/main_window.h"
 #include "widgets/xca_application.h"
 #include "x_file.h"
+#include "xca_warning_core.h"
 #if defined(Q_OS_WIN32)
 // For the segfault handler
 #include <windows.h>

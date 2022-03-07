@@ -20,8 +20,8 @@ class pki_pkcs12 : public pki_multi {
   pki_pkcs12(const QString& d, pki_x509* acert, pki_key* akey);
   pki_pkcs12(const QString& fname);
 
-  pki_key* getKey() const { return key; }
-  pki_x509* getCert() const { return cert; }
+  [[nodiscard]] pki_key* getKey() const { return key; }
+  [[nodiscard]] pki_x509* getCert() const { return cert; }
   void writePKCS12(XFile& file) const;
 };
 

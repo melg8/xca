@@ -20,9 +20,9 @@ class errorEx {
   }
   errorEx(const QSqlError& e) { msg = e.text(); }
   void appendString(QString s) { msg = msg + " " + s; }
-  QString getString() const { return msg; }
-  const char* getCString() const { return msg.toLatin1(); }
-  bool isEmpty() const { return msg.isEmpty(); }
+  [[nodiscard]] QString getString() const { return msg; }
+  [[nodiscard]] const char* getCString() const { return msg.toLatin1(); }
+  [[nodiscard]] bool isEmpty() const { return msg.isEmpty(); }
 };
 
 #endif  // EXCEPTION_H

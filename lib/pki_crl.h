@@ -45,7 +45,7 @@ class pki_crl final : public pki_x509name {
  protected:
   QVariant issuerSqlId;
   X509_CRL* crl;
-  extList extensions() const;
+  [[nodiscard]] extList extensions() const;
   void collect_properties(QMap<QString, QString>& prp) const final;
 
  public:
@@ -53,7 +53,7 @@ class pki_crl final : public pki_x509name {
   ~pki_crl() final;
   void fromPEM_BIO(BIO* bio, const QString& name) final;
   void fload(const QString& fname) final;
-  QString getSigAlg() const;
+  [[nodiscard]] QString getSigAlg() const;
   void writeDefault(const QString& dirname) const final;
   void createCrl(const QString d, pki_x509* iss);
   void addRev(const x509rev& rev, bool withReason = true);
@@ -61,16 +61,16 @@ class pki_crl final : public pki_x509name {
   void addV3ext(const x509v3ext& e);
   void sign(pki_key* key, const digest& digest);
   void writeCrl(XFile& file, bool pem = true) const;
-  pki_x509* getIssuer() const;
-  QString getIssuerName() const;
+  [[nodiscard]] pki_x509* getIssuer() const;
+  [[nodiscard]] QString getIssuerName() const;
   void setIssuer(pki_x509* iss);
-  x509name getSubject() const final;
+  [[nodiscard]] x509name getSubject() const final;
   void setLastUpdate(const a1time& t);
   void setNextUpdate(const a1time& t);
-  a1time getNextUpdate() const;
-  a1time getLastUpdate() const;
+  [[nodiscard]] a1time getNextUpdate() const;
+  [[nodiscard]] a1time getLastUpdate() const;
   bool verify(pki_x509* issuer);
-  int numRev() const;
+  [[nodiscard]] int numRev() const;
   x509revList getRevList();
   QString printV3ext();
   x509v3ext getExtByNid(int nid);
@@ -78,19 +78,19 @@ class pki_crl final : public pki_x509name {
   QVariant column_data(const dbheader* hd) const final;
   QVariant getIcon(const dbheader* hd) const final;
   a1time column_a1time(const dbheader* hd) const final;
-  QString getMsg(msg_type msg) const final;
+  [[nodiscard]] QString getMsg(msg_type msg) const final;
   void d2i(QByteArray& ba);
-  QByteArray i2d() const final;
+  [[nodiscard]] QByteArray i2d() const final;
   void setCrlNumber(a1int num);
   bool getCrlNumber(a1int* num) const;
-  a1int getCrlNumber() const;
+  [[nodiscard]] a1int getCrlNumber() const;
   bool pem(BioByteArray&) final;
-  bool visible() const final;
+  [[nodiscard]] bool visible() const final;
   QSqlError lookupIssuer();
   QSqlError insertSqlData() final;
   QSqlError deleteSqlData() final;
   void restoreSql(const QSqlRecord& rec) final;
-  QStringList icsVEVENT() const;
+  [[nodiscard]] QStringList icsVEVENT() const;
   void print(BioByteArray& b, enum print_opt opt) const final;
 };
 

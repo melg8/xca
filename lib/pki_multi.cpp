@@ -1,7 +1,6 @@
 #include "pki_multi.h"
 
 #include <QList>
-#include "xca_warning_core.h"
 #include "exception.h"
 #include "func.h"
 #include "load_obj.h"
@@ -14,6 +13,7 @@
 #include "pki_x_509.h"
 #include "pki_x_509_req.h"
 #include "x_file.h"
+#include "xca_warning_core.h"
 
 pki_multi::pki_multi(const QString& name) : pki_base(name) {
   multi.clear();

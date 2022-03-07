@@ -1,7 +1,7 @@
 #include "xca_warning.h"
 
-#include "xca_dialog.h"
 #include "lib/func.h"
+#include "xca_dialog.h"
 
 #include <QApplication>
 #include <QClipboard>

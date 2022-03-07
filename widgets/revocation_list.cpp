@@ -1,10 +1,10 @@
 #include "revocation_list.h"
 
 #include "help.h"
-#include "main_window.h"
-#include "new_crl.h"
 #include "lib/asn_1_int.h"
 #include "lib/pki_x_509.h"
+#include "main_window.h"
+#include "new_crl.h"
 
 enum revCol { Cnumber, Cserial, Cdate, Creason, CiDate, Cmax };
 

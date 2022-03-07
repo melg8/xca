@@ -14,10 +14,6 @@
 
 #include "cert_detail.h"
 #include "help.h"
-#include "main_window.h"
-#include "new_key.h"
-#include "oid_resolver.h"
-#include "xca_warning.h"
 #include "lib/db_key.h"
 #include "lib/db_temp.h"
 #include "lib/db_x_509.h"
@@ -25,7 +21,11 @@
 #include "lib/func.h"
 #include "lib/oid.h"
 #include "lib/x_509_name.h"
+#include "main_window.h"
+#include "new_key.h"
+#include "oid_resolver.h"
 #include "v_3_ext.h"
+#include "xca_warning.h"
 
 void NewX509::setupExplicitDN(NIDlist my_dn_nid = NIDlist()) {
   NIDlist expl_dn_nid;

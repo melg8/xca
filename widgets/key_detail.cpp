@@ -4,12 +4,12 @@
 #include "lib/pki_evp.h"
 #include "lib/pki_scard.h"
 
+#include "click_label.h"
+#include "dist_name.h"
 #include "help.h"
 #include "main_window.h"
 #include "oid_resolver.h"
 #include "xca_application.h"
-#include "click_label.h"
-#include "dist_name.h"
 
 #include <QLabel>
 #include <QLineEdit>

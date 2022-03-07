@@ -3,8 +3,8 @@
 #include <openssl/asn1.h>
 #include <openssl/err.h>
 #include <QMessageBox>
-#include "bio_byte_array.h"
 #include "base.h"
+#include "bio_byte_array.h"
 #include "exception.h"
 #include "func.h"
 

@@ -22,13 +22,13 @@ class database_model final : public QObject {
   void openSqlDB();
   QSqlError initSqlDB();
   QString dbName;
-  bool checkForOldDbFormat(const QString& dbfile) const;
-  enum open_result verifyOldDbPass(const QString& dbname) const;
+  [[nodiscard]] bool checkForOldDbFormat(const QString& dbfile) const;
+  [[nodiscard]] enum open_result verifyOldDbPass(const QString& dbname) const;
   void importOldDatabase(const QString& dbfile);
-  QString get_default_db() const;
-  QString checkPre2Xdatabase() const;
-  enum open_result initPass(const QString& db_name,
-                            const QString& passhash) const;
+  [[nodiscard]] QString get_default_db() const;
+  [[nodiscard]] QString checkPre2Xdatabase() const;
+  [[nodiscard]] enum open_result initPass(const QString& db_name,
+                                          const QString& passhash) const;
   void restart_timer();
   static void openDatabase(const QString& descriptor, const Passwd& pass);
   static void openRemoteDatabase(const QString& connName,
@@ -46,9 +46,9 @@ class database_model final : public QObject {
   void timerEvent(QTimerEvent* event) final;
   db_base* modelForPki(const pki_base* pki) const;
 
-  QString dbname() const { return dbName; }
+  [[nodiscard]] QString dbname() const { return dbName; }
   void dump_database(const QString& dirname) const;
-  QList<db_base*> getModels() const { return models; }
+  [[nodiscard]] QList<db_base*> getModels() const { return models; }
   template <class T>
   T* model() const {
     foreach (db_base* model, models) {
@@ -87,7 +87,7 @@ class xca_db {
       db = nullptr;
     }
   }
-  QString name() const { return db ? db->dbname() : QString(); }
+  [[nodiscard]] QString name() const { return db ? db->dbname() : QString(); }
   bool isOpen() { return db != nullptr; }
   template <class T>
   T* model() const {
@@ -97,7 +97,7 @@ class xca_db {
     if (db) db->dump_database(dirname);
   }
   void as_default() const { database_model::as_default_database(name()); }
-  QList<db_base*> getModels() const {
+  [[nodiscard]] QList<db_base*> getModels() const {
     return db ? db->getModels() : QList<db_base*>();
   }
   pki_base* insert(pki_base* pki) { return db ? db->insert(pki) : nullptr; }

@@ -17,16 +17,16 @@ class x509rev {
   int reason_idx, crlNo;
   void set(const x509rev& x);
 
-  X509_REVOKED* toREVOKED(bool withReason = true) const;
+  [[nodiscard]] X509_REVOKED* toREVOKED(bool withReason = true) const;
   void fromREVOKED(const X509_REVOKED* rev);
 
  public:
   operator QString() const;
   static QStringList crlreasons();
   void d2i(QByteArray& ba);
-  QByteArray i2d() const;
-  QString getReason() const;
-  bool identical(const x509rev& x) const;
+  [[nodiscard]] QByteArray i2d() const;
+  [[nodiscard]] QString getReason() const;
+  [[nodiscard]] bool identical(const x509rev& x) const;
 
   x509rev() {
     reason_idx = 0;
@@ -36,7 +36,9 @@ class x509rev {
   x509rev(const x509rev& n) { set(n); }
   x509rev(QSqlRecord rec, int offset = 0);
   void executeQuery(XSqlQuery& q);
-  bool isValid() const { return serial != a1int(0L) && !date.isUndefined(); }
+  [[nodiscard]] bool isValid() const {
+    return serial != a1int(0L) && !date.isUndefined();
+  }
   x509rev& set(const X509_REVOKED* r) {
     fromREVOKED(r);
     return *this;
@@ -53,11 +55,11 @@ class x509rev {
     reason_idx = crlreasons().indexOf(reason);
   }
   void setCrlNo(int n) { crlNo = n; }
-  a1int getSerial() const { return serial; }
-  a1time getDate() const { return date; }
-  a1time getInvalDate() const { return ivalDate; }
-  int getCrlNo() const { return crlNo; }
-  X509_REVOKED* get(bool withReason = true) const {
+  [[nodiscard]] a1int getSerial() const { return serial; }
+  [[nodiscard]] a1time getDate() const { return date; }
+  [[nodiscard]] a1time getInvalDate() const { return ivalDate; }
+  [[nodiscard]] int getCrlNo() const { return crlNo; }
+  [[nodiscard]] X509_REVOKED* get(bool withReason = true) const {
     return toREVOKED(withReason);
   }
 };
@@ -67,7 +69,7 @@ class x509revList : public QList<x509rev> {
   static x509revList fromSql(QVariant caId);
   bool merged;
   void merge(const x509revList& other);
-  bool identical(const x509revList& other) const;
+  [[nodiscard]] bool identical(const x509revList& other) const;
   x509revList() : QList<x509rev>() { merged = false; }
   x509revList(const x509revList& r) : QList<x509rev>(r) { merged = r.merged; }
   x509revList(const x509rev& r) : QList<x509rev>() {

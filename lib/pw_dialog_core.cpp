@@ -2,10 +2,10 @@
 
 #include "xca_warning_core.h"
 
-#include "lib/passwd.h"
 #include "lib/base.h"
 #include "lib/exception.h"
 #include "lib/func.h"
+#include "lib/passwd.h"
 
 #include <QLabel>
 #include <QMessageBox>

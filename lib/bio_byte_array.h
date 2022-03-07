@@ -24,11 +24,11 @@ class BioByteArray {
       : read_write(nullptr), read_only(nullptr), store(bba.byteArray()) {}
   BioByteArray() : read_write(nullptr), read_only(nullptr), store() {}
   ~BioByteArray();
-  int size() const;
+  [[nodiscard]] int size() const;
   BIO* bio();
   BIO* ro();
-  QByteArray byteArray() const;
-  QString qstring() const;
+  [[nodiscard]] QByteArray byteArray() const;
+  [[nodiscard]] QString qstring() const;
   operator BIO*();
   operator QByteArray();
   BioByteArray& operator=(const BioByteArray& other);

@@ -17,7 +17,7 @@ class NewKey final : public QDialog, public Ui::NewKey {
 
  public:
   NewKey(QWidget* parent, const QString& name);
-  keyjob getKeyJob() const;
+  [[nodiscard]] keyjob getKeyJob() const;
 
  public slots:
   void accept() final;

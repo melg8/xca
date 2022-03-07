@@ -8,7 +8,7 @@
 class X509SuperTreeView : public XcaTreeView {
   Q_OBJECT
 
-  db_x509super* x509super() const {
+  [[nodiscard]] db_x509super* x509super() const {
     return dynamic_cast<db_x509super*>(basemodel);
   }
 

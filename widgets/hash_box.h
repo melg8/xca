@@ -14,7 +14,7 @@ class hashBox : public QComboBox {
 
  public:
   hashBox(QWidget* parent);
-  const digest current() const;
+  [[nodiscard]] const digest current() const;
   void setCurrent(const digest& md);
   void setupHashes(QList<int> nids);
   void setupAllHashes();

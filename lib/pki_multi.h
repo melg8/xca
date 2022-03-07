@@ -19,7 +19,7 @@ class pki_multi : public pki_base {
   void append_item(pki_base* pki);
   void print(BioByteArray& b, enum print_opt opt) const override;
   QList<pki_base*> pull();
-  QList<pki_base*> get() const;
+  [[nodiscard]] QList<pki_base*> get() const;
 };
 
 #endif  // PKI_MULTI_H

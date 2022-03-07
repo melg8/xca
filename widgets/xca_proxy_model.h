@@ -10,10 +10,11 @@ class XcaProxyModel final : public QSortFilterProxyModel {
   Q_OBJECT
  public:
   XcaProxyModel(QWidget* parent = nullptr) : QSortFilterProxyModel(parent) {}
-  bool lessThan(const QModelIndex& left, const QModelIndex& right) const final;
-  bool filterAcceptsRow(int sourceRow,
-                        const QModelIndex& sourceParent) const final;
-  QVariant data(const QModelIndex& index, int role) const final;
+  [[nodiscard]] bool lessThan(const QModelIndex& left,
+                              const QModelIndex& right) const final;
+  [[nodiscard]] bool filterAcceptsRow(
+      int sourceRow, const QModelIndex& sourceParent) const final;
+  [[nodiscard]] QVariant data(const QModelIndex& index, int role) const final;
 };
 
 #endif  // XCA_PROXY_MODEL_H

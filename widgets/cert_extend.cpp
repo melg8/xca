@@ -7,8 +7,8 @@
 #include <QMessageBox>
 #include "lib/base.h"
 #include "lib/func.h"
-#include "widgets/xca_warning.h"
 #include "widgets/validity.h"
+#include "widgets/xca_warning.h"
 
 CertExtend::CertExtend(QWidget* parent, pki_x509* s) : QDialog(parent) {
   setupUi(this);

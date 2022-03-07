@@ -9,7 +9,9 @@ class QAction;
 class KeyTreeView final : public XcaTreeView {
   Q_OBJECT
 
-  db_key* keys() const { return dynamic_cast<db_key*>(basemodel); }
+  [[nodiscard]] db_key* keys() const {
+    return dynamic_cast<db_key*>(basemodel);
+  }
 
  public:
   KeyTreeView(QWidget* parent) : XcaTreeView(parent) {}

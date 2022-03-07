@@ -20,9 +20,9 @@ class digest {
   digest(const digest& d) = default;
   digest& operator=(const digest& d) = default;
 
-  bool isInsecure() const;
-  const EVP_MD* MD() const;
-  QString name() const;
+  [[nodiscard]] bool isInsecure() const;
+  [[nodiscard]] const EVP_MD* MD() const;
+  [[nodiscard]] QString name() const;
 
   static void setDefault(const QString& def);
   static const digest getDefault();

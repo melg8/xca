@@ -24,19 +24,21 @@ class pkcs11_lib final : public QLibrary {
   ~pkcs11_lib() final;
 
   QList<unsigned long> getSlotList();
-  QString driverInfo() const;
-  QString filename() const { return file; }
-  CK_FUNCTION_LIST* ptr() const { return p11; }
-  bool isLoaded() const { return p11 != nullptr; }
-  enum Qt::CheckState checked() const {
+  [[nodiscard]] QString driverInfo() const;
+  [[nodiscard]] QString filename() const { return file; }
+  [[nodiscard]] CK_FUNCTION_LIST* ptr() const { return p11; }
+  [[nodiscard]] bool isLoaded() const { return p11 != nullptr; }
+  [[nodiscard]] enum Qt::CheckState checked() const {
     return is_enabled ? Qt::Checked : Qt::Unchecked;
   }
-  bool isLib(const QString& name) const { return name2File(name) == file; }
-  QString toData(int enabled) const {
+  [[nodiscard]] bool isLib(const QString& name) const {
+    return name2File(name) == file;
+  }
+  [[nodiscard]] QString toData(int enabled) const {
     return QString("%1:%2").arg(enabled).arg(file);
   }
-  QString toData() const { return toData(is_enabled); }
-  QString pixmap() const {
+  [[nodiscard]] QString toData() const { return toData(is_enabled); }
+  [[nodiscard]] QString pixmap() const {
     if (!is_enabled) return QString();
     return isLoaded() ? ":doneIco" : ":warnIco";
   }
@@ -54,7 +56,7 @@ class slotid {
   void isValid() const {
     if (!lib) throw errorEx("InternalError: slotid is invalid");
   }
-  CK_FUNCTION_LIST* p11() const { return lib->ptr(); }
+  [[nodiscard]] CK_FUNCTION_LIST* p11() const { return lib->ptr(); }
 };
 
 typedef QList<slotid> slotidList;
@@ -66,26 +68,28 @@ class pkcs11_lib_list final : public QAbstractListModel {
  public:
   pkcs11_lib* add_lib(const QString& fname);
   void load(const QString& list);
-  slotidList getSlotList() const;
-  QString getPkcs11Provider() const;
+  [[nodiscard]] slotidList getSlotList() const;
+  [[nodiscard]] QString getPkcs11Provider() const;
   void remove_libs();
-  bool loaded() const;
+  [[nodiscard]] bool loaded() const;
 
   /* Helper for QAbstractListModel */
-  pkcs11_lib* libByModelIndex(const QModelIndex& index) const;
+  [[nodiscard]] pkcs11_lib* libByModelIndex(const QModelIndex& index) const;
 
   /* Reimplementation from QAbstractListModel */
-  int rowCount(const QModelIndex& parent = QModelIndex()) const final;
-  QVariant data(const QModelIndex& index,
-                int role = Qt::DisplayRole) const final;
+  [[nodiscard]] int rowCount(
+      const QModelIndex& parent = QModelIndex()) const final;
+  [[nodiscard]] QVariant data(const QModelIndex& index,
+                              int role = Qt::DisplayRole) const final;
   bool setData(const QModelIndex& index, const QVariant& value, int role) final;
 
-  QMap<int, QVariant> itemData(const QModelIndex& index) const final;
+  [[nodiscard]] QMap<int, QVariant> itemData(
+      const QModelIndex& index) const final;
   bool setItemData(const QModelIndex& index,
                    const QMap<int, QVariant>& roles) final;
 
-  Qt::ItemFlags flags(const QModelIndex& index) const final;
-  Qt::DropActions supportedDropActions() const final;
+  [[nodiscard]] Qt::ItemFlags flags(const QModelIndex& index) const final;
+  [[nodiscard]] Qt::DropActions supportedDropActions() const final;
 
   bool removeRows(int row,
                   int count,

@@ -1,8 +1,8 @@
 #include "main_window.h"
 
+#include "hash_box.h"
 #include "import_multi.h"
 #include "xca_application.h"
-#include "hash_box.h"
 
 #include <QApplication>
 #include <QClipboard>
@@ -19,12 +19,12 @@
 
 #include <openssl/err.h>
 
-#include "lib/passwd.h"
 #include "lib/database_model.h"
 #include "lib/dh_gen.h"
 #include "lib/entropy.h"
 #include "lib/exception.h"
 #include "lib/load_obj.h"
+#include "lib/passwd.h"
 #include "lib/pki_evp.h"
 #include "lib/pki_multi.h"
 #include "lib/pki_scard.h"

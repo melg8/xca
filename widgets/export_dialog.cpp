@@ -1,9 +1,9 @@
 #include "export_dialog.h"
 
 #include "help.h"
+#include "lib/base.h"
 #include "main_window.h"
 #include "xca_warning.h"
-#include "lib/base.h"
 
 #include <QComboBox>
 #include <QFileDialog>

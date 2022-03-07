@@ -1,9 +1,9 @@
 #include "func.h"
 
-#include "xca_warning_core.h"
 #include "asn_1_time.h"
 #include "exception.h"
 #include "settings.h"
+#include "xca_warning_core.h"
 
 #include <openssl/asn1.h>
 #include <openssl/bio.h>

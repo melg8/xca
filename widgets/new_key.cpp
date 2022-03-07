@@ -4,13 +4,13 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QStringList>
-#include "help.h"
-#include "item_combo.h"
-#include "main_window.h"
 #include "click_label.h"
 #include "dist_name.h"
+#include "help.h"
+#include "item_combo.h"
 #include "lib/pkcs_11.h"
 #include "lib/pki_evp.h"
+#include "main_window.h"
 
 class keyListItem {
  public:
@@ -65,7 +65,7 @@ class keyListItem {
     maxKeySize = INT_MAX;
     ec_flags = 0;
   }
-  int type() const { return ktype.type; }
+  [[nodiscard]] int type() const { return ktype.type; }
 };
 
 Q_DECLARE_METATYPE(keyListItem)

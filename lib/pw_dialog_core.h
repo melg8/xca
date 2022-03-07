@@ -2,8 +2,8 @@
 #define PW_DIALOG_CORE_H
 
 #include <QByteArray>
-#include "passwd.h"
 #include "pass_info.h"
+#include "passwd.h"
 
 class PwDialogUI_i {
  public:

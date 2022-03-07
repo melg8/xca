@@ -27,7 +27,7 @@ class ExportDialog final : public QDialog, public Ui::ExportDialog {
                const QString& help_ctx = QString());
   ~ExportDialog() final;
   static bool mayWriteFile(const QString& fname);
-  const pki_export* export_type(int idx = -1) const;
+  [[nodiscard]] const pki_export* export_type(int idx = -1) const;
 
  public slots:
   void on_fileBut_clicked();

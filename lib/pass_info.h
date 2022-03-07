@@ -23,15 +23,15 @@ class pass_info : public QObject {
 
  public:
   pass_info(const QString& t, const QString& d, QWidget* w = nullptr);
-  QString getTitle() const { return title; }
-  QString getDescription() const { return description; }
+  [[nodiscard]] QString getTitle() const { return title; }
+  [[nodiscard]] QString getDescription() const { return description; }
   QWidget* getWidget() {
     if (!widget) widget = qApp->activeWindow();
     return widget;
   }
-  QString getType() const { return type; }
-  QString getImage() const { return pixmap; }
-  enum open_result getResult() const { return result; }
+  [[nodiscard]] QString getType() const { return type; }
+  [[nodiscard]] QString getImage() const { return pixmap; }
+  [[nodiscard]] enum open_result getResult() const { return result; }
   void setTitle(QString t) { title = t; }
   void setDescription(QString d) { description = d; }
   void setWidget(QWidget* w) { widget = w; }

@@ -10,7 +10,7 @@ class a1int {
   ASN1_INTEGER* in;
   ASN1_INTEGER* dup(const ASN1_INTEGER* a) const;
   a1int& setQString(const QString& s, int dec);
-  QString toQString(int dec) const;
+  [[nodiscard]] QString toQString(int dec) const;
 
  public:
   a1int();
@@ -21,16 +21,16 @@ class a1int {
   ~a1int();
   a1int& set(const ASN1_INTEGER* i);
   a1int& set(long l);
-  QString toHex() const;
-  QString toDec() const;
+  [[nodiscard]] QString toHex() const;
+  [[nodiscard]] QString toDec() const;
   a1int& setHex(const QString& s);
   a1int& setDec(const QString& s);
   a1int& setRaw(const unsigned char* data, unsigned len);
-  long getLong() const;
-  ASN1_INTEGER* get() const;
-  const ASN1_INTEGER* get0() const;
+  [[nodiscard]] long getLong() const;
+  [[nodiscard]] ASN1_INTEGER* get() const;
+  [[nodiscard]] const ASN1_INTEGER* get0() const;
   QByteArray i2d();
-  int derSize() const;
+  [[nodiscard]] int derSize() const;
 
   a1int& operator++();
   a1int operator++(int);

@@ -30,7 +30,7 @@ class ImportMulti final : public QDialog, private Ui::ImportMulti {
   void tokenInfo(const slotid& s);
   void dragEnterEvent(QDragEnterEvent* event) final;
   void dropEvent(QDropEvent* event) final;
-  bool openDB() const;
+  [[nodiscard]] bool openDB() const;
 
  public slots:
   void on_butRemove_clicked();

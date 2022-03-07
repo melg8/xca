@@ -7,7 +7,9 @@
 class CertTreeView final : public X509SuperTreeView {
   Q_OBJECT
 
-  db_x509* certs() const { return dynamic_cast<db_x509*>(basemodel); }
+  [[nodiscard]] db_x509* certs() const {
+    return dynamic_cast<db_x509*>(basemodel);
+  }
 
  public:
   CertTreeView(QWidget* parent) : X509SuperTreeView(parent) {}

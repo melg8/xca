@@ -5,10 +5,10 @@
 #include <QFile>
 #include <QStringList>
 
-#include "main_window.h"
-#include "xca_warning.h"
 #include "lib/base.h"
 #include "lib/db_history.h"
+#include "main_window.h"
+#include "xca_warning.h"
 
 DbMap OpenDb::getDatabases() {
   QStringList list = QSqlDatabase::drivers();

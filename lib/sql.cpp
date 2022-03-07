@@ -3,9 +3,9 @@
 #include <QDebug>
 #include <QString>
 
-#include "xca_warning_core.h"
 #include "base.h"
 #include "settings.h"
+#include "xca_warning_core.h"
 
 int DbTransaction::mutex;
 int DbTransaction::error;

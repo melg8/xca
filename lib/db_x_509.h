@@ -54,7 +54,7 @@ class db_x509 : public db_x509super {
   void revoke(QModelIndexList indexes);
   void do_revoke(QModelIndexList indexes, const x509rev& r);
   void unRevoke(QModelIndexList indexes);
-  int exportFlags(const QModelIndex& idx) const override;
+  [[nodiscard]] int exportFlags(const QModelIndex& idx) const override;
   void exportItems(const QModelIndexList& indexes,
                    const pki_export* xport,
                    XFile& file) const override;

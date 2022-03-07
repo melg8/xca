@@ -34,7 +34,7 @@ class db_base : public QAbstractItemModel {
   virtual dbheaderList getHeaders();
   int colResizing;
   QString sqlItemSelector();
-  bool isValidCol(int col) const;
+  [[nodiscard]] bool isValidCol(int col) const;
   void timerEvent(QTimerEvent* event) override;
   bool treeview;
   pki_base* rootItem;
@@ -57,8 +57,8 @@ class db_base : public QAbstractItemModel {
   virtual void inToCont(pki_base* pki);
   virtual void remFromCont(const QModelIndex& idx);
   void changeView();
-  int exportFlags(const QModelIndexList& indexes) const;
-  virtual int exportFlags(const QModelIndex&) const { return 0; }
+  [[nodiscard]] int exportFlags(const QModelIndexList& indexes) const;
+  [[nodiscard]] virtual int exportFlags(const QModelIndex&) const { return 0; }
   virtual void exportItem(const QModelIndex&, const pki_export*, XFile&) const {
   }
   virtual void exportItems(const QModelIndexList& indexes,
@@ -66,19 +66,20 @@ class db_base : public QAbstractItemModel {
                            XFile& file) const;
 
   void dump(const QString& dirname) const;
-  QModelIndex index(int row,
-                    int column,
-                    const QModelIndex& parent) const override;
+  [[nodiscard]] QModelIndex index(int row,
+                                  int column,
+                                  const QModelIndex& parent) const override;
   QModelIndex index(pki_base* pki) const;
-  QModelIndex parent(const QModelIndex& index) const override;
-  int rowCount(const QModelIndex& parent) const override;
-  int allItemsCount() const { return rootItem->childCount(); }
-  int columnCount(const QModelIndex& parent) const override;
-  QVariant data(const QModelIndex& index, int role) const override;
-  QVariant headerData(int section,
-                      Qt::Orientation orientation,
-                      int role) const override;
-  Qt::ItemFlags flags(const QModelIndex& index) const override;
+  [[nodiscard]] QModelIndex parent(const QModelIndex& index) const override;
+  [[nodiscard]] int rowCount(const QModelIndex& parent) const override;
+  [[nodiscard]] int allItemsCount() const { return rootItem->childCount(); }
+  [[nodiscard]] int columnCount(const QModelIndex& parent) const override;
+  [[nodiscard]] QVariant data(const QModelIndex& index,
+                              int role) const override;
+  [[nodiscard]] QVariant headerData(int section,
+                                    Qt::Orientation orientation,
+                                    int role) const override;
+  [[nodiscard]] Qt::ItemFlags flags(const QModelIndex& index) const override;
   bool setData(const QModelIndex& index,
                const QVariant& value,
                int role) override;
@@ -94,7 +95,7 @@ class db_base : public QAbstractItemModel {
   void insertChild(pki_base* child, pki_base* parent = nullptr);
   int rownumber(const pki_base* child) const;
   static void createSuccess(const pki_base* pki);
-  bool columnHidden(int col) const;
+  [[nodiscard]] bool columnHidden(int col) const;
   virtual void saveHeaderState();
   void initHeaderView(QHeaderView* hv);
   void setVisualIndex(int i, int visualIndex);
@@ -103,12 +104,13 @@ class db_base : public QAbstractItemModel {
   void colResizeStart() { colResizing++; }
   void colResizeEnd() { colResizing--; }
   dbheaderList getAllHeaders() { return allHeaders; }
-  QString pem2QString(QModelIndexList indexes) const;
+  [[nodiscard]] QString pem2QString(QModelIndexList indexes) const;
 
   void deletePKI(QModelIndex idx);
-  QMimeData* mimeData(const QModelIndexList& indexes) const override;
+  [[nodiscard]] QMimeData* mimeData(
+      const QModelIndexList& indexes) const override;
   void emitDataChanged(pki_base* pki);
-  bool containsType(enum pki_type t) const;
+  [[nodiscard]] bool containsType(enum pki_type t) const;
   void writeVcalendar(XFile& file, QStringList vcal) const;
 
  public slots:

@@ -3,14 +3,14 @@
 #include "crl_detail.h"
 #include "export_dialog.h"
 #include "item_combo.h"
-#include "main_window.h"
-#include "new_crl.h"
-#include "xca_dialog.h"
-#include "xca_warning.h"
 #include "lib/database_model.h"
 #include "lib/db_crl.h"
 #include "lib/load_obj.h"
 #include "lib/pki_x_509.h"
+#include "main_window.h"
+#include "new_crl.h"
+#include "xca_dialog.h"
+#include "xca_warning.h"
 
 void CrlTreeView::showPki(pki_base* pki) {
   CrlDetail::showCrl(this, dynamic_cast<pki_crl*>(pki));

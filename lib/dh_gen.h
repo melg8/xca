@@ -14,8 +14,8 @@ class DHgen final : public QThread {
 
  public:
   DHgen(const QString& n, int b) : QThread(), fname(n), bits(b) {}
-  QString filename() const { return fname; }
-  errorEx error() const { return err; }
+  [[nodiscard]] QString filename() const { return fname; }
+  [[nodiscard]] errorEx error() const { return err; }
 
  protected:
   void run() final;

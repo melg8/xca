@@ -2,8 +2,8 @@
 
 /* here we have the possibility to add our own OIDS */
 
-#include "xca_warning_core.h"
 #include "func.h"
+#include "xca_warning_core.h"
 
 #include <openssl/objects.h>
 

@@ -4,11 +4,11 @@
 #include <QAbstractItemView>
 #include <QMenu>
 #include "export_dialog.h"
+#include "lib/load_obj.h"
+#include "lib/pki_temp.h"
 #include "main_window.h"
 #include "new_x_509.h"
 #include "xca_dialog.h"
-#include "lib/load_obj.h"
-#include "lib/pki_temp.h"
 
 void TempTreeView::fillContextMenu(QMenu* menu,
                                    QMenu*,

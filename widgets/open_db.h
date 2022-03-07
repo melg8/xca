@@ -14,12 +14,12 @@ class OpenDb final : public QDialog, public Ui::OpenDb {
   static QString lastRemote;
   bool sqlite, show_connection_settings;
   void setupDatabaseName(const QString& db);
-  QString getDbType() const;
+  [[nodiscard]] QString getDbType() const;
   void fillDbDropDown(const QString& current);
 
  public:
   OpenDb(QWidget* parent, const QString& db);
-  QString getDescriptor() const;
+  [[nodiscard]] QString getDescriptor() const;
   static bool hasSqLite();
   static void checkSqLite();
   static bool hasRemoteDrivers();

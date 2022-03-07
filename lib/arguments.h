@@ -53,12 +53,12 @@ class arguments {
 
   QString operator[](const QString&) const;
   arguments& operator=(const arguments&);
-  bool has(const QString& opt) const;
+  [[nodiscard]] bool has(const QString& opt) const;
   int parse(int argc, char* argv[]);
-  QStringList getFiles() const;
-  int getResult() const;
-  QString resultString() const;
-  bool needDb() const;
+  [[nodiscard]] QStringList getFiles() const;
+  [[nodiscard]] int getResult() const;
+  [[nodiscard]] QString resultString() const;
+  [[nodiscard]] bool needDb() const;
 };
 
 #endif  // ARGUMENTS_H

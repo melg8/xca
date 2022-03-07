@@ -57,17 +57,17 @@ class pki_temp final : public pki_x509name {
   void old_fromData(const unsigned char* p, int size, int version);
   void fromData(QByteArray& ba, int version);
   void setAsPreDefined() { pre_defined = true; }
-  QString comboText() const final;
-  QByteArray toData() const;
+  [[nodiscard]] QString comboText() const final;
+  [[nodiscard]] QByteArray toData() const;
   QString toB64Data() { return QString::fromLatin1(toData().toBase64()); }
   bool compare(const pki_base* ref) const final;
   void writeTemp(XFile& file) const;
   QVariant getIcon(const dbheader* hd) const final;
-  QString getMsg(msg_type msg) const final;
-  x509name getSubject() const final;
+  [[nodiscard]] QString getMsg(msg_type msg) const final;
+  [[nodiscard]] x509name getSubject() const final;
   void setSubject(x509name n) { xname = n; }
   bool pem(BioByteArray&) final;
-  QByteArray toExportData() const;
+  [[nodiscard]] QByteArray toExportData() const;
   void fromPEM_BIO(BIO*, const QString&) final;
   void fromExportData(QByteArray data);
   extList fromCert(pki_x509super* cert_or_req);

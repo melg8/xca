@@ -31,21 +31,22 @@ class a1time : public QDateTime {
   a1time& set(const ASN1_TIME* a);
   int fromPlain(const QString& plain);
   a1time& setUndefined();
-  bool isUndefined() const;
-  QString toString(QString fmt, Qt::TimeSpec spec = Qt::UTC) const;
-  QString toPretty() const;
-  QString toPrettyGMT() const;
-  QString toPlain(const QString& fmt = QString()) const;
-  QString toPlainUTC() const;
-  QString toSortable() const;
-  QString toFancy() const;
-  QString isoLocalDate() const;
+  [[nodiscard]] bool isUndefined() const;
+  [[nodiscard]] QString toString(QString fmt,
+                                 Qt::TimeSpec spec = Qt::UTC) const;
+  [[nodiscard]] QString toPretty() const;
+  [[nodiscard]] QString toPrettyGMT() const;
+  [[nodiscard]] QString toPlain(const QString& fmt = QString()) const;
+  [[nodiscard]] QString toPlainUTC() const;
+  [[nodiscard]] QString toSortable() const;
+  [[nodiscard]] QString toFancy() const;
+  [[nodiscard]] QString isoLocalDate() const;
   ASN1_TIME* get();
   ASN1_TIME* get_utc();
   static QDateTime now(int delta = 0);
   QByteArray i2d();
   void d2i(QByteArray& ba);
-  qint64 age() const;
+  [[nodiscard]] qint64 age() const;
 };
 
 #endif  // ASN_1_TIME_H

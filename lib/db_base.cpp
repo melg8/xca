@@ -1,8 +1,8 @@
 #include "db_base.h"
 
-#include "xca_warning_core.h"
 #include "exception.h"
 #include "func.h"
+#include "xca_warning_core.h"
 
 #include <QDebug>
 #include <QDir>

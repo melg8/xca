@@ -4,14 +4,14 @@
 #include <QLineEdit>
 #include <QMessageBox>
 #include <QPushButton>
-#include "help.h"
-#include "key_detail.h"
-#include "main_window.h"
-#include "oid_resolver.h"
 #include "click_label.h"
 #include "dist_name.h"
-#include "lib/xca_warning_core.h"
+#include "help.h"
+#include "key_detail.h"
 #include "lib/func.h"
+#include "lib/xca_warning_core.h"
+#include "main_window.h"
+#include "oid_resolver.h"
 
 CertDetail::CertDetail(QWidget* w)
     : QDialog(w ? w : mainwin), keySqlId(), issuerSqlId(), thisSqlId() {

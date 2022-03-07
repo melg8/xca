@@ -4,14 +4,14 @@
 #include <QLineEdit>
 #include <QTextEdit>
 #include "cert_detail.h"
+#include "click_label.h"
+#include "dist_name.h"
 #include "help.h"
+#include "lib/pki_crl.h"
 #include "main_window.h"
 #include "oid_resolver.h"
 #include "open_db.h"
 #include "revocation_list.h"
-#include "click_label.h"
-#include "dist_name.h"
-#include "lib/pki_crl.h"
 
 CrlDetail::CrlDetail(QWidget* w)
     : QDialog(w ? w : mainwin), issuerSqlId(), crlSqlId() {

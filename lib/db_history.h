@@ -12,7 +12,7 @@ class dbhistory {
  public:
   dbhistory();
   void addEntry(const QString& name);
-  QStringList get() const { return history; }
+  [[nodiscard]] QStringList get() const { return history; }
   static void setLastRemote(const QString& db);
   static QString getLastRemote();
 };

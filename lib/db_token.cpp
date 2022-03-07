@@ -1,9 +1,9 @@
 #include "db_token.h"
 
-#include "xca_warning_core.h"
 #include "exception.h"
 #include "pki_scard.h"
 #include "sql.h"
+#include "xca_warning_core.h"
 
 db_token::db_token() : db_base("manageTokens") { updateHeaders(); }
 

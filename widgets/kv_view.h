@@ -80,30 +80,31 @@ class kvmodel final : public QAbstractTableModel {
   kvmodel(QStringList& heads);
   QStringList getRow(int i);
   void addRow(const QStringList& newrow);
-  Qt::ItemFlags flags(const QModelIndex& index) const final {
+  [[nodiscard]] Qt::ItemFlags flags(const QModelIndex& index) const final {
     return QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
   }
-  QModelIndex index(int row,
-                    int column,
-                    const QModelIndex& parent = QModelIndex()) const final {
+  [[nodiscard]] QModelIndex index(
+      int row,
+      int column,
+      const QModelIndex& parent = QModelIndex()) const final {
     (void)parent;
     return createIndex(row, column, row * myCols + column);
   }
-  QVariant data(const QModelIndex& index, int role) const final;
-  QVariant headerData(int section,
-                      Qt::Orientation orientation,
-                      int role) const final;
+  [[nodiscard]] QVariant data(const QModelIndex& index, int role) const final;
+  [[nodiscard]] QVariant headerData(int section,
+                                    Qt::Orientation orientation,
+                                    int role) const final;
   bool insertRows(int row,
                   int count,
                   const QModelIndex& parent = QModelIndex()) final;
   bool removeRows(int row,
                   int count,
                   const QModelIndex& parent = QModelIndex()) final;
-  int rowCount(const QModelIndex& parent) const final {
+  [[nodiscard]] int rowCount(const QModelIndex& parent) const final {
     (void)parent;
     return items.count() / myCols;
   }
-  int columnCount(const QModelIndex& parent) const final {
+  [[nodiscard]] int columnCount(const QModelIndex& parent) const final {
     (void)parent;
     return myCols;
   }

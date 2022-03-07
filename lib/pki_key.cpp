@@ -1,10 +1,10 @@
 #include "pki_key.h"
 
-#include "xca_warning_core.h"
 #include "func.h"
 #include "pkcs_11.h"
 #include "pki_export.h"
 #include "pki_x_509_super.h"
+#include "xca_warning_core.h"
 
 #include <openssl/pem.h>
 #include <openssl/rand.h>
