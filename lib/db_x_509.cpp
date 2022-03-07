@@ -536,10 +536,10 @@ pki_x509* db_x509::newCert(NewX509* dlg) {
   catch (errorEx& err) {
     XCA_ERROR(err);
     delete cert;
-    if (tempkey != nullptr) {
-      delete (tempkey);
-    }
     cert = nullptr;
+
+    delete tempkey;
+    tempkey = nullptr;
   }
   return cert;
 }
