@@ -134,7 +134,7 @@
   <customwidget>
    <class>kvView</class>
    <extends>QTableView</extends>
-   <header>widgets/kvView.h</header>
+   <header>widgets/kv_view.h</header>
    <slots>
     <slot>addKvRow()</slot>
     <slot>deleteCurrentRow()</slot>

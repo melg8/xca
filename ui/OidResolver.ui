@@ -186,7 +186,7 @@
   <customwidget>
    <class>CopyLabel</class>
    <extends>QLabel</extends>
-   <header location="global">widgets/clicklabel.h</header>
+   <header location="global">widgets/click_label.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

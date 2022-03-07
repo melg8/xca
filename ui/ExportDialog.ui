@@ -190,7 +190,7 @@
   <customwidget>
    <class>focusCombo</class>
    <extends>QComboBox</extends>
-   <header>widgets/FocusCombo.h</header>
+   <header>widgets/focus_combo.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

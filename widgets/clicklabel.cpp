@@ -1,4 +1,4 @@
-#include "clicklabel.h"
+#include "click_label.h"
 
 #include <QColor>
 #include <QPalette>

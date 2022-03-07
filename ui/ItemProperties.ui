@@ -70,7 +70,7 @@
   <customwidget>
    <class>CopyLabel</class>
    <extends>QLabel</extends>
-   <header>widgets/clicklabel.h</header>
+   <header>widgets/click_label.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

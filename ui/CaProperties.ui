@@ -40,7 +40,7 @@
   <customwidget>
    <class>itemComboTemp</class>
    <extends>QComboBox</extends>
-   <header>widgets/ItemCombo.h</header>
+   <header>widgets/item_combo.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

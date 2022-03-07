@@ -521,7 +521,7 @@
   <customwidget>
    <class>XcaTreeView</class>
    <extends>QTreeView</extends>
-   <header>widgets/XcaTreeView.h</header>
+   <header>widgets/xca_tree_view.h</header>
    <slots>
     <slot>newItem()</slot>
     <slot>load()</slot>
@@ -533,22 +533,22 @@
   <customwidget>
    <class>KeyTreeView</class>
    <extends>QTreeView</extends>
-   <header>widgets/KeyTreeView.h</header>
+   <header>widgets/key_tree_view.h</header>
   </customwidget>
   <customwidget>
    <class>TempTreeView</class>
    <extends>QTreeView</extends>
-   <header>widgets/TempTreeView.h</header>
+   <header>widgets/temp_tree_view.h</header>
   </customwidget>
   <customwidget>
    <class>ReqTreeView</class>
    <extends>QTreeView</extends>
-   <header>widgets/ReqTreeView.h</header>
+   <header>widgets/req_tree_view.h</header>
   </customwidget>
   <customwidget>
    <class>CertTreeView</class>
    <extends>QTreeView</extends>
-   <header>widgets/CertTreeView.h</header>
+   <header>widgets/cert_tree_view.h</header>
    <slots>
     <slot>loadPKCS12()</slot>
     <slot>loadPKCS7()</slot>
@@ -558,7 +558,7 @@
   <customwidget>
    <class>CrlTreeView</class>
    <extends>QTreeView</extends>
-   <header>widgets/CrlTreeView.h</header>
+   <header>widgets/crl_tree_view.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

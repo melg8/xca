@@ -1,10 +1,10 @@
-#include "NewCrl.h"
+#include "new_crl.h"
 
 #include "lib/database_model.h"
 #include "lib/db_crl.h"
 #include "lib/pki_x_509.h"
 
-#include "XcaDialog.h"
+#include "xca_dialog.h"
 #include "new_crl_widget.h"
 
 [[nodiscard]] static NewCrlOptions NewCrlOptionsFrom(

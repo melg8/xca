@@ -1,6 +1,6 @@
 #include "new_crl_widget.h"
 
-#include "MainWindow.h"
+#include "main_window.h"
 
 NewCrlWidget::NewCrlWidget(const CrlJobSettings &j,
                const NewCrlOptions &options, QWidget *w)

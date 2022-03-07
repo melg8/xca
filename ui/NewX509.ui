@@ -1206,7 +1206,7 @@
   <customwidget>
    <class>hashBox</class>
    <extends>QComboBox</extends>
-   <header>widgets/hashBox.h</header>
+   <header>widgets/hash_box.h</header>
   </customwidget>
   <customwidget>
    <class>Validity</class>
@@ -1221,7 +1221,7 @@
   <customwidget>
    <class>kvView</class>
    <extends>QTableView</extends>
-   <header>widgets/kvView.h</header>
+   <header>widgets/kv_view.h</header>
    <slots>
     <slot>addKvRow()</slot>
     <slot>deleteCurrentRow()</slot>
@@ -1230,27 +1230,27 @@
   <customwidget>
    <class>DoubleClickLabel</class>
    <extends>QLabel</extends>
-   <header>widgets/clicklabel.h</header>
+   <header>widgets/click_label.h</header>
   </customwidget>
   <customwidget>
    <class>itemComboReq</class>
    <extends>QComboBox</extends>
-   <header>widgets/ItemCombo.h</header>
+   <header>widgets/item_combo.h</header>
   </customwidget>
   <customwidget>
    <class>itemComboKey</class>
    <extends>QComboBox</extends>
-   <header>widgets/ItemCombo.h</header>
+   <header>widgets/item_combo.h</header>
   </customwidget>
   <customwidget>
    <class>itemComboCert</class>
    <extends>QComboBox</extends>
-   <header>widgets/ItemCombo.h</header>
+   <header>widgets/item_combo.h</header>
   </customwidget>
   <customwidget>
    <class>itemComboTemp</class>
    <extends>QComboBox</extends>
-   <header>widgets/ItemCombo.h</header>
+   <header>widgets/item_combo.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

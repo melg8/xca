@@ -18,10 +18,10 @@
 
 // TODO(melg8): drop UI dependencies.
 #include "ui_NewX509.h"
-#include "widgets/CertExtend.h"
-#include "widgets/MainWindow.h"
-#include "widgets/NewX509.h"
-#include "widgets/RevocationList.h"
+#include "widgets/cert_extend.h"
+#include "widgets/main_window.h"
+#include "widgets/new_x_509.h"
+#include "widgets/revocation_list.h"
 
 #include "ui_CertExtend.h"
 #include "ui_Help.h"

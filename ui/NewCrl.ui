@@ -219,7 +219,7 @@
   <customwidget>
    <class>hashBox</class>
    <extends>QComboBox</extends>
-   <header>widgets/hashBox.h</header>
+   <header>widgets/hash_box.h</header>
   </customwidget>
   <customwidget>
    <class>Validity</class>

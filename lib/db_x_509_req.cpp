@@ -5,7 +5,7 @@
 #include "pki_x_509_req.h"
 
 // TODO(melg8): drop UI dependencies.
-#include "widgets/NewX509.h"
+#include "widgets/new_x_509.h"
 
 db_x509req::db_x509req() : db_x509super("requests") {
   sqlHashTable = "requests";

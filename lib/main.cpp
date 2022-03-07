@@ -16,8 +16,8 @@
 #include "pki_multi.h"
 #include "settings.h"
 #include "ui_MainWindow.h"
-#include "widgets/MainWindow.h"
-#include "widgets/XcaApplication.h"
+#include "widgets/main_window.h"
+#include "widgets/xca_application.h"
 #include "x_file.h"
 #if defined(Q_OS_WIN32)
 // For the segfault handler

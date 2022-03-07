@@ -426,12 +426,12 @@ Especially EC and DSA are only defined with SHA1 in the PKCS#11 specification.</
   <customwidget>
    <class>hashBox</class>
    <extends>QComboBox</extends>
-   <header>widgets/hashBox.h</header>
+   <header>widgets/hash_box.h</header>
   </customwidget>
   <customwidget>
    <class>focusCombo</class>
    <extends>QComboBox</extends>
-   <header>widgets/FocusCombo.h</header>
+   <header>widgets/focus_combo.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
