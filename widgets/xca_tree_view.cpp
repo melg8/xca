@@ -170,7 +170,7 @@ QModelIndex XcaTreeView::currentIndex() {
   idx = basemodel->index(idx.row(), 0, idx.parent());
   if (!idx.isValid()) {
     QModelIndexList l = getSelectedIndexes();
-    if (l.size() > 0) {
+    if (!l.empty()) {
       idx = l[0];
     }
   }
@@ -472,7 +472,7 @@ void XcaTreeView::showContextMenu(QContextMenuEvent* e,
     menu->addAction(tr("Rename"), this, SLOT(editIdx()));
     menu->addAction(tr("Properties"), this, SLOT(editComment()));
   }
-  if (indexes.size() > 0) {
+  if (!indexes.empty()) {
     menu->addAction(tr("Delete"), this, SLOT(deleteItems()),
                     QKeySequence::Delete);
     subExport = menu->addMenu(tr("Export"));

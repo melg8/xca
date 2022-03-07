@@ -141,7 +141,7 @@ void db_x509super::toTemplate(QModelIndex index) {
     Q_CHECK_PTR(temp);
     temp->setIntName(pki->getIntName());
     extList el = temp->fromCert(pki);
-    if (el.size()) {
+    if (!el.empty()) {
       xcaWarning::warningv3(
           tr("The following extensions were not ported into the template"), el);
     }

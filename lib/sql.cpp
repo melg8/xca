@@ -165,7 +165,7 @@ QString XSqlQuery::query_details() {
   for (const auto& i : list) {
     sl << i.toString();
   }
-  if (sl.size()) {
+  if (!sl.empty()) {
     lq += QString("[%1]").arg(sl.join(", "));
   }
   return QString("%1:%2 (%3)").arg(file).arg(line).arg(lq);

@@ -728,7 +728,7 @@ void db_x509::certRenewal(QModelIndexList indexes) {
   bool doRevoke = false;
   bool doReplace = false;
 
-  if (indexes.size() == 0) {
+  if (indexes.empty()) {
     return;
   }
   QModelIndex idx = indexes[0];
@@ -799,7 +799,7 @@ void db_x509::certRenewal(QModelIndexList indexes) {
 }
 
 void db_x509::revoke(QModelIndexList indexes) {
-  if (indexes.size() == 0) {
+  if (indexes.empty()) {
     return;
   }
   auto* revoke = new Revocation(indexes);

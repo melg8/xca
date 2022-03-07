@@ -465,7 +465,7 @@ static void QString2lb(QListWidget* lb, QString x) {
   for (int i = 0; i < li.size(); i++) {
     QString lname = OBJ_sn2ln(CCHAR(li[i].trimmed()));
     items = lb->findItems(lname, Qt::MatchExactly);
-    if (items.size() > 0) {
+    if (!items.empty()) {
       items[0]->setSelected(true);
     }
   }
@@ -954,7 +954,7 @@ int NewX509::validateExtensions(QString nconf, QString& result) {
     el.clear();
   }
   ext_count += el.size();
-  if (el.size() > 0) {
+  if (!el.empty()) {
     result += "<h2><center>";
     result += tr("Other Tabs") + "</center></h2><p>\n";
     result += el.getHtml("<br>");
@@ -966,7 +966,7 @@ int NewX509::validateExtensions(QString nconf, QString& result) {
     el.clear();
   }
   ext_count += el.size();
-  if (el.size() > 0) {
+  if (!el.empty()) {
     if (!result.isEmpty()) {
       result += "\n<hr>\n";
     }
@@ -974,7 +974,7 @@ int NewX509::validateExtensions(QString nconf, QString& result) {
     result += tr("Advanced Tab") + "</center></h2><p>\n";
     result += el.getHtml("<br>");
   }
-  if (errors.size()) {
+  if (!errors.empty()) {
     if (!result.isEmpty()) {
       result += "\n<hr>\n";
     }
@@ -994,7 +994,7 @@ int NewX509::validateExtensions(QString nconf, QString& result) {
     }
   }
   ext_count += el.size();
-  if (el.size() > 0) {
+  if (!el.empty()) {
     if (!result.isEmpty()) {
       result += "\n<hr>\n";
     }
@@ -1003,7 +1003,7 @@ int NewX509::validateExtensions(QString nconf, QString& result) {
     result += el.getHtml("<br>");
   }
   el = getExtDuplicates();
-  if (el.size() > 0) {
+  if (!el.empty()) {
     QString errtxt;
     ret = 1;
     errtxt =
@@ -1069,7 +1069,7 @@ QString NewX509::mandatoryDnRemain() {
       dnl.removeAt(j);
     }
   }
-  if (dnl.size() == 0) {
+  if (dnl.empty()) {
     return {};
   }
 

@@ -257,7 +257,7 @@ QString pkcs11_lib_list::getPkcs11Provider() const {
   QStringList prov;
   foreach (int i, model_data)
     prov << libs[i]->toData();
-  return prov.size() == 0 ? QString() : prov.join("\n");
+  return prov.empty() ? QString() : prov.join("\n");
 }
 
 void pkcs11_lib_list::remove_libs() {

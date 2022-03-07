@@ -184,7 +184,7 @@ static void read_cmdline(int argc, char* argv[]) {
     qDebug() << "Probe" << file;
     cmdline_items->probeAnything(file);
   }
-  if (cmdline_items->failed_files.size() > 0) {
+  if (!cmdline_items->failed_files.empty()) {
     XCA_WARN(QString("Failed to import from '%1'")
                  .arg(cmdline_items->failed_files.join("' '")));
   }

@@ -52,7 +52,7 @@ ExportDialog::ExportDialog(QWidget* w,
     exportFormat->addItem(QString("%1 (*.%2)").arg(t->desc).arg(t->extension),
                           QVariant(t->id));
   }
-  if (usual.size() > 0 && normal.size() > 0) {
+  if (!usual.empty() && !normal.empty()) {
     exportFormat->insertSeparator(usual.size());
   }
 

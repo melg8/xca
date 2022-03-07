@@ -567,7 +567,7 @@ bool x509v3ext::parse_Crldp(QString* single, QString* adv) const {
     othersect = crldpsect + othersect;
   }
   sk_DIST_POINT_free(crld);
-  if (crldps.size() == 0) {
+  if (crldps.empty()) {
     return true;
   }
   if (adv) {
@@ -598,7 +598,7 @@ static void gen_cpol_notice(QString tag, USERNOTICE* notice, QString* adv) {
       a1int num(sk_ASN1_INTEGER_value(ref->noticenos, i));
       sl << num.toDec();
     }
-    if (sl.size()) {
+    if (!sl.empty()) {
       *adv += QString("noticeNumbers=%1\n").arg(sl.join(", "));
     }
   }
@@ -855,7 +855,7 @@ bool x509v3ext::parse_policyMappings(QString*, QString* adv) const {
                    .arg(obj2SnOid(pmap->issuerDomainPolicy))
                    .arg(obj2SnOid(pmap->subjectDomainPolicy));
   }
-  if (polMaps.size() > 0 && adv) {
+  if (!polMaps.empty() && adv) {
     *adv = QString("policyMappings=%1@policyMappings_sect\n")
                .arg(parse_critical()) +
            *adv + QString("[policyMappings_sect]\n") + polMaps.join("\n");
@@ -909,7 +909,7 @@ bool x509v3ext::parse_nameConstraints(QString*, QString* adv) const {
     permEx << ret;
   }
 
-  if (adv && retval && permEx.size() > 0) {
+  if (adv && retval && !permEx.empty()) {
     ret = permEx.join(", ");
     qDebug("%s %d '%s'\n", __func__, retval, CCHAR(ret));
     *adv =

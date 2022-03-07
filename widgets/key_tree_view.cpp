@@ -38,7 +38,7 @@ void KeyTreeView::fillContextMenu(QMenu* menu,
   connect(group, SIGNAL(triggered(QAction*)), this,
           SLOT(clipboardFormat(QAction*)));
 
-  if (indexes.size() == 0 || !key) {
+  if (indexes.empty() || !key) {
     return;
   }
 
@@ -212,7 +212,7 @@ void KeyTreeView::load() {
 }
 
 ExportDialog* KeyTreeView::exportDialog(const QModelIndexList& indexes) {
-  if (indexes.size() == 0) {
+  if (indexes.empty()) {
     return nullptr;
   }
   auto* key = db_base::fromIndex<pki_key>(indexes[0]);

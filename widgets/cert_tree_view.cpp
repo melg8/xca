@@ -31,7 +31,7 @@ void CertTreeView::fillContextMenu(QMenu* menu,
   auto* cert = db_base::fromIndex<pki_x509>(index);
   pki_x509* parent;
 
-  if (indexes.size() == 0 || !cert) {
+  if (indexes.empty() || !cert) {
     return;
   }
 

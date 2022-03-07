@@ -114,7 +114,7 @@ void db_crl::exportItems(const QModelIndexList& indexes,
       crl->writeCrl(file, xport->match_all(F_PEM));
     }
   }
-  if (vcal.size() > 0) {
+  if (!vcal.empty()) {
     writeVcalendar(file, vcal);
   }
 }

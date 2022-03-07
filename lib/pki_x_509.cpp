@@ -111,7 +111,7 @@ QSqlError pki_x509::insertSqlData() {
   q.bindValue(2, crlExpire.toPlain());
   q.bindValue(3, crlDays);
   q.exec();
-  if (fromDataRevList.size() > 0) {
+  if (!fromDataRevList.empty()) {
     fromDataRevList.sqlUpdate(sqlItemId);
   }
   return q.lastError();

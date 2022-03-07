@@ -40,7 +40,7 @@ void OpenDb::driver_selected() {
   }
 }
 
-bool OpenDb::hasRemoteDrivers() { return getDatabases().size() > 0; }
+bool OpenDb::hasRemoteDrivers() { return !getDatabases().empty(); }
 
 void OpenDb::fillDbDropDown(const QString& current) {
   DbMap databases = getDatabases();

@@ -364,7 +364,7 @@ void database_model::openRemoteDatabase(const QString& connName,
 
   db.setDatabaseName(params["dbname"]);
   QStringList hostport = params["host"].split(":");
-  if (hostport.size() > 0) {
+  if (!hostport.empty()) {
     db.setHostName(hostport[0]);
   }
   if (hostport.size() > 1) {
