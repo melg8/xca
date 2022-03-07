@@ -273,7 +273,7 @@ void migrateOldPaths() {
 QString getFullFilename(const QString& filename,
                         const QString& selectedFilter) {
   QString rv = filename.trimmed(), ext;
-  QRegExp rx(".* \\( ?\\*(.[a-z]{1,3}) ?\\)");
+  QRegExp rx(R"(.* \( ?\*(.[a-z]{1,3}) ?\))");
   rx.indexIn(selectedFilter);
   ext = rx.cap(1);
   if (!ext.isEmpty() && !rv.endsWith(ext)) {

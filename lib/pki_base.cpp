@@ -62,7 +62,7 @@ QString pki_base::getUnderlinedName() const {
   QRegExp rx("^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])$");
 
   if (rx.indexIn(name) != -1) name += "_";
-  return name.replace(QRegExp("[ $&;`/\\\\<>:\"/\\|?*]+"), "_");
+  return name.replace(QRegExp(R"([ $&;`/\\<>:"/\|?*]+)"), "_");
 }
 
 bool pki_base::visible() const {
