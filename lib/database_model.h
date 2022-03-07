@@ -69,10 +69,10 @@ class database_model final : public QObject {
 
 class xca_db {
  private:
-  database_model* db;
+  database_model* db{nullptr};
 
  public:
-  xca_db() : db(nullptr) {}
+  xca_db() = default;
   ~xca_db() { close(); }
   void open(const QString& dbName, const Passwd& pass = Passwd()) {
     close();

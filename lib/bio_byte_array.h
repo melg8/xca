@@ -9,9 +9,9 @@
 
 class BioByteArray {
  protected:
-  BIO* read_write;
-  BIO* read_only;
-  QByteArray store;
+  BIO* read_write{nullptr};
+  BIO* read_only{nullptr};
+  QByteArray store{};
 
   void set(const QByteArray& qba);
   void add(const QByteArray& qba);
@@ -19,11 +19,9 @@ class BioByteArray {
   void cleanse_and_free(BIO* bio);
 
  public:
-  BioByteArray(QByteArray qba)
-      : read_write(nullptr), read_only(nullptr), store(std::move(qba)) {}
-  BioByteArray(const BioByteArray& bba)
-      : read_write(nullptr), read_only(nullptr), store(bba.byteArray()) {}
-  BioByteArray() : read_write(nullptr), read_only(nullptr), store() {}
+  BioByteArray(QByteArray qba) : store(std::move(qba)) {}
+  BioByteArray(const BioByteArray& bba) : store(bba.byteArray()) {}
+  BioByteArray() = default;
   ~BioByteArray();
   [[nodiscard]] int size() const;
   BIO* bio();

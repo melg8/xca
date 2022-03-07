@@ -35,14 +35,15 @@ class keytype {
 #endif
     };
   }
-  int type;
-  QString name;
-  CK_MECHANISM_TYPE mech;
-  bool curve, length;
+  int type{-1};
+  QString name{};
+  CK_MECHANISM_TYPE mech{0};
+  bool curve{false};
+  bool length{true};
 
   keytype(int t, QString n, CK_MECHANISM_TYPE m, bool c, bool l)
       : type(t), name(std::move(n)), mech(m), curve(c), length(l) {}
-  keytype() : type(-1), name(QString()), mech(0), curve(false), length(true) {}
+  keytype() = default;
   bool isValid() { return type != -1; }
   [[nodiscard]] QString traditionalPemName() const {
     return name + " PRIVATE KEY";
