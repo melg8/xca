@@ -776,9 +776,8 @@ x509name NewX509::getX509name(int _throw) {
     if (!err.isEmpty()) {
       if (_throw) {
         throw err;
-      } else {
-        XCA_WARN(err.getString());
       }
+      XCA_WARN(err.getString());
     }
   }
   return x;
@@ -1148,9 +1147,8 @@ void NewX509::accept() {
         reject();
       }
       return;
-    } else {
-      description->setText(cn);
     }
+    description->setText(cn);
   }
   if (keyList->count() == 0 && keyList->isEnabled() &&
       !fromReqCB->isChecked()) {

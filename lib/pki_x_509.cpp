@@ -828,9 +828,8 @@ QVariant pki_x509::column_data(const dbheader* hd) const {
         }
         if (!ca) {
           return {tr("No")};
-        } else {
-          return {tr("Yes")};
         }
+        return {tr("Yes")};
       }
       break;
     }

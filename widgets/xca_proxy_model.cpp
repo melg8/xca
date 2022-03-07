@@ -24,11 +24,11 @@ bool XcaProxyModel::lessThan(const QModelIndex& left,
     diff = l.size() - r.size();
     if (diff < 0) {
       return true;
-    } else if (diff > 0) {
-      return false;
-    } else {
-      return l < r;
     }
+    if (diff > 0) {
+      return false;
+    }
+    return l < r;
   }
   if (hd_left->type == dbheader::hd_asn1time &&
       hd_right->type == dbheader::hd_asn1time) {

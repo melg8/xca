@@ -296,7 +296,8 @@ static bool genName2conf(GENERAL_NAME* gen,
         *single =
             QString("IP:%1.%2.%3.%4").arg(p[0]).arg(p[1]).arg(p[2]).arg(p[3]);
         return true;
-      } else if (gen->d.ip->length == 8) {
+      }
+      if (gen->d.ip->length == 8) {
         *single = QString("IP:%1.%2.%3.%4/%5.%6.%7.%8")
                       .arg(p[0])
                       .arg(p[1])
@@ -307,10 +308,12 @@ static bool genName2conf(GENERAL_NAME* gen,
                       .arg(p[6])
                       .arg(p[7]);
         return true;
-      } else if (gen->d.ip->length == 16) {
+      }
+      if (gen->d.ip->length == 16) {
         *single = "IP:" + ipv6_from_binary(gen->d.ip->data);
         return true;
-      } else if (gen->d.ip->length == 32) {
+      }
+      if (gen->d.ip->length == 32) {
         *single = "IP:" + ipv6_from_binary(gen->d.ip->data) + "/" +
                   ipv6_from_binary(gen->d.ip->data + 16);
         return true;

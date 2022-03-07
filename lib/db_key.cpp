@@ -122,18 +122,17 @@ pki_base* db_key::insert(pki_base* item) {
                    .arg(oldkey->getIntName()));
       delete lkey;
       return nullptr;
-    } else {
-      XCA_INFO(tr("The database already contains the public part of the "
-                  "imported key as\n'%1\nand will be completed by the new, "
-                  "private part of the key")
-                   .arg(oldkey->getIntName()));
-      lkey->setComment(oldkey->getComment());
-      lkey->selfComment(tr("Extending public key from %1 by imported key '%2'")
-                            .arg(oldkey->getInsertionDate().toPretty())
-                            .arg(lkey->getIntName()));
-      lkey->setIntName(oldkey->getIntName());
-      deletePKI(index(oldkey));
     }
+    XCA_INFO(tr("The database already contains the public part of the "
+                "imported key as\n'%1\nand will be completed by the new, "
+                "private part of the key")
+                 .arg(oldkey->getIntName()));
+    lkey->setComment(oldkey->getComment());
+    lkey->selfComment(tr("Extending public key from %1 by imported key '%2'")
+                          .arg(oldkey->getInsertionDate().toPretty())
+                          .arg(lkey->getIntName()));
+    lkey->setIntName(oldkey->getIntName());
+    deletePKI(index(oldkey));
   }
   return insertPKI(lkey);
 }
