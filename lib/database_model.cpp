@@ -73,8 +73,8 @@ bool database_model::checkForOldDbFormat(const QString& dbfile) const {
   char head[4];
 
   XFile file(dbfile);
-  if (!file.exists()) return 0;
-  if (!file.open(QIODevice::ReadOnly)) return 0;
+  if (!file.exists()) return false;
+  if (!file.open(QIODevice::ReadOnly)) return false;
   file.read(head, sizeof head);
   file.close();
   return !memcmp(head, magic, sizeof head);
@@ -105,7 +105,7 @@ database_model::database_model(const QString& name, const Passwd& pass) {
       result = PwDialogCore::execute(&p, &passwd);
       if (result != pw_ok) throw result;
     }
-  } while (1);
+  } while (true);
 
   Entropy::seed_rng();
   initSqlDB();

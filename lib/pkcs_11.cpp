@@ -411,7 +411,7 @@ pk11_attr_data pkcs11::findUniqueID(unsigned long oclass) {
   pk11_attr_data id(CKA_ID);
   pk11_attr_ulong class_att(CKA_CLASS, oclass);
 
-  while (1) {
+  while (true) {
     unsigned char buf[ID_LEN];
     pk11_attlist atts(class_att);
     RAND_bytes(buf, ID_LEN);

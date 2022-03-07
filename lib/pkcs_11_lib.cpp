@@ -78,7 +78,7 @@ QList<unsigned long> pkcs11_lib::getSlotList() {
   /* This one helps to avoid errors.
    * Fist time it fails, 2nd time it works */
   CALL_P11_C(this, C_GetSlotList, CK_TRUE, p11_slots, &num_slots);
-  while (1) {
+  while (true) {
     CALL_P11_C(this, C_GetSlotList, CK_TRUE, p11_slots, &num_slots);
     if (rv != CKR_OK && rv != CKR_BUFFER_TOO_SMALL)
       pk11error("C_GetSlotList", rv);

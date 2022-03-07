@@ -58,7 +58,7 @@ ExportDialog::ExportDialog(QWidget* w,
   on_exportFormat_highlighted(0);
 }
 
-ExportDialog::~ExportDialog() { pki_base::pem_comment = 0; }
+ExportDialog::~ExportDialog() { pki_base::pem_comment = false; }
 
 void ExportDialog::on_fileBut_clicked() {
   QString s =

@@ -783,7 +783,7 @@ bool pki_evp::verify_priv(EVP_PKEY* pkey) const {
     if (EVP_DigestVerify(ctx, sig, siglen, data, datalen) != 1) break;
 
     verify = true;
-  } while (0);
+  } while (false);
 
   if (ctx) EVP_MD_CTX_free(ctx);
 
