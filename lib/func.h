@@ -30,9 +30,9 @@ class QPixmap;
 extern MainWindow* mainwin;
 extern bool is_gui_app;
 
-typedef struct asn1_object_st ASN1_OBJECT;
-typedef struct asn1_string_st ASN1_STRING;
-typedef struct evp_md_st EVP_MD;
+using ASN1_OBJECT = struct asn1_object_st;
+using ASN1_STRING = struct asn1_string_st;
+using EVP_MD = struct evp_md_st;
 
 int console_write(FILE* fp, const QByteArray& ba);
 Passwd readPass();

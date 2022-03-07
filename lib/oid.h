@@ -5,7 +5,7 @@ class QString;
 #include <QList>
 #include <QMap>
 
-typedef QList<int> NIDlist;
+using NIDlist = QList<int>;
 
 extern NIDlist extkeyuse_nid;
 extern NIDlist distname_nid;

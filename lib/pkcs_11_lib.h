@@ -59,7 +59,7 @@ class slotid {
   [[nodiscard]] CK_FUNCTION_LIST* p11() const { return lib->ptr(); }
 };
 
-typedef QList<slotid> slotidList;
+using slotidList = QList<slotid>;
 
 class pkcs11_lib_list final : public QAbstractListModel {
   QList<pkcs11_lib*> libs;

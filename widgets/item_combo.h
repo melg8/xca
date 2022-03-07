@@ -29,9 +29,9 @@ class itemCombo : public QComboBox {
   }
 };
 
-typedef class itemCombo<pki_temp> itemComboTemp;
-typedef class itemCombo<pki_x509req> itemComboReq;
-typedef class itemCombo<pki_x509> itemComboCert;
-typedef class itemCombo<pki_key> itemComboKey;
+using itemComboTemp = class itemCombo<pki_temp>;
+using itemComboReq = class itemCombo<pki_x509req>;
+using itemComboCert = class itemCombo<pki_x509>;
+using itemComboKey = class itemCombo<pki_key>;
 
 #endif  // ITEM_COMBO_H

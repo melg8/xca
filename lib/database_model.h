@@ -11,7 +11,7 @@
 #include "lib/passwd.h"
 #include "sql.h"
 
-typedef QMap<QString, QString> DbMap;
+using DbMap = QMap<QString, QString>;
 
 class database_model final : public QObject {
   Q_OBJECT
