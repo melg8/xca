@@ -16,7 +16,7 @@
 #include "pki_scard.h"
 #include "pki_x_509_req.h"
 
-pki_x509::pki_x509(X509* c) : pki_x509super() {
+pki_x509::pki_x509(X509* c) {
   init();
   cert = c;
   pki_openssl_error();

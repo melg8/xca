@@ -13,8 +13,7 @@
 #include "open_db.h"
 #include "revocation_list.h"
 
-CrlDetail::CrlDetail(QWidget* w)
-    : QDialog(w ? w : mainwin), issuerSqlId(), crlSqlId() {
+CrlDetail::CrlDetail(QWidget* w) : QDialog(w ? w : mainwin) {
   setupUi(this);
   setWindowTitle(XCA_TITLE);
   mainwin->helpdlg->register_ctxhelp_button(this, "crldetail");

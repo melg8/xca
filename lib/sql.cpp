@@ -180,9 +180,9 @@ QSqlError XSqlQuery::lastError() {
           e.databaseText(), e.type(), e.nativeErrorCode()};
 }
 
-XSqlQuery::XSqlQuery() : QSqlQuery() {}
+XSqlQuery::XSqlQuery() {}
 
-XSqlQuery::XSqlQuery(QString q) : QSqlQuery() { exec(q); }
+XSqlQuery::XSqlQuery(QString q) { exec(q); }
 
 bool XSqlQuery::exec(QString q) {
   q = rewriteQuery(q);

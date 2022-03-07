@@ -59,7 +59,7 @@ void MainWindow::initResolver() {
   }
 }
 
-MainWindow::MainWindow() : QMainWindow() {
+MainWindow::MainWindow() {
   dbindex = new QLabel();
   const int frame_style =
       static_cast<int>(QFrame::Plain) | static_cast<int>(QFrame::NoFrame);

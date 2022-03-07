@@ -17,7 +17,7 @@ class XcaProgressGui final : public XcaProgress_i {
 
  public:
   XcaProgressGui() = delete;
-  XcaProgressGui(QMainWindow* m) : XcaProgress_i(), mwin(m), bar() {
+  XcaProgressGui(QMainWindow* m) : mwin(m), bar() {
     bar = new QProgressBar();
     bar->setMinimum(0);
     bar->setTextVisible(true);

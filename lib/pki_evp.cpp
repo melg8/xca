@@ -194,7 +194,7 @@ static bool EVP_PKEY_isPrivKey(EVP_PKEY* key) {
   return false;
 }
 
-pki_evp::pki_evp(EVP_PKEY* pkey) : pki_key() {
+pki_evp::pki_evp(EVP_PKEY* pkey) {
   init();
   set_EVP_PKEY(pkey);
 }

@@ -70,9 +70,9 @@ class x509revList : public QList<x509rev> {
   bool merged;
   void merge(const x509revList& other);
   [[nodiscard]] bool identical(const x509revList& other) const;
-  x509revList() : QList<x509rev>() { merged = false; }
+  x509revList() { merged = false; }
   x509revList(const x509revList& r) : QList<x509rev>(r) { merged = r.merged; }
-  x509revList(const x509rev& r) : QList<x509rev>() {
+  x509revList(const x509rev& r) {
     if (r.isValid()) {
       merged = false;
       append(r);

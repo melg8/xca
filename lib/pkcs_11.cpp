@@ -177,7 +177,7 @@ class pinPadLoginThread final : public QThread {
 
  public:
   errorEx err;
-  pinPadLoginThread(pkcs11* _p11, bool _so) : QThread() {
+  pinPadLoginThread(pkcs11* _p11, bool _so) {
     so = _so;
     p11 = _p11;
   }

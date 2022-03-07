@@ -15,7 +15,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 
-KeyDetail::KeyDetail(QWidget* w) : QDialog(w ? w : mainwin), keySqlId() {
+KeyDetail::KeyDetail(QWidget* w) : QDialog(w ? w : mainwin) {
   setupUi(this);
   setWindowTitle(XCA_TITLE);
   image->setPixmap(QPixmap(":keyImg"));

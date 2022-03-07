@@ -22,7 +22,7 @@ void db_base::restart_timer() {
   hoursTimer = startTimer(MSECS_PER_HOUR);
 }
 
-db_base::db_base(const char* classname) : QAbstractItemModel() {
+db_base::db_base(const char* classname) {
   rootItem = new pki_base(QString("ROOTitem(%1)").arg(classname));
   treeItem = new pki_base(QString("TREEitem(%1)").arg(classname));
   colResizing = 0;

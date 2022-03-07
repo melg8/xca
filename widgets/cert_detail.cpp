@@ -13,8 +13,7 @@
 #include "main_window.h"
 #include "oid_resolver.h"
 
-CertDetail::CertDetail(QWidget* w)
-    : QDialog(w ? w : mainwin), keySqlId(), issuerSqlId(), thisSqlId() {
+CertDetail::CertDetail(QWidget* w) : QDialog(w ? w : mainwin) {
   setupUi(this);
   setWindowTitle(XCA_TITLE);
   showConf = false;

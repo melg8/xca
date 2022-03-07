@@ -647,7 +647,7 @@ class keygenThread final : public QThread {
   pkcs11* p11;
 
   keygenThread(keyjob t, QString n, pkcs11* _p11)
-      : QThread(), task(std::move(t)), name(std::move(n)), p11(_p11) {}
+      : task(std::move(t)), name(std::move(n)), p11(_p11) {}
 
   void run() final {
     try {
