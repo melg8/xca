@@ -4,12 +4,12 @@
 #include <QFileDialog>
 #include <QToolTip>
 #include "help.h"
-#include "search_pkcs_11.h"
-#include "xca_warning.h"
 #include "lib/func.h"
 #include "lib/load_obj.h"
 #include "lib/oid.h"
 #include "lib/pki_scard.h"
+#include "search_pkcs_11.h"
+#include "xca_warning.h"
 
 Options::Options(QWidget* parent) : QDialog(parent) {
   setWindowTitle(XCA_TITLE);
@@ -142,7 +142,7 @@ int Options::exec() {
   return TransCommit() ? QDialog::Accepted : QDialog::Rejected;
 }
 
-void Options::on_addButton_clicked(void) {
+void Options::on_addButton_clicked() {
   load_pkcs11 l;
   QString fname;
 
@@ -160,7 +160,7 @@ void Options::addLib(QString fname) {
                        l->driverInfo().trimmed());
 }
 
-void Options::on_removeButton_clicked(void) {
+void Options::on_removeButton_clicked() {
   QList<int> indexes;
   foreach (QModelIndex i, pkcs11List->selectionModel()->selectedIndexes())
     indexes << i.row();
@@ -171,7 +171,7 @@ void Options::on_removeButton_clicked(void) {
     pkcs11List->model()->removeRow(i);
 }
 
-void Options::on_searchPkcs11_clicked(void) {
+void Options::on_searchPkcs11_clicked() {
   if (!searchP11) {
     searchP11 = new SearchPkcs11(this, getLibDir());
     connect(searchP11, SIGNAL(addLib(QString)), this, SLOT(addLib(QString)));

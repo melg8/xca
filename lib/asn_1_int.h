@@ -32,7 +32,7 @@ class a1int {
   QByteArray i2d();
   int derSize() const;
 
-  a1int& operator++(void);
+  a1int& operator++();
   a1int operator++(int);
   a1int& operator=(const a1int& a);
   a1int& operator=(long i);

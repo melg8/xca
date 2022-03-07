@@ -1,9 +1,9 @@
 #include "pki_base.h"
 
-#include "xca_warning_core.h"
 #include "exception.h"
 #include "func.h"
 #include "x_file.h"
+#include "xca_warning_core.h"
 
 #include <openssl/evp.h>
 #include <openssl/md5.h>
@@ -38,7 +38,7 @@ pki_base::pki_base(const pki_base* p) {
   p->inheritFilename(this);
 }
 
-pki_base::~pki_base(void) {
+pki_base::~pki_base() {
   if (!allitems.removeOne(this))
     qDebug() << "DEL" << getIntName() << "NOT FOUND";
   qDebug() << "DEL pki_base::count" << allitems.count();

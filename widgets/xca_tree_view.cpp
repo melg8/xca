@@ -277,7 +277,7 @@ void XcaTreeView::headerDetails() {
     mainwin->getResolver()->searchOid(QString::number(curr_hd->id));
 }
 
-void XcaTreeView::columnRemove(void) {
+void XcaTreeView::columnRemove() {
   if (curr_hd->action) curr_hd->action->setChecked(false);
 }
 

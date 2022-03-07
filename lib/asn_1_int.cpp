@@ -111,7 +111,7 @@ long a1int::getLong() const {
   return l;
 }
 
-a1int& a1int::operator++(void) {
+a1int& a1int::operator++() {
   BIGNUM* bn = ASN1_INTEGER_to_BN(in, nullptr);
   openssl_error();
   BN_add(bn, bn, BN_value_one());

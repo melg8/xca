@@ -25,7 +25,7 @@ class pki_scard final : public pki_key {
   QString slot_label;
   QString object_id;
   QList<CK_MECHANISM_TYPE> mech_list;
-  void init(void);
+  void init();
 
  public:
   pki_scard(const QString name);
@@ -33,7 +33,7 @@ class pki_scard final : public pki_key {
   void load_token(pkcs11& p11, CK_OBJECT_HANDLE object);
   bool prepare_card(slotid* slot) const;
   bool find_key_on_card(slotid* slot) const;
-  QString getTypeString(void) const final;
+  QString getTypeString() const final;
   QString getManufacturer() const { return card_manufacturer; }
   QString getSerial() const { return card_serial; }
   QString getModel() const { return card_model; }

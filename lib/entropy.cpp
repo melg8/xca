@@ -54,7 +54,7 @@ unsigned Entropy::pool_pos = 0;
 QElapsedTimer Entropy::timer;
 unsigned Entropy::seed_strength = 0;
 
-QString Entropy::makeSalt(void) {
+QString Entropy::makeSalt() {
   QString s = "T";
   unsigned char rand[8];
 

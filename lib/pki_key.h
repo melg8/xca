@@ -153,10 +153,10 @@ class pki_key : public pki_base {
   void autoIntName(const QString& file) override;
   QString length() const;
   QString comboText() const override;
-  QString getKeyTypeString(void) const;
+  QString getKeyTypeString() const;
   virtual EVP_PKEY* decryptKey() const = 0;
   virtual bool isToken();
-  virtual QString getTypeString(void) const;
+  virtual QString getTypeString() const;
   virtual QList<int> possibleHashNids();
   QString getMsg(msg_type msg) const override;
 
@@ -168,7 +168,7 @@ class pki_key : public pki_base {
   virtual bool verify_priv(EVP_PKEY* pkey) const;
   int getUcount() const;
   void setUcount(int c) { useCount = c; }
-  enum passType getOwnPass(void) { return ownPass; }
+  enum passType getOwnPass() { return ownPass; }
   EVP_PKEY* getPubKey() { return key; }
   bool isPubKey() const { return isPub; }
   virtual void generate(const keyjob&) { qFatal("generate in pki_key"); }

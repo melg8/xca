@@ -27,9 +27,9 @@ class Options final : public QDialog, public Ui::Options {
   void on_expDNadd_clicked();
   void on_expDNdel_clicked();
   void on_expDNdefault_clicked();
-  void on_addButton_clicked(void);
-  void on_removeButton_clicked(void);
-  void on_searchPkcs11_clicked(void);
+  void on_addButton_clicked();
+  void on_removeButton_clicked();
+  void on_searchPkcs11_clicked();
   void addLib(QString);
 };
 

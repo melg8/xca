@@ -4,11 +4,11 @@
 #include <QMenu>
 #include "export_dialog.h"
 #include "key_detail.h"
+#include "lib/load_obj.h"
+#include "lib/pki_scard.h"
 #include "main_window.h"
 #include "new_key.h"
 #include "xca_warning.h"
-#include "lib/load_obj.h"
-#include "lib/pki_scard.h"
 
 void KeyTreeView::fillContextMenu(QMenu* menu,
                                   QMenu* subExport,
@@ -180,7 +180,7 @@ void KeyTreeView::clipboardFormat(QAction* a) {
   Settings["KeyFormat"] = a->data().toInt();
 }
 
-void KeyTreeView::load(void) {
+void KeyTreeView::load() {
   load_key l;
   load_default(&l);
 }

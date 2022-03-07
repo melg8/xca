@@ -22,7 +22,7 @@ class Entropy {
   static int get(unsigned char* buf, int num);
   static void seed_rng();
   static unsigned strength();
-  static QString makeSalt(void);
+  static QString makeSalt();
 };
 
 #endif  // ENTROPY_H

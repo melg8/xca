@@ -4,9 +4,9 @@
 #include <QAbstractItemView>
 #include <QMenu>
 #include "export_dialog.h"
-#include "main_window.h"
 #include "lib/load_obj.h"
 #include "lib/pki_x_509_req.h"
+#include "main_window.h"
 
 void ReqTreeView::fillContextMenu(QMenu* menu,
                                   QMenu* subExport,
@@ -47,7 +47,7 @@ void ReqTreeView::unmarkSigned() {
   if (basemodel) reqs()->setSigned(currentIndex(), false);
 }
 
-void ReqTreeView::load(void) {
+void ReqTreeView::load() {
   load_req l;
   load_default(&l);
 }

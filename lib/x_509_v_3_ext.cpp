@@ -4,9 +4,9 @@
 #include <openssl/x509v3.h>
 #include <QDebug>
 #include <QStringList>
-#include "bio_byte_array.h"
 #include "asn_1_int.h"
 #include "base.h"
+#include "bio_byte_array.h"
 #include "exception.h"
 #include "func.h"
 #include "x_509_name.h"
@@ -975,7 +975,7 @@ int extList::idxByNid(int nid) {
   return -1;
 }
 
-int extList::delInvalid(void) {
+int extList::delInvalid() {
   int removed = 0;
   for (int i = 0; i < size(); i++) {
     if (!at(i).isValid()) {
