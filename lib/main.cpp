@@ -1,6 +1,6 @@
 #include "main.h"
 
-#include <signal.h>
+#include <csignal>
 
 #include <QDebug>
 #include <QDir>

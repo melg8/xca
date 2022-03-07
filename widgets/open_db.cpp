@@ -1,9 +1,9 @@
 #include "open_db.h"
 
-#include <stdio.h>
 #include <QDebug>
 #include <QFile>
 #include <QStringList>
+#include <cstdio>
 
 #include "lib/base.h"
 #include "lib/db_history.h"

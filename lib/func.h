@@ -4,9 +4,9 @@
 #include <QByteArray>
 #include <QMap>
 
-#include <stdio.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <cstdio>
 
 #include "base.h"
 #include "passwd.h"

@@ -1,7 +1,7 @@
 #include "arguments.h"
 
 #include <getopt.h>
-#include <stdio.h>
+#include <cstdio>
 
 #if !defined(Q_OS_WIN32)
 #include <sys/ioctl.h>

@@ -8,7 +8,7 @@
 #include <QDebug>
 #include <QFile>
 
-#include <errno.h>
+#include <cerrno>
 #include "exception.h"
 
 #include <openssl/bio.h>

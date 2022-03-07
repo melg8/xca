@@ -11,7 +11,7 @@
 #include <QLocale>
 #include <QObject>
 
-#include <time.h>
+#include <ctime>
 
 /* As defined in rfc-5280  4.1.2.5 */
 #define UNDEFINED_DATE "99991231235959Z"

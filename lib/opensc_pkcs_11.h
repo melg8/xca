@@ -1178,7 +1178,7 @@ struct ck_c_initialize_args {
 #define CK_DEFINE_FUNCTION(retval, name) retval CK_SPEC name
 
 /* For NULL.  */
-#include <stddef.h>
+#include <cstddef>
 
 typedef unsigned char CK_BYTE;
 typedef unsigned char CK_CHAR;
