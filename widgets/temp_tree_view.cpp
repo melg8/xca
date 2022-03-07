@@ -22,22 +22,22 @@ void TempTreeView::fillContextMenu(QMenu* menu,
 }
 
 void TempTreeView::duplicateTemp() {
-  pki_temp* temp = db_base::fromIndex<pki_temp>(currentIndex());
+  auto* temp = db_base::fromIndex<pki_temp>(currentIndex());
   db_temp* db_temp = temps();
   if (!temp || !basemodel || !db_temp) return;
 
-  pki_temp* newtemp = new pki_temp(temp);
+  auto* newtemp = new pki_temp(temp);
   newtemp->setIntName(newtemp->getIntName() + " " + tr("copy"));
   db_temp->insertPKI(newtemp);
 }
 
 void TempTreeView::certFromTemp() {
-  pki_temp* temp = db_base::fromIndex<pki_temp>(currentIndex());
+  auto* temp = db_base::fromIndex<pki_temp>(currentIndex());
   if (temp) emit newCert(temp);
 }
 
 void TempTreeView::reqFromTemp() {
-  pki_temp* temp = db_base::fromIndex<pki_temp>(currentIndex());
+  auto* temp = db_base::fromIndex<pki_temp>(currentIndex());
   if (temp) emit newReq(temp);
 }
 
@@ -46,7 +46,7 @@ void TempTreeView::showPki(pki_base* pki) {
 }
 
 bool TempTreeView::runTempDlg(pki_temp* temp) {
-  NewX509* dlg = new NewX509(this);
+  auto* dlg = new NewX509(this);
 
   dlg->setTemp(temp);
   if (!dlg->exec()) {
@@ -64,9 +64,9 @@ void TempTreeView::newItem() {
 
   if (!basemodel) return;
 
-  itemComboTemp* ic = new itemComboTemp(nullptr);
+  auto* ic = new itemComboTemp(nullptr);
   ic->insertPkiItems(temps()->getPredefs());
-  XcaDialog* dlg =
+  auto* dlg =
       new XcaDialog(this, tmpl, ic, tr("Preset Template values"), QString());
   if (dlg->exec()) {
     temp = new pki_temp(ic->currentPkiItem());

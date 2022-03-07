@@ -226,7 +226,7 @@ void XcaTreeView::load_default(load_base* load) {
 
   update_workingdir(slist[0]);
 
-  ImportMulti* dlgi = new ImportMulti(nullptr);
+  auto* dlgi = new ImportMulti(nullptr);
   foreach (s, slist) {
     pki_base* item = nullptr;
     try {
@@ -247,15 +247,15 @@ void XcaTreeView::editComment() {
   pki_base* item = db_base::fromIndex(currentIndex());
   if (!basemodel || !item) return;
 
-  QWidget* w = new QWidget(nullptr);
-  Ui::ItemProperties* prop = new Ui::ItemProperties();
+  auto* w = new QWidget(nullptr);
+  auto* prop = new Ui::ItemProperties();
   prop->setupUi(w);
   prop->comment->setPlainText(item->getComment());
   prop->name->setText(item->getIntName());
   prop->source->setText(item->pki_source_name());
   prop->insertionDate->setText(item->getInsertionDate().toPretty());
-  XcaDialog* d = new XcaDialog(this, item->getType(), w, tr("Item properties"),
-                               QString(), "itemproperties");
+  auto* d = new XcaDialog(this, item->getType(), w, tr("Item properties"),
+                          QString(), "itemproperties");
   if (d->exec())
     basemodel->updateItem(item, prop->name->text(),
                           prop->comment->toPlainText());
@@ -287,7 +287,7 @@ void XcaTreeView::showItem(const QModelIndex& index) {
 }
 
 void XcaTreeView::showItem(const QString& name) {
-  pki_base* pki = Store.lookupPki<pki_base>(name.toULongLong());
+  auto* pki = Store.lookupPki<pki_base>(name.toULongLong());
   showItem(pki);
 }
 
@@ -411,7 +411,7 @@ ExportDialog* XcaTreeView::exportDialog(const QModelIndexList&) {
 
 void XcaTreeView::showContextMenu(QContextMenuEvent* e,
                                   const QModelIndex& idx) {
-  QMenu* menu = new QMenu(mainwin);
+  auto* menu = new QMenu(mainwin);
   QMenu* subExport = nullptr;
   QModelIndexList indexes = getSelectedIndexes();
   QModelIndex index;

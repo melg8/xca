@@ -665,7 +665,7 @@ EVP_PKEY* pki_scard::decryptKey() const {
   if (!prepare_card(&slot_id))
     throw errorEx(tr("Failed to find the key on the token"));
 
-  pkcs11* p11 = new pkcs11();
+  auto* p11 = new pkcs11();
   p11->startSession(slot_id);
   pin = p11->tokenLogin(card_label, false);
   if (pin.isNull()) {

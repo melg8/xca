@@ -47,8 +47,8 @@ const QList<QStringList> MainWindow::getTranslators() const {
 }
 
 void MainWindow::about() {
-  QTextEdit* textbox = new QTextEdit(nullptr);
-  XcaDialog* about = new XcaDialog(this, x509, textbox, QString(), QString());
+  auto* textbox = new QTextEdit(nullptr);
+  auto* about = new XcaDialog(this, x509, textbox, QString(), QString());
   about->aboutDialog(QPixmap(":scardImg"));
   QString openssl, qt, cont, version, brainpool;
 #ifdef OPENSSL_NO_EC

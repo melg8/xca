@@ -243,7 +243,7 @@ a1int pki_x509::getSerial() const {
 
 pki_x509* pki_x509::getBySerial(const a1int& a) const {
   foreach (pki_base* p, childItems) {
-    pki_x509* pki = static_cast<pki_x509*>(p);
+    auto* pki = static_cast<pki_x509*>(p);
     if (a == pki->getSerial()) return pki;
   }
   return nullptr;
@@ -358,7 +358,7 @@ void pki_x509::store_token(bool alwaysSelect) {
 
 void pki_x509::deleteFromToken() {
   pki_key* privkey = getRefKey();
-  pki_scard* card = dynamic_cast<pki_scard*>(privkey);
+  auto* card = dynamic_cast<pki_scard*>(privkey);
   slotidList p11_slots;
 
   if (!card || !pkcs11::libraries.loaded()) return;
@@ -481,8 +481,8 @@ void pki_x509::delSigner(pki_base* s) {
 bool pki_x509::isCA() const {
   bool ca;
   int crit;
-  BASIC_CONSTRAINTS* bc = (BASIC_CONSTRAINTS*)X509_get_ext_d2i(
-      cert, NID_basic_constraints, &crit, nullptr);
+  auto* bc = (BASIC_CONSTRAINTS*)X509_get_ext_d2i(cert, NID_basic_constraints,
+                                                  &crit, nullptr);
   pki_openssl_error();
   ca = bc && bc->ca;
   if (bc) BASIC_CONSTRAINTS_free(bc);
@@ -611,7 +611,7 @@ void pki_x509::setRevocations(const x509revList& rl) {
   x509revList revList = rl;
 
   foreach (pki_base* p, childItems) {
-    pki_x509* pki = static_cast<pki_x509*>(p);
+    auto* pki = static_cast<pki_x509*>(p);
     rev.setSerial(pki->getSerial());
     int idx = revList.indexOf(rev);
     if (idx != -1)
@@ -628,7 +628,7 @@ pki_key* pki_x509::getPubKey() const {
   if (pkey == nullptr) {
     return nullptr;
   }
-  pki_evp* key = new pki_evp(pkey);
+  auto* key = new pki_evp(pkey);
   pki_openssl_error();
   return key;
 }
@@ -713,7 +713,7 @@ void pki_x509::setRevoked(const x509rev& revok) { revocation = revok; }
 bool pki_x509::caAndPathLen(bool* ca, a1int* pathlen, bool* hasLen) const {
   x509v3ext e = getExtByNid(NID_basic_constraints);
   if (e.nid() != NID_basic_constraints) return false;
-  BASIC_CONSTRAINTS* bc = (BASIC_CONSTRAINTS*)e.d2i();
+  auto* bc = (BASIC_CONSTRAINTS*)e.d2i();
   if (hasLen) *hasLen = bc->pathlen ? true : false;
   if (pathlen && bc->pathlen) pathlen->set(bc->pathlen);
   if (ca) *ca = bc->ca;
@@ -806,7 +806,7 @@ QStringList pki_x509::icsVEVENT_ca() const {
 
   ics << icsVEVENT();
   foreach (pki_base* p, childItems) {
-    pki_x509* pki = static_cast<pki_x509*>(p);
+    auto* pki = static_cast<pki_x509*>(p);
     if (pki->getNotAfter() > a1time() && !isRevoked()) ics << pki->icsVEVENT();
   }
 

@@ -85,7 +85,7 @@ void CrlDetail::showIssuer() {
 }
 
 void CrlDetail::showCrl(QWidget* parent, pki_crl* crl) {
-  CrlDetail* dlg = new CrlDetail(parent);
+  auto* dlg = new CrlDetail(parent);
   if (!dlg) return;
 
   dlg->setCrl(crl);

@@ -138,7 +138,7 @@ QString x509name::getOid(int i) const {
 }
 
 void x509name::d2i(QByteArray& ba) {
-  X509_NAME* n = (X509_NAME*)d2i_bytearray(D2I_VOID(d2i_X509_NAME), ba);
+  auto* n = (X509_NAME*)d2i_bytearray(D2I_VOID(d2i_X509_NAME), ba);
   if (n) {
     X509_NAME_free(xn);
     xn = n;

@@ -7,7 +7,7 @@
 QWidget* comboDelegate::createEditor(QWidget* parent,
                                      const QStyleOptionViewItem&,
                                      const QModelIndex&) const {
-  QComboBox* editor = new QComboBox(parent);
+  auto* editor = new QComboBox(parent);
   editor->addItems(keys);
   return editor;
 }
@@ -15,14 +15,14 @@ QWidget* comboDelegate::createEditor(QWidget* parent,
 void comboDelegate::setEditorData(QWidget* editor,
                                   const QModelIndex& index) const {
   QString v = index.model()->data(index, Qt::EditRole).toString();
-  QComboBox* c = static_cast<QComboBox*>(editor);
+  auto* c = static_cast<QComboBox*>(editor);
   c->setCurrentIndex(c->findText(v));
 }
 
 void comboDelegate::setModelData(QWidget* editor,
                                  QAbstractItemModel* model,
                                  const QModelIndex& index) const {
-  QComboBox* c = static_cast<QComboBox*>(editor);
+  auto* c = static_cast<QComboBox*>(editor);
   model->setData(index, c->currentText(), Qt::EditRole);
 }
 
@@ -38,7 +38,7 @@ void lineDelegate::setEditorData(QWidget* editor,
 
   v = index.model()->data(index, Qt::EditRole).toString();
   QModelIndex key = index.sibling(index.row(), 0);
-  QLineEdit* l = static_cast<QLineEdit*>(editor);
+  auto* l = static_cast<QLineEdit*>(editor);
 
   l->setText(v);
 
@@ -52,7 +52,7 @@ void lineDelegate::setEditorData(QWidget* editor,
 void lineDelegate::setModelData(QWidget* editor,
                                 QAbstractItemModel* model,
                                 const QModelIndex& index) const {
-  QLineEdit* l = static_cast<QLineEdit*>(editor);
+  auto* l = static_cast<QLineEdit*>(editor);
   model->setData(index, l->text(), Qt::EditRole);
 }
 
@@ -165,7 +165,7 @@ void kvView::initCols(QStringList& heads) {
 kvView::~kvView() { delete model(); }
 
 void kvView::initLineDelegate(int col) {
-  lineDelegate* d = new lineDelegate(infoLabel, this);
+  auto* d = new lineDelegate(infoLabel, this);
   setItemDelegateForColumn(col, d);
   connect(static_cast<QItemDelegate*>(d),
           SIGNAL(closeEditor(QWidget*, QAbstractItemDelegate::EndEditHint)),
@@ -174,7 +174,7 @@ void kvView::initLineDelegate(int col) {
 
 void kvView::setKeys(const QStringList& k, int col) {
   if (!col) keys0 = k;
-  comboDelegate* d = new comboDelegate(k, this);
+  auto* d = new comboDelegate(k, this);
   setItemDelegateForColumn(col, d);
 }
 

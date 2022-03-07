@@ -382,7 +382,7 @@ QString asn1ToQString(const ASN1_STRING* str, bool quote) {
 /* returns an encoded ASN1 string from QString for a special nid*/
 ASN1_STRING* QStringToAsn1(const QString s, int nid) {
   QByteArray ba = s.toUtf8();
-  const unsigned char* utf8 = (const unsigned char*)ba.constData();
+  const auto* utf8 = (const unsigned char*)ba.constData();
   unsigned long global_mask = ASN1_STRING_get_default_mask();
   unsigned long mask = DIRSTRING_TYPE & global_mask;
   ASN1_STRING* out = nullptr;
@@ -422,7 +422,7 @@ QByteArray i2d_bytearray(int (*i2d)(const void*, unsigned char**),
   QByteArray ba;
 
   ba.resize(i2d(data, nullptr));
-  unsigned char* p = (unsigned char*)ba.data();
+  auto* p = (unsigned char*)ba.data();
   i2d(data, &p);
   openssl_error();
   return ba;

@@ -187,7 +187,7 @@ void CertDetail::setReq(pki_x509req* req) {
     // The non extension attributes
     int cnt = X509_REQ_get_attr_count(req->getReq());
     int added = 0;
-    QGridLayout* attrLayout = new QGridLayout(attributes);
+    auto* attrLayout = new QGridLayout(attributes);
     attrLayout->setAlignment(Qt::AlignTop);
     attrLayout->setSpacing(6);
     attrLayout->setMargin(11);
@@ -261,7 +261,7 @@ void CertDetail::showIssuer() {
 
 void CertDetail::showCert(QWidget* parent, pki_x509super* x) {
   if (!x) return;
-  CertDetail* dlg = new CertDetail(parent);
+  auto* dlg = new CertDetail(parent);
   if (!dlg) return;
   dlg->setX509super(x);
   if (dlg->exec()) {

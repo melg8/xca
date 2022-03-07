@@ -14,7 +14,7 @@ void ReqTreeView::fillContextMenu(QMenu* menu,
                                   QModelIndexList indexes) {
   X509SuperTreeView::fillContextMenu(menu, subExport, index, indexes);
 
-  pki_x509req* req = db_base::fromIndex<pki_x509req>(index);
+  auto* req = db_base::fromIndex<pki_x509req>(index);
 
   if (indexes.size() != 1 || !req) return;
 
@@ -29,13 +29,13 @@ void ReqTreeView::fillContextMenu(QMenu* menu,
 }
 
 void ReqTreeView::signReq() {
-  pki_x509req* req = db_base::fromIndex<pki_x509req>(currentIndex());
-  db_x509* certs = Database.model<db_x509>();
+  auto* req = db_base::fromIndex<pki_x509req>(currentIndex());
+  auto* certs = Database.model<db_x509>();
   certs->newCert(req);
 }
 
 void ReqTreeView::toRequest() {
-  pki_x509req* req = db_base::fromIndex<pki_x509req>(currentIndex());
+  auto* req = db_base::fromIndex<pki_x509req>(currentIndex());
   if (basemodel) reqs()->newItem(nullptr, req);
 }
 

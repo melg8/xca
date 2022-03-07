@@ -166,7 +166,7 @@ void NewKey::updateCurves(unsigned min, unsigned max, unsigned long ec_flags) {
 }
 
 void NewKey::on_keyType_currentIndexChanged(int idx) {
-  keyListItem ki = keyType->itemData(idx).value<keyListItem>();
+  auto ki = keyType->itemData(idx).value<keyListItem>();
 
   curveBox->setVisible(ki.ktype.curve);
   curveLabel->setVisible(ki.ktype.curve);
@@ -181,7 +181,7 @@ void NewKey::on_keyType_currentIndexChanged(int idx) {
 
 keyjob NewKey::getKeyJob() const {
   keyjob job;
-  keyListItem selected =
+  auto selected =
       keyType->itemData(keyType->currentIndex()).value<keyListItem>();
   job.ktype = selected.ktype;
   if (job.isEC()) {

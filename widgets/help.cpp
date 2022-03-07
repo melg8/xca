@@ -52,7 +52,7 @@ void Help::contexthelp() {
 
 void Help::register_ctxhelp_button(QDialog* dlg,
                                    const QString& help_ctx) const {
-  QDialogButtonBox* buttonBox = dlg->findChild<QDialogButtonBox*>("buttonBox");
+  auto* buttonBox = dlg->findChild<QDialogButtonBox*>("buttonBox");
 
   if (!buttonBox || help_ctx.isEmpty()) return;
 

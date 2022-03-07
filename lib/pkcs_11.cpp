@@ -178,10 +178,10 @@ class pinPadLoginThread final : public QThread {
 };
 
 static QDialog* newPinPadBox() {
-  QDialog* box = new QDialog(nullptr, Qt::WindowStaysOnTopHint);
+  auto* box = new QDialog(nullptr, Qt::WindowStaysOnTopHint);
   box->setWindowTitle(XCA_TITLE);
-  QHBoxLayout* h = new QHBoxLayout(box);
-  QLabel* l = new QLabel();
+  auto* h = new QHBoxLayout(box);
+  auto* l = new QLabel();
   l->setPixmap(QPixmap(":scardImg"));
   l->setMaximumSize(QSize(95, 40));
   l->setScaledContents(true);
@@ -252,7 +252,7 @@ bool pkcs11::selectToken(slotid* slot, QWidget* w) {
       return true;
   }
   Ui::SelectToken ui;
-  QDialog* select_slot = new QDialog(w);
+  auto* select_slot = new QDialog(w);
   ui.setupUi(select_slot);
   ui.image->setPixmap(QPixmap(":scardImg"));
   ui.tokenBox->addItems(slotnames);
@@ -596,7 +596,7 @@ int pkcs11::encrypt(int flen,
 
 #ifndef LIBRESSL_VERSION_NUMBER
 static int rsa_privdata_free(RSA* rsa) {
-  pkcs11* priv = (pkcs11*)RSA_get_app_data(rsa);
+  auto* priv = (pkcs11*)RSA_get_app_data(rsa);
   delete priv;
   return 0;
 }
@@ -606,7 +606,7 @@ static int rsa_encrypt(int flen,
                        unsigned char* to,
                        RSA* rsa,
                        int padding) {
-  pkcs11* priv = (pkcs11*)RSA_get_app_data(rsa);
+  auto* priv = (pkcs11*)RSA_get_app_data(rsa);
   const BIGNUM* n = nullptr;
 
   if (padding != RSA_PKCS1_PADDING) {
@@ -621,7 +621,7 @@ static int rsa_decrypt(int flen,
                        unsigned char* to,
                        RSA* rsa,
                        int padding) {
-  pkcs11* priv = (pkcs11*)RSA_get_app_data(rsa);
+  auto* priv = (pkcs11*)RSA_get_app_data(rsa);
 
   if (padding != RSA_PKCS1_PADDING) {
     return -1;
@@ -630,7 +630,7 @@ static int rsa_decrypt(int flen,
 }
 
 static int dsa_privdata_free(DSA* dsa) {
-  pkcs11* p11 = (pkcs11*)DSA_get_ex_data(dsa, 0);
+  auto* p11 = (pkcs11*)DSA_get_ex_data(dsa, 0);
   delete p11;
   return 0;
 }
@@ -638,7 +638,7 @@ static int dsa_privdata_free(DSA* dsa) {
 static DSA_SIG* dsa_sign(const unsigned char* dgst, int dlen, DSA* dsa) {
   int len, rs_len;
   unsigned char rs_buf[128];
-  pkcs11* p11 = (pkcs11*)DSA_get_ex_data(dsa, 0);
+  auto* p11 = (pkcs11*)DSA_get_ex_data(dsa, 0);
   DSA_SIG* dsa_sig = DSA_SIG_new();
   BIGNUM *r, *s;
 
@@ -661,7 +661,7 @@ out:
 #ifndef OPENSSL_NO_EC
 
 static void ec_privdata_free(EC_KEY* ec) {
-  pkcs11* p11 = (pkcs11*)EC_KEY_get_ex_data(ec, 0);
+  auto* p11 = (pkcs11*)EC_KEY_get_ex_data(ec, 0);
   delete p11;
 }
 
@@ -681,7 +681,7 @@ static ECDSA_SIG* ec_do_sign(const unsigned char* dgst,
   int len, rs_len;
   unsigned char rs_buf[512];
   ECDSA_SIG* ec_sig = ECDSA_SIG_new();
-  pkcs11* p11 = (pkcs11*)EC_KEY_get_ex_data(ec, 0);
+  auto* p11 = (pkcs11*)EC_KEY_get_ex_data(ec, 0);
   BIGNUM *r, *s;
 
   (void)in_kinv;

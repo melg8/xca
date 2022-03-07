@@ -68,8 +68,8 @@ void xcaWarningGui::warningv3(const QString& msg, const extList& el) {
   QString etext =
       QString("<h3>") + msg + QString("</h3><hr>") + el.getHtml("<br>");
 
-  QTextEdit* textbox = new QTextEdit(etext);
-  XcaDialog* d = new XcaDialog(nullptr, x509, textbox, QString(), QString());
+  auto* textbox = new QTextEdit(etext);
+  auto* d = new XcaDialog(nullptr, x509, textbox, QString(), QString());
   d->aboutDialog(QPixmap(":certImg"));
   d->exec();
   delete d;

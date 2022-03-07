@@ -38,9 +38,9 @@ static QString CurveComment(int nid) {
 
 void KeyDetail::setupFingerprints(pki_key* pKey) {
   int pos = 0;
-  QWidget* widget = new QWidget(fingerprint);
-  QVBoxLayout* v = new QVBoxLayout(fingerprint);
-  QGridLayout* grid = new QGridLayout(widget);
+  auto* widget = new QWidget(fingerprint);
+  auto* v = new QVBoxLayout(fingerprint);
+  auto* grid = new QGridLayout(widget);
   v->addStretch();
   v->addWidget(widget);
   v->addStretch();
@@ -54,8 +54,8 @@ void KeyDetail::setupFingerprints(pki_key* pKey) {
   foreach (QString type, sl) {
     qDebug() << type << pKey->fingerprint(type);
 
-    QLabel* left = new QLabel(widget);
-    CopyLabel* right = new CopyLabel(widget);
+    auto* left = new QLabel(widget);
+    auto* right = new CopyLabel(widget);
 
     left->setTextFormat(Qt::PlainText);
     left->setText(type);
@@ -84,7 +84,7 @@ void KeyDetail::setKey(pki_key* pKey) {
     keyPrivEx->setRed();
   } else if (pKey->isToken()) {
     image->setPixmap(QPixmap(":scardImg"));
-    pki_scard* card = static_cast<pki_scard*>(pKey);
+    auto* card = static_cast<pki_scard*>(pKey);
     cardLabel->setText(card->getCardLabel());
     cardModel->setText(card->getModel());
     cardManufacturer->setText(card->getManufacturer());
@@ -142,7 +142,7 @@ void KeyDetail::itemChanged(pki_base* pki) {
 
 void KeyDetail::showKey(QWidget* parent, pki_key* pKey, bool ro) {
   if (!pKey) return;
-  KeyDetail* dlg = new KeyDetail(parent);
+  auto* dlg = new KeyDetail(parent);
   if (!dlg) return;
   dlg->setKey(pKey);
   dlg->keyDesc->setReadOnly(ro);

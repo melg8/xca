@@ -9,7 +9,7 @@ XcaHeaderView::XcaHeaderView() : QHeaderView(Qt::Horizontal) {
 }
 
 void XcaHeaderView::contextMenuEvent(QContextMenuEvent* e) {
-  XcaTreeView* tv = static_cast<XcaTreeView*>(parentWidget());
+  auto* tv = static_cast<XcaTreeView*>(parentWidget());
   if (tv) tv->headerEvent(e, logicalIndexAt(e->pos()));
 }
 

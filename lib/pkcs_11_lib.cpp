@@ -150,7 +150,7 @@ pkcs11_lib* pkcs11_lib_list::add_lib(const QString& fname) {
     break;
   }
   if (idx == -1) {
-    pkcs11_lib* lib = new pkcs11_lib(fname);
+    auto* lib = new pkcs11_lib(fname);
     idx = libs.size();
     libs << lib;
   }

@@ -30,7 +30,7 @@ XcaProgress::~XcaProgress() { progress->stop(); }
 void XcaProgress::increment() { progress->increment(); }
 
 void XcaProgress::inc(int, int, void* p) {
-  XcaProgress* prog = static_cast<XcaProgress*>(p);
+  auto* prog = static_cast<XcaProgress*>(p);
   if (prog) prog->increment();
 }
 

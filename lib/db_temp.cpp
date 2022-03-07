@@ -21,7 +21,7 @@ db_temp::db_temp() : db_x509name("templates") {
   updateHeaders();
   loadContainer();
 
-  pki_temp* tmpl = new pki_temp(tr("Empty template"));
+  auto* tmpl = new pki_temp(tr("Empty template"));
   tmpl->setAsPreDefined();
   predefs << tmpl;
 
@@ -85,6 +85,6 @@ bool db_temp::alterTemp(pki_temp* temp) {
 void db_temp::exportItem(const QModelIndex& index,
                          const pki_export*,
                          XFile& file) const {
-  pki_temp* temp = fromIndex<pki_temp>(index);
+  auto* temp = fromIndex<pki_temp>(index);
   if (temp) temp->writeTemp(file);
 }

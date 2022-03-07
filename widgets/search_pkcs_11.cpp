@@ -108,7 +108,7 @@ void SearchPkcs11::updateCurrFile(QString f) {
 }
 
 void SearchPkcs11::updateLibs(QString f) {
-  QListWidgetItem* i = new QListWidgetItem(nativeSeparator(f));
+  auto* i = new QListWidgetItem(nativeSeparator(f));
   i->setWhatsThis(f);
   liblist->addItem(i);
   liblist->update();

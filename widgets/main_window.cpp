@@ -218,9 +218,9 @@ void MainWindow::pastePem() {
   if (!text.isEmpty())
     if (pastePem(text, true)) return;
 
-  QTextEdit* textbox = new QTextEdit();
+  auto* textbox = new QTextEdit();
   textbox->setPlainText(text);
-  XcaDialog* input =
+  auto* input =
       new XcaDialog(this, x509, textbox, tr("Import PEM data"), QString());
   input->noSpacer();
   if (input->exec()) {
@@ -309,7 +309,7 @@ void MainWindow::manageToken() {
   try {
     if (!p11.selectToken(&slot, this)) return;
 
-    ImportMulti* import_dialog = new ImportMulti(this);
+    auto* import_dialog = new ImportMulti(this);
 
     import_dialog->tokenInfo(slot);
     QList<CK_OBJECT_HANDLE> objects;
@@ -456,7 +456,7 @@ void MainWindow::importAnything(QString file) {
 }
 
 void MainWindow::importAnything(const QStringList& files) {
-  pki_multi* multi = new pki_multi();
+  auto* multi = new pki_multi();
 
   foreach (QString s, files)
     multi->probeAnything(s);
@@ -468,7 +468,7 @@ void MainWindow::importMulti(pki_multi* multi, int force) {
   if (!multi) return;
 
   QStringList failed_files = multi->failed_files;
-  ImportMulti* dlgi = new ImportMulti(this);
+  auto* dlgi = new ImportMulti(this);
 
   // dlgi->addItem() deletes "multi" if appropriate
   dlgi->addItem(multi);
@@ -477,7 +477,7 @@ void MainWindow::importMulti(pki_multi* multi, int force) {
 }
 
 void MainWindow::openRemoteSqlDB() {
-  OpenDb* opendb = new OpenDb(this, QString());
+  auto* opendb = new OpenDb(this, QString());
   QString descriptor;
   Passwd pass;
   DbMap params;
@@ -595,7 +595,7 @@ void MainWindow::exportIndexHierarchy() {
 void MainWindow::exportIndex(const QString& fname, bool hierarchy) const {
   qDebug() << fname << hierarchy;
   if (fname.isEmpty() || !Database.isOpen()) return;
-  db_x509* certs = Database.model<db_x509>();
+  auto* certs = Database.model<db_x509>();
   certs->writeIndex(fname, hierarchy);
 }
 

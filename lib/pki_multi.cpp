@@ -27,7 +27,7 @@ pki_multi::~pki_multi() {
 }
 
 void pki_multi::append_item(pki_base* pki) {
-  pki_multi* m = dynamic_cast<pki_multi*>(pki);
+  auto* m = dynamic_cast<pki_multi*>(pki);
   if (m)
     multi += m;
   else

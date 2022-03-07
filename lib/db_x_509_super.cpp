@@ -67,7 +67,7 @@ dbheaderList db_x509super::getHeaders() {
 }
 
 pki_key* db_x509super::findKey(pki_x509super* ref) {
-  db_key* keys = Database.model<db_key>();
+  auto* keys = Database.model<db_key>();
   pki_key *key, *refkey;
   if (!ref) return nullptr;
   if ((key = ref->getRefKey()) != nullptr) return key;
@@ -91,9 +91,9 @@ QList<pki_x509super*> db_x509super::findByPubKey(pki_key* refkey) {
 }
 
 void db_x509super::extractPubkey(QModelIndex index) {
-  db_key* keys = Database.model<db_key>();
+  auto* keys = Database.model<db_key>();
   pki_key* key;
-  pki_x509super* pki = fromIndex<pki_x509super>(index);
+  auto* pki = fromIndex<pki_x509super>(index);
   if (!pki) return;
   key = pki->getPubKey();
   if (!key) return;
@@ -110,12 +110,12 @@ void db_x509super::extractPubkey(QModelIndex index) {
 }
 
 void db_x509super::toTemplate(QModelIndex index) {
-  db_temp* temps = Database.model<db_temp>();
-  pki_x509super* pki = fromIndex<pki_x509super>(index);
+  auto* temps = Database.model<db_temp>();
+  auto* pki = fromIndex<pki_x509super>(index);
   if (!pki || !temps) return;
 
   try {
-    pki_temp* temp = new pki_temp();
+    auto* temp = new pki_temp();
     Q_CHECK_PTR(temp);
     temp->setIntName(pki->getIntName());
     extList el = temp->fromCert(pki);

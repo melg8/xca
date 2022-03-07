@@ -23,12 +23,12 @@ DistName::DistName(QWidget* parent) : QWidget(parent) {
   DistNameLayout->setSpacing(6);
   DistNameLayout->setMargin(11);
 
-  QGridLayout* g = new QGridLayout();
+  auto* g = new QGridLayout();
   g->setAlignment(Qt::AlignTop);
   g->setSpacing(6);
   g->setMargin(11);
 
-  QVBoxLayout* v = new QVBoxLayout(this);
+  auto* v = new QVBoxLayout(this);
   v->setSpacing(6);
   v->setMargin(11);
   v->addLayout(DistNameLayout);

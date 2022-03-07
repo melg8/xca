@@ -182,7 +182,7 @@ void pki_x509req::fload(const QString& fname) {
 }
 
 void pki_x509req::d2i(QByteArray& ba) {
-  X509_REQ* r = (X509_REQ*)d2i_bytearray(D2I_VOID(d2i_X509_REQ), ba);
+  auto* r = (X509_REQ*)d2i_bytearray(D2I_VOID(d2i_X509_REQ), ba);
   if (r) {
     X509_REQ_free(request);
     request = r;
@@ -251,7 +251,7 @@ pki_key* pki_x509req::getPubKey() const {
   if (pkey == nullptr) {
     return nullptr;
   }
-  pki_evp* key = new pki_evp(pkey);
+  auto* key = new pki_evp(pkey);
   pki_openssl_error();
   return key;
 }

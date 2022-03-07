@@ -31,7 +31,7 @@ void db_key::loadContainer() {
               "GROUP by pkey");
   q.exec();
   while (q.next()) {
-    pki_key* key = Store.lookupPki<pki_key>(q.value(0));
+    auto* key = Store.lookupPki<pki_key>(q.value(0));
     if (!key) {
       qDebug() << "Unknown key" << q.value(0).toULongLong();
       continue;
@@ -82,7 +82,7 @@ void db_key::remFromCont(const QModelIndex& idx) {
 
 void db_key::inToCont(pki_base* pki) {
   db_base::inToCont(pki);
-  pki_key* key = static_cast<pki_key*>(pki);
+  auto* key = static_cast<pki_key*>(pki);
   unsigned hash = key->hash();
   QList<pki_x509super*> items = Store.sqlSELECTpki<pki_x509super>(
       "SELECT item FROM x509super WHERE pkey IS NULL AND key_hash=?",
@@ -102,9 +102,9 @@ void db_key::inToCont(pki_base* pki) {
 }
 
 pki_base* db_key::insert(pki_base* item) {
-  pki_key* lkey = dynamic_cast<pki_key*>(item);
+  auto* lkey = dynamic_cast<pki_key*>(item);
   pki_key* oldkey;
-  pki_evp* evp = dynamic_cast<pki_evp*>(lkey);
+  auto* evp = dynamic_cast<pki_evp*>(lkey);
 
   if (evp) evp->setOwnPass(pki_evp::ptCommon);
 
@@ -170,7 +170,7 @@ pki_key* db_key::newKey(const keyjob& task, const QString& name) {
 int db_key::exportFlags(const QModelIndex& index) const {
   int disable_flags = 0;
 
-  pki_key* key = fromIndex<pki_key>(index);
+  auto* key = fromIndex<pki_key>(index);
 
   if (!index.isValid() || !key) return 0;
 
@@ -191,8 +191,8 @@ void db_key::exportItem(const QModelIndex& index,
                         const pki_export* xport,
                         XFile& file) const {
   const EVP_CIPHER* algo = nullptr;
-  pki_key* key = fromIndex<pki_key>(index);
-  pki_evp* privkey = dynamic_cast<pki_evp*>(key);
+  auto* key = fromIndex<pki_key>(index);
+  auto* privkey = dynamic_cast<pki_evp*>(key);
 
   int (*pwCallback)(char*, int, int, void*) = nullptr;
 
@@ -222,7 +222,7 @@ void db_key::exportItem(const QModelIndex& index,
 }
 
 void db_key::setOwnPass(QModelIndex idx, enum pki_key::passType x) {
-  pki_evp* targetKey = fromIndex<pki_evp>(idx);
+  auto* targetKey = fromIndex<pki_evp>(idx);
   enum pki_key::passType old_type;
 
   if (!idx.isValid() || !targetKey) return;

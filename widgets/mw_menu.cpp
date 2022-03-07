@@ -44,7 +44,7 @@ static QAction* languageMenuEntry(const QStringList& sl) {
 
   if (sl.length() > 2) tooltip += " - " + sl[2];
 
-  QAction* a = new QAction(lang, nullptr);
+  auto* a = new QAction(lang, nullptr);
   a->setToolTip(tooltip);
   a->setData(QVariant(locale));
   a->setDisabled(!XcaApplication::languageAvailable(locale));
@@ -210,7 +210,7 @@ void MainWindow::load_database() {
 void MainWindow::setOptions() {
   if (!QSqlDatabase::database().isOpen()) return;
 
-  Options* opt = new Options(this);
+  auto* opt = new Options(this);
   if (opt->exec()) {
     reqView->showHideSections();
     certView->showHideSections();

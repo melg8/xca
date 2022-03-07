@@ -99,7 +99,7 @@ static const QList<int> other_curve_nids() {
 
 builtin_curves::builtin_curves() {
   int i, num_curves = EC_get_builtin_curves(nullptr, 0);
-  EC_builtin_curve* curves = new EC_builtin_curve[num_curves];
+  auto* curves = new EC_builtin_curve[num_curves];
 
   Q_CHECK_PTR(curves);
 

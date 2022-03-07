@@ -15,13 +15,12 @@
 
 void NewCrl::newCrl(QWidget* parent, pki_x509* issuer) {
   crljob task(issuer);
-  NewCrlWidget* widget =
-      new NewCrlWidget(task.settings, NewCrlOptionsFrom(issuer));
-  XcaDialog* dlg =
+  auto* widget = new NewCrlWidget(task.settings, NewCrlOptionsFrom(issuer));
+  auto* dlg =
       new XcaDialog(parent, revocation, widget, QObject::tr("Create CRL"),
                     QString(), "crlgenerate");
   if (dlg->exec()) {
-    db_crl* db = Database.model<db_crl>();
+    auto* db = Database.model<db_crl>();
     if (db) {
       task.settings = widget->getCrlJob();
       db->newCrl(task);

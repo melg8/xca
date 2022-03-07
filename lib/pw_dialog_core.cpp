@@ -32,7 +32,7 @@ enum open_result PwDialogCore::execute(pass_info* p,
 int PwDialogCore::pwCallback(char* buf, int size, int rwflag, void* userdata) {
   Passwd passwd;
   enum open_result result;
-  pass_info* p = static_cast<pass_info*>(userdata);
+  auto* p = static_cast<pass_info*>(userdata);
 
   result = execute(p, &passwd, rwflag, false);
 

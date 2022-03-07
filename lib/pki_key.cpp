@@ -45,7 +45,7 @@ void pki_key::autoIntName(const QString& file) {
 }
 
 void pki_key::d2i(QByteArray& ba) {
-  EVP_PKEY* k = (EVP_PKEY*)d2i_bytearray(D2I_VOID(d2i_PUBKEY), ba);
+  auto* k = (EVP_PKEY*)d2i_bytearray(D2I_VOID(d2i_PUBKEY), ba);
   pki_openssl_error();
   if (k) {
     if (key) EVP_PKEY_free(key);
@@ -338,7 +338,7 @@ QList<int> pki_key::possibleHashNids() {
 }
 
 bool pki_key::compare(const pki_base* ref) const {
-  const pki_key* kref = static_cast<const pki_key*>(ref);
+  const auto* kref = static_cast<const pki_key*>(ref);
 
   if (kref->getKeyType() != getKeyType()) return false;
   if (!kref || !kref->key || !key) return false;
@@ -376,7 +376,7 @@ QString pki_key::BN2QString(const BIGNUM* bn) const {
   QString x = "";
   char zs[10];
   int j, size = BN_num_bytes(bn);
-  unsigned char* buf = (unsigned char*)OPENSSL_malloc(size);
+  auto* buf = (unsigned char*)OPENSSL_malloc(size);
   Q_CHECK_PTR(buf);
   BN_bn2bin(bn, buf);
   for (j = 0; j < size; j++) {

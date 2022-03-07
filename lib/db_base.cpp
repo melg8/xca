@@ -549,7 +549,7 @@ QMimeData* db_base::mimeData(const QModelIndexList& indexes) const {
 
   if (data.isEmpty()) return nullptr;
 
-  QMimeData* mimeData = new QMimeData();
+  auto* mimeData = new QMimeData();
   mimeData->setText(data.toLatin1());
   mimeData->setData(X_XCA_DRAG_DATA, QByteArray());
   return mimeData;

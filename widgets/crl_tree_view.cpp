@@ -19,7 +19,7 @@ void CrlTreeView::showPki(pki_base* pki) {
 void CrlTreeView::newItem(pki_x509* cert) { NewCrl::newCrl(this, cert); }
 
 void CrlTreeView::newItem() {
-  db_x509* certs = Database.model<db_x509>();
+  auto* certs = Database.model<db_x509>();
   QList<pki_x509*> cas = certs->getAllIssuers();
   pki_x509* ca = nullptr;
 
@@ -31,9 +31,9 @@ void CrlTreeView::newItem() {
       ca = cas[0];
       break;
     default: {
-      itemComboCert* c = new itemComboCert(nullptr);
-      XcaDialog* d = new XcaDialog(this, revocation, c,
-                                   tr("Select CA certificate"), QString());
+      auto* c = new itemComboCert(nullptr);
+      auto* d = new XcaDialog(this, revocation, c, tr("Select CA certificate"),
+                              QString());
       c->insertPkiItems(cas);
       if (!d->exec()) {
         delete d;

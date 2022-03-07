@@ -349,7 +349,7 @@ QString x509v3ext::parse_critical() const {
 }
 
 bool x509v3ext::parse_ia5(QString* single, QString* adv) const {
-  ASN1_STRING* str = (ASN1_STRING*)d2i();
+  auto* str = (ASN1_STRING*)d2i();
   QString ret;
 
   if (!str) {
@@ -374,7 +374,7 @@ bool x509v3ext::parse_ia5(QString* single, QString* adv) const {
 bool x509v3ext::parse_generalName(QString* single, QString* adv) const {
   bool retval = true;
   QString sect, ret;
-  STACK_OF(GENERAL_NAME)* gens = (STACK_OF(GENERAL_NAME)*)d2i();
+  auto* gens = (STACK_OF(GENERAL_NAME)*)d2i();
 
   if (!gens) return false;
 
@@ -393,7 +393,7 @@ bool x509v3ext::parse_generalName(QString* single, QString* adv) const {
 }
 
 bool x509v3ext::parse_eku(QString* single, QString* adv) const {
-  EXTENDED_KEY_USAGE* eku = (EXTENDED_KEY_USAGE*)d2i();
+  auto* eku = (EXTENDED_KEY_USAGE*)d2i();
   QStringList sl;
   int i;
 
@@ -419,7 +419,7 @@ bool x509v3ext::parse_ainfo(QString* single, QString* adv) const {
   QStringList sl;
   int i;
 
-  AUTHORITY_INFO_ACCESS* ainfo = (AUTHORITY_INFO_ACCESS*)d2i();
+  auto* ainfo = (AUTHORITY_INFO_ACCESS*)d2i();
 
   if (!ainfo) return false;
 
@@ -468,7 +468,7 @@ bool x509v3ext::parse_Crldp(QString* single, QString* adv) const {
   QStringList crldps;
   const char* sn = OBJ_nid2sn(nid());
 
-  STACK_OF(DIST_POINT)* crld = (STACK_OF(DIST_POINT)*)d2i();
+  auto* crld = (STACK_OF(DIST_POINT)*)d2i();
 
   if (!crld) return false;
 
@@ -594,7 +594,7 @@ bool x509v3ext::parse_certpol(QString*, QString* adv) const {
   QStringList pols;
   QString myadv;
   int i;
-  STACK_OF(POLICYINFO)* pol = (STACK_OF(POLICYINFO)*)d2i();
+  auto* pol = (STACK_OF(POLICYINFO)*)d2i();
 
   if (!pol) return false;
 
@@ -621,7 +621,7 @@ bool x509v3ext::parse_certpol(QString*, QString* adv) const {
 }
 
 bool x509v3ext::parse_bc(QString* single, QString* adv) const {
-  BASIC_CONSTRAINTS* bc = (BASIC_CONSTRAINTS*)d2i();
+  auto* bc = (BASIC_CONSTRAINTS*)d2i();
 
   if (!bc) return false;
 
@@ -690,7 +690,7 @@ bool x509v3ext::parse_sKeyId(QString*, QString* adv) const {
 
 bool x509v3ext::parse_aKeyId(QString*, QString* adv) const {
   QStringList ret;
-  AUTHORITY_KEYID* akeyid = (AUTHORITY_KEYID*)d2i();
+  auto* akeyid = (AUTHORITY_KEYID*)d2i();
 
   if (!akeyid) return false;
 
@@ -717,7 +717,7 @@ bool x509v3ext::parse_generic(QString*, QString* adv) const {
 }
 
 bool x509v3ext::parse_inhibitAnyPolicy(QString*, QString* adv) const {
-  ASN1_INTEGER* a = (ASN1_INTEGER*)d2i();
+  auto* a = (ASN1_INTEGER*)d2i();
 
   if (!a) return false;
 
@@ -736,7 +736,7 @@ bool x509v3ext::parse_inhibitAnyPolicy(QString*, QString* adv) const {
 bool x509v3ext::parse_policyConstraints(QString*, QString* adv) const {
   QStringList v;
   a1int a1null(0L), a;
-  POLICY_CONSTRAINTS* pol = (POLICY_CONSTRAINTS*)d2i();
+  auto* pol = (POLICY_CONSTRAINTS*)d2i();
 
   if (!pol) return false;
 
@@ -760,7 +760,7 @@ bool x509v3ext::parse_policyMappings(QString*, QString* adv) const {
   bool retval = true;
   QStringList polMaps;
   QString myadv;
-  POLICY_MAPPINGS* pmaps = (POLICY_MAPPINGS*)d2i();
+  auto* pmaps = (POLICY_MAPPINGS*)d2i();
 
   if (!pmaps) return false;
 
@@ -805,7 +805,7 @@ bool x509v3ext::parse_nameConstraints(QString*, QString* adv) const {
   QString sect, ret;
   QStringList permEx;
   QString tag = OBJ_nid2sn(nid());
-  NAME_CONSTRAINTS* cons = (NAME_CONSTRAINTS*)d2i();
+  auto* cons = (NAME_CONSTRAINTS*)d2i();
 
   if (!cons) return false;
 

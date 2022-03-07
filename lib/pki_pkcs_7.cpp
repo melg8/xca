@@ -79,7 +79,7 @@ void pki_pkcs7::writeP7(XFile& file, bool PEM) {
     pki_openssl_error();
   }
   foreach (pki_base* pki, multi) {
-    pki_x509* x = dynamic_cast<pki_x509*>(pki);
+    auto* x = dynamic_cast<pki_x509*>(pki);
     if (x) PKCS7_add_certificate(p7, X509_dup(x->getCert()));
   }
   BioByteArray b;
@@ -115,7 +115,7 @@ void pki_pkcs7::append_certs(PKCS7* myp7, const QString& name) {
 
   for (int x = 0; x < sk_X509_num(certstack); x++) {
     X509* c = X509_dup(sk_X509_value(certstack, x));
-    pki_x509* cert = new pki_x509(c);
+    auto* cert = new pki_x509(c);
     openssl_error();
     cert->autoIntName(getIntName());
     cert->pkiSource = imported;

@@ -213,13 +213,13 @@ static void read_cmdline(int argc, char* argv[]) {
   }
   if (!cmd_opts["index"].isEmpty()) {
     qDebug() << cmd_opts["index"];
-    db_x509* certs = Database.model<db_x509>();
+    auto* certs = Database.model<db_x509>();
     certs->writeIndex(cmd_opts["index"], false);
     XCA_INFO(QObject::tr("Index file written to '%1'").arg(cmd_opts["index"]));
   }
   if (!cmd_opts["hierarchy"].isEmpty()) {
     qDebug() << cmd_opts["hierarchy"];
-    db_x509* certs = Database.model<db_x509>();
+    auto* certs = Database.model<db_x509>();
     certs->writeIndex(cmd_opts["hierarchy"], true);
     XCA_INFO(QObject::tr("Index hierarchy written to '%1'")
                  .arg(cmd_opts["hierarchy"]));
@@ -234,13 +234,13 @@ static void read_cmdline(int argc, char* argv[]) {
       Database.close();
       throw errorEx(QObject::tr("Unknown key type %1").arg(cmd_opts["keygen"]));
     }
-    db_key* keys = Database.model<db_key>();
+    auto* keys = Database.model<db_key>();
     pki_key* pki = keys->newKey(task, cmd_opts["name"]);
     if (pki) cmdline_items->append_item(pki);
   }
   if (cmd_opts.has("issuers")) {
     QStringList out;
-    db_x509* certs = Database.model<db_x509>();
+    auto* certs = Database.model<db_x509>();
     QList<pki_x509*> issuers = certs->getAllIssuers();
     std::sort(issuers.begin(), issuers.end(), compare_pki_base);
     foreach (pki_x509* iss, issuers) {
@@ -254,8 +254,8 @@ static void read_cmdline(int argc, char* argv[]) {
     console_write(stdout, out.join("\n").toUtf8() + '\n');
   }
   if (cmd_opts.has("crlgen")) {
-    db_crl* crls = Database.model<db_crl>();
-    db_x509* certs = Database.model<db_x509>();
+    auto* crls = Database.model<db_crl>();
+    auto* certs = Database.model<db_x509>();
     QList<pki_x509*> issuers = certs->getAllIssuers();
     pki_x509* issuer = nullptr;
     QString ca = cmd_opts["crlgen"];
@@ -278,7 +278,7 @@ static void read_cmdline(int argc, char* argv[]) {
       bool ok;
       qDebug() << "Select" << item;
       qulonglong id = item.toULongLong(&ok);
-      pki_base* pki = Store.lookupPki<pki_base>(QVariant(id));
+      auto* pki = Store.lookupPki<pki_base>(QVariant(id));
       if (pki) cmdline_items->append_item(pki);
     }
   }

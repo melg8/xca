@@ -247,7 +247,7 @@ extList pki_temp::fromCert(pki_x509super* cert_or_req) {
   settings["adv_ext"] = adv_ext;
 
   if (cert_or_req->getType() == x509) {
-    pki_x509* cert = (pki_x509*)cert_or_req;
+    auto* cert = (pki_x509*)cert_or_req;
     if (cert->getNotAfter().isUndefined()) {
       settings["noWellDefinedExpDate"] = "1";
     } else {

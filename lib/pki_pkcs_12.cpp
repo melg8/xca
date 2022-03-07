@@ -89,7 +89,7 @@ pki_pkcs12::pki_pkcs12(const QString& fname) : pki_multi(fname) {
   for (int i = 0; i < sk_X509_num(certstack); ++i) {
     X509* crt = sk_X509_value(certstack, i);
     if (!crt) continue;
-    pki_x509* cacert = new pki_x509(crt);
+    auto* cacert = new pki_x509(crt);
     Q_CHECK_PTR(cacert);
     if (alias.isEmpty()) {
       cacert->autoIntName(QString());
@@ -118,7 +118,7 @@ void pki_pkcs12::writePKCS12(XFile& file) const {
 
   STACK_OF(X509)* certstack = sk_X509_new_null();
   foreach (pki_base* pki, multi) {
-    pki_x509* x = dynamic_cast<pki_x509*>(pki);
+    auto* x = dynamic_cast<pki_x509*>(pki);
     if (x && x != cert) sk_X509_push(certstack, x->getCert());
   }
   pkcs12 = PKCS12_create(pass.data(), getIntName().toUtf8().data(),

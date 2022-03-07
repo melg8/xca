@@ -46,7 +46,7 @@ QList<nameEdit> NewX509::setupExplicitInputs(NIDlist nid_list,
                                              QWidget* old,
                                              int columns) {
   QList<nameEdit> edits;
-  QGridLayout* layout = dynamic_cast<QGridLayout*>(parent->layout());
+  auto* layout = dynamic_cast<QGridLayout*>(parent->layout());
   if (layout) {
     QLayoutItem* child;
     while ((child = layout->takeAt(0))) {
@@ -99,8 +99,8 @@ QList<nameEdit> NewX509::setupExplicitInputs(NIDlist nid_list,
 NewX509::NewX509(QWidget* parent) : QDialog(parent ? parent : mainwin) {
   int i;
   QStringList keys;
-  db_key* keymodel = Database.model<db_key>();
-  db_x509req* reqmodel = Database.model<db_x509req>();
+  auto* keymodel = Database.model<db_key>();
+  auto* reqmodel = Database.model<db_x509req>();
 
   attr_nid << NID_pkcs9_unstructuredName << NID_pkcs9_challengePassword;
 
@@ -227,9 +227,9 @@ NewX509::NewX509(QWidget* parent) : QDialog(parent ? parent : mainwin) {
 
     w->setToolTip(tooltip);
 
-    DoubleClickLabel* l = dynamic_cast<DoubleClickLabel*>(w);
-    QGroupBox* g = dynamic_cast<QGroupBox*>(w);
-    QCheckBox* c = dynamic_cast<QCheckBox*>(w);
+    auto* l = dynamic_cast<DoubleClickLabel*>(w);
+    auto* g = dynamic_cast<QGroupBox*>(w);
+    auto* c = dynamic_cast<QCheckBox*>(w);
     if (l) {
       l->setText(text);
       l->setClickText(OBJ_nid2sn(nid));
@@ -368,7 +368,7 @@ void NewX509::defineRequest(pki_x509req* req) {
 
 /* Preset all values from another request to create a similar one */
 void NewX509::fromX509super(pki_x509super* cert_or_req, bool applyTemp) {
-  pki_temp* temp = new pki_temp("");
+  auto* temp = new pki_temp("");
   temp->fromCert(cert_or_req);
   defineTemplate(temp);
   delete temp;
@@ -383,7 +383,7 @@ void NewX509::fromX509super(pki_x509super* cert_or_req, bool applyTemp) {
 
   switch (cert_or_req->getType()) {
     case x509: {
-      pki_x509* cert = (pki_x509*)cert_or_req;
+      auto* cert = (pki_x509*)cert_or_req;
       pki_x509* signer = cert->getSigner();
       if (signer == cert) {
         foreignSignRB->setChecked(false);
@@ -395,7 +395,7 @@ void NewX509::fromX509super(pki_x509super* cert_or_req, bool applyTemp) {
       break;
     }
     case x509_req: {
-      pki_x509req* req = (pki_x509req*)cert_or_req;
+      auto* req = (pki_x509req*)cert_or_req;
       setReqAttributes(req);
       break;
     }
@@ -611,9 +611,9 @@ void NewX509::on_genKeyBut_clicked() {
   QString name = description->text();
   if (name.isEmpty()) name = getX509name().getMostPopular();
 
-  NewKey* dlg = new NewKey(this, name);
+  auto* dlg = new NewKey(this, name);
   if (dlg->exec()) {
-    db_key* keys = Database.model<db_key>();
+    auto* keys = Database.model<db_key>();
     keys->newKey(dlg->getKeyJob(), dlg->keyDesc->text());
   }
   delete dlg;

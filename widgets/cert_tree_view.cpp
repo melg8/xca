@@ -28,7 +28,7 @@ void CertTreeView::fillContextMenu(QMenu* menu,
   menu->addAction(tr("Import PKCS#12"), this, SLOT(loadPKCS12()));
   menu->addAction(tr("Import from PKCS#7"), this, SLOT(loadPKCS7()));
 
-  pki_x509* cert = db_base::fromIndex<pki_x509>(index);
+  auto* cert = db_base::fromIndex<pki_x509>(index);
   pki_x509* parent;
 
   if (indexes.size() == 0 || !cert) return;
@@ -42,7 +42,7 @@ void CertTreeView::fillContextMenu(QMenu* menu,
 
   allUnrevoked = allRevoked = sameParent = true;
   foreach (QModelIndex i, indexes) {
-    pki_x509* c = db_base::fromIndex<pki_x509>(i);
+    auto* c = db_base::fromIndex<pki_x509>(i);
     if (!c) continue;
     if (c->getSigner() != parent) sameParent = false;
     if (c->isRevoked())
@@ -105,7 +105,7 @@ void CertTreeView::loadPKCS7() {
 }
 
 void CertTreeView::genCrl() {
-  pki_x509* ca = db_base::fromIndex<pki_x509>(currentIndex());
+  auto* ca = db_base::fromIndex<pki_x509>(currentIndex());
 
   NewCrl::newCrl(this, ca);
 }
@@ -115,7 +115,7 @@ void CertTreeView::toCertificate() {
 }
 
 void CertTreeView::deleteFromToken() {
-  pki_x509* cert = db_base::fromIndex<pki_x509>(currentIndex());
+  auto* cert = db_base::fromIndex<pki_x509>(currentIndex());
   try {
     cert->deleteFromToken();
   } catch (errorEx& err) {
@@ -131,10 +131,10 @@ void CertTreeView::changeView() {
 }
 
 void CertTreeView::manageRevocations() {
-  pki_x509* cert = db_base::fromIndex<pki_x509>(currentIndex());
+  auto* cert = db_base::fromIndex<pki_x509>(currentIndex());
   if (!cert) return;
 
-  RevocationList* dlg = new RevocationList();
+  auto* dlg = new RevocationList();
   dlg->setRevList(cert->getRevList(), cert);
   if (dlg->exec()) {
     cert->setRevocations(dlg->getRevList());
@@ -147,7 +147,7 @@ void CertTreeView::caProperties() {
   XcaDialog* dlg;
   QWidget* w;
 
-  pki_x509* cert = db_base::fromIndex<pki_x509>(currentIndex());
+  auto* cert = db_base::fromIndex<pki_x509>(currentIndex());
   if (!cert || !basemodel) return;
 
   w = new QWidget();
@@ -157,7 +157,7 @@ void CertTreeView::caProperties() {
   ui.days->setValue(cert->getCrlDays());
 
   QVariant tmplId = cert->getTemplateSqlId();
-  pki_temp* templ = Store.lookupPki<pki_temp>(tmplId);
+  auto* templ = Store.lookupPki<pki_temp>(tmplId);
 
   ui.temp->insertPkiItems(Store.getAll<pki_temp>());
   ui.temp->setNullItem(tr("No template"));

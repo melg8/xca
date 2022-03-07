@@ -65,7 +65,7 @@ QSqlError pki_crl::lookupIssuer() {
   q.exec();
   if (q.lastError().isValid()) return q.lastError();
   while (q.next()) {
-    pki_x509* x = Store.lookupPki<pki_x509>(q.value(0));
+    auto* x = Store.lookupPki<pki_x509>(q.value(0));
     if (!x) {
       qDebug("CA certificate with id %d not found", q.value(0).toInt());
       continue;
@@ -168,7 +168,7 @@ pki_crl::~pki_crl() {
 }
 
 void pki_crl::d2i(QByteArray& ba) {
-  X509_CRL* c = (X509_CRL*)d2i_bytearray(D2I_VOID(d2i_X509_CRL), ba);
+  auto* c = (X509_CRL*)d2i_bytearray(D2I_VOID(d2i_X509_CRL), ba);
   pki_openssl_error();
   if (c) {
     X509_CRL_free(crl);

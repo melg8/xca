@@ -28,9 +28,9 @@ enum open_result PwDialogUI::execute(pass_info* p,
                                      Passwd* passwd,
                                      bool write,
                                      bool abort) {
-  PwDialog* dlg = new PwDialog(p, write);
+  auto* dlg = new PwDialog(p, write);
   if (abort) dlg->addAbortButton();
-  enum open_result result = (enum open_result)dlg->exec();
+  auto result = (enum open_result)dlg->exec();
   *passwd = dlg->getPass();
   delete dlg;
   if (result == pw_exit) throw pw_exit;

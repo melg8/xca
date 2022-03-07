@@ -4,7 +4,7 @@
 
 bool XcaProxyModel::lessThan(const QModelIndex& left,
                              const QModelIndex& right) const {
-  db_base* db = dynamic_cast<db_base*>(sourceModel());
+  auto* db = dynamic_cast<db_base*>(sourceModel());
   if (!db) return QSortFilterProxyModel::lessThan(left, right);
 
   dbheaderList headers = db->getAllHeaders();

@@ -17,9 +17,9 @@ void KeyTreeView::fillContextMenu(QMenu* menu,
   QMenu* clipboard;
   QAction* a;
   bool multi = indexes.size() > 1;
-  QActionGroup* group = new QActionGroup(menu);
+  auto* group = new QActionGroup(menu);
 
-  pki_key* key = db_base::fromIndex<pki_key>(index);
+  auto* key = db_base::fromIndex<pki_key>(index);
   int exp_type = Settings["KeyFormat"];
   const pki_export* x;
 
@@ -133,7 +133,7 @@ void KeyTreeView::toToken() {
 
   if (!currentIdx.isValid() || !basemodel) return;
 
-  pki_key* key = db_base::fromIndex<pki_key>(currentIdx);
+  auto* key = db_base::fromIndex<pki_key>(currentIdx);
   if (!key || !pkcs11::libraries.loaded() || key->isToken()) return;
 
   pki_scard* card = nullptr;
@@ -161,7 +161,7 @@ void KeyTreeView::toToken() {
 }
 
 void KeyTreeView::showPki(pki_base* pki) {
-  pki_key* key = dynamic_cast<pki_key*>(pki);
+  auto* key = dynamic_cast<pki_key*>(pki);
   KeyDetail::showKey(this, key);
 }
 
@@ -170,7 +170,7 @@ void KeyTreeView::newItem() { newItem(""); }
 void KeyTreeView::newItem(const QString& name) {
   if (!basemodel) return;
 
-  NewKey* dlg = new NewKey(this, name);
+  auto* dlg = new NewKey(this, name);
 
   if (dlg->exec()) keys()->newKey(dlg->getKeyJob(), dlg->keyDesc->text());
   delete dlg;
@@ -187,7 +187,7 @@ void KeyTreeView::load() {
 
 ExportDialog* KeyTreeView::exportDialog(const QModelIndexList& indexes) {
   if (indexes.size() == 0) return nullptr;
-  pki_key* key = db_base::fromIndex<pki_key>(indexes[0]);
+  auto* key = db_base::fromIndex<pki_key>(indexes[0]);
   return new ExportDialog(
       this, tr("Export public key [%1]").arg(key->getTypeString()),
       tr("Private Keys ( *.pem *.der *.pk8 );; "

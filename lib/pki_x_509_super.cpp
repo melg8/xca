@@ -21,7 +21,7 @@ QSqlError pki_x509super::lookupKey() {
   q.exec();
   if (q.lastError().isValid()) return q.lastError();
   while (q.next()) {
-    pki_key* x = Store.lookupPki<pki_key>(q.value(0));
+    auto* x = Store.lookupPki<pki_key>(q.value(0));
     if (!x) {
       qDebug("Public key with id %d not found", q.value(0).toInt());
       continue;

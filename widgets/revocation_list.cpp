@@ -106,7 +106,7 @@ void RevocationList::setRevList(const x509revList& rl, pki_x509* iss) {
 const x509revList& RevocationList::getRevList() { return revList; }
 
 void RevocationList::on_addRev_clicked() {
-  Revocation* revoke = new Revocation(QModelIndexList(), this);
+  auto* revoke = new Revocation(QModelIndexList(), this);
   if (revoke->exec()) {
     x509rev revit = revoke->getRevocation();
     revList << revit;
@@ -143,7 +143,7 @@ void RevocationList::on_certList_itemDoubleClicked(QTreeWidgetItem* current) {
 
   rev = revList[idx];
 
-  Revocation* revoke = new Revocation(QModelIndexList(), this);
+  auto* revoke = new Revocation(QModelIndexList(), this);
   revoke->setRevocation(rev);
   if (revoke->exec()) {
     a1time a1 = rev.getDate();
@@ -170,7 +170,7 @@ Revocation::Revocation(QModelIndexList indexes, QWidget* w)
     serial->setText(
         QString("Batch revocation of %1 Certificates").arg(indexes.size()));
     foreach (QModelIndex idx, indexes) {
-      pki_x509* cert = db_base::fromIndex<pki_x509>(idx);
+      auto* cert = db_base::fromIndex<pki_x509>(idx);
       if (cert) serials << cert->getSerial();
     }
     std::sort(serials.begin(), serials.end());
@@ -179,7 +179,7 @@ Revocation::Revocation(QModelIndexList indexes, QWidget* w)
     serial->setToolTip(sl.join("\n"));
     serial->setEnabled(false);
   } else if (indexes.size() == 1) {
-    pki_x509* cert = db_base::fromIndex<pki_x509>(indexes[0]);
+    auto* cert = db_base::fromIndex<pki_x509>(indexes[0]);
     serial->setText(cert->getSerial());
     serial->setEnabled(false);
   } else {

@@ -67,7 +67,7 @@ void ImportMulti::addItem(pki_base* pki) {
   if (!pki) return;
 
   if (pki->pkiSource == unknown) pki->pkiSource = imported;
-  pki_multi* pm = dynamic_cast<pki_multi*>(pki);
+  auto* pm = dynamic_cast<pki_multi*>(pki);
   if (pm) {
     QList<pki_base*> items = pm->pull();
     foreach (pki_base* inner, items)
@@ -76,9 +76,9 @@ void ImportMulti::addItem(pki_base* pki) {
     return;
   }
 
-  pki_x509* cert = dynamic_cast<pki_x509*>(pki);
-  pki_crl* crl = dynamic_cast<pki_crl*>(pki);
-  pki_x509super* cert_or_req = dynamic_cast<pki_x509super*>(pki);
+  auto* cert = dynamic_cast<pki_x509*>(pki);
+  auto* crl = dynamic_cast<pki_crl*>(pki);
+  auto* cert_or_req = dynamic_cast<pki_x509super*>(pki);
 
   if (cert) cert->setSigner(cert->findIssuer());
   if (cert_or_req) cert_or_req->lookupKey();
@@ -110,7 +110,7 @@ void ImportMulti::dropEvent(QDropEvent* event) {
   QList<QUrl> urls = event->mimeData()->urls();
   QUrl u;
   QStringList failed;
-  pki_multi* pki = new pki_multi();
+  auto* pki = new pki_multi();
 
   foreach (u, urls)
     pki->probeAnything(u.toLocalFile());
@@ -224,22 +224,22 @@ void ImportMulti::on_butDetails_clicked() {
 
   if (!pki) return;
   try {
-    pki_x509super* pki_super = dynamic_cast<pki_x509super*>(pki);
+    auto* pki_super = dynamic_cast<pki_x509super*>(pki);
     if (pki_super) {
       CertDetail::showCert(this, pki_super);
       return;
     }
-    pki_key* key = dynamic_cast<pki_key*>(pki);
+    auto* key = dynamic_cast<pki_key*>(pki);
     if (key) {
       KeyDetail::showKey(this, key);
       return;
     }
-    pki_crl* crl = dynamic_cast<pki_crl*>(pki);
+    auto* crl = dynamic_cast<pki_crl*>(pki);
     if (crl) {
       CrlDetail::showCrl(this, crl);
       return;
     }
-    pki_temp* temp = dynamic_cast<pki_temp*>(pki);
+    auto* temp = dynamic_cast<pki_temp*>(pki);
     if (temp) {
       XCA_WARN(
           tr("Details of the item '%1' cannot be shown").arg("XCA template"));

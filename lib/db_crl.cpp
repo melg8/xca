@@ -31,7 +31,7 @@ pki_base* db_crl::newPKI(enum pki_type type) {
 }
 
 void db_crl::revokeCerts(pki_crl* crl) {
-  db_x509* certs = Database.model<db_x509>();
+  auto* certs = Database.model<db_x509>();
   x509revList revlist;
 
   if (!certs || !crl) return;
@@ -56,7 +56,7 @@ void db_crl::removeSigner(pki_base* signer) {
 }
 
 void db_crl::inToCont(pki_base* pki) {
-  pki_crl* crl = dynamic_cast<pki_crl*>(pki);
+  auto* crl = dynamic_cast<pki_crl*>(pki);
   unsigned hash = crl->getSubject().hashNum();
   QList<pki_x509*> items;
 
@@ -73,8 +73,8 @@ void db_crl::inToCont(pki_base* pki) {
 }
 
 pki_base* db_crl::insert(pki_base* item) {
-  pki_crl* crl = dynamic_cast<pki_crl*>(item);
-  pki_crl* oldcrl = dynamic_cast<pki_crl*>(getByReference(crl));
+  auto* crl = dynamic_cast<pki_crl*>(item);
+  auto* oldcrl = dynamic_cast<pki_crl*>(getByReference(crl));
   if (oldcrl) {
     XCA_INFO(tr("The revocation list already exists in the database "
                 "as:\n'%1'\nand so it was not imported")
@@ -98,7 +98,7 @@ void db_crl::exportItems(const QModelIndexList& indexes,
                          XFile& file) const {
   QStringList vcal;
   foreach (QModelIndex idx, indexes) {
-    pki_crl* crl = fromIndex<pki_crl>(idx);
+    auto* crl = fromIndex<pki_crl>(idx);
     if (!crl) continue;
     if (xport->match_all(F_CAL))
       vcal << crl->icsVEVENT();

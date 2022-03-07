@@ -53,7 +53,7 @@ void db_x509req::newItem() { newItem(nullptr, nullptr); }
 
 void db_x509req::newItem(pki_temp* temp, pki_x509req* orig) {
   pki_x509req* req = nullptr;
-  NewX509* dlg = new NewX509();
+  auto* dlg = new NewX509();
 
   if (temp) {
     dlg->defineTemplate(temp);
@@ -88,12 +88,12 @@ void db_x509req::newItem(pki_temp* temp, pki_x509req* orig) {
 void db_x509req::exportItem(const QModelIndex& index,
                             const pki_export* xport,
                             XFile& file) const {
-  pki_x509req* req = fromIndex<pki_x509req>(index);
+  auto* req = fromIndex<pki_x509req>(index);
   if (req) req->writeReq(file, xport->match_all(F_PEM));
 }
 
 void db_x509req::setSigned(QModelIndex index, bool signe) {
-  pki_x509req* req = fromIndex<pki_x509req>(index);
+  auto* req = fromIndex<pki_x509req>(index);
   if (!req) return;
   req->markSigned(signe);
   emit columnsContentChanged();

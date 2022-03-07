@@ -45,8 +45,8 @@ void db_x509::loadContainer() {
   XSqlQuery q("SELECT item, issuer FROM certs WHERE issuer is NOT NULL");
   while (q.next()) {
     pki_base* root = treeItem;
-    pki_x509* cert = Store.lookupPki<pki_x509>(q.value(0));
-    pki_x509* issuer = Store.lookupPki<pki_x509>(q.value(1));
+    auto* cert = Store.lookupPki<pki_x509>(q.value(0));
+    auto* issuer = Store.lookupPki<pki_x509>(q.value(1));
     if (cert && issuer) {
       cert->setSigner(issuer);
       if (cert != issuer) root = issuer;
@@ -97,14 +97,14 @@ QList<pki_x509*> db_x509::getAllIssuers() {
 }
 
 void db_x509::remFromCont(const QModelIndex& idx) {
-  db_crl* crls = Database.model<db_crl>();
+  auto* crls = Database.model<db_crl>();
   db_x509super::remFromCont(idx);
   pki_base* pki = fromIndex(idx);
   pki_base* new_parent;
   QList<pki_x509*> childs;
 
   while (pki->childCount()) {
-    pki_x509* child = dynamic_cast<pki_x509*>(pki->takeFirst());
+    auto* child = dynamic_cast<pki_x509*>(pki->takeFirst());
     child->delSigner(dynamic_cast<pki_x509*>(pki));
     new_parent = child->findIssuer();
     insertChild(child);
@@ -137,7 +137,7 @@ static bool recursiveSigning(pki_x509* cert, pki_x509* client) {
 }
 
 void db_x509::inToCont(pki_base* pki) {
-  pki_x509* cert = dynamic_cast<pki_x509*>(pki);
+  auto* cert = dynamic_cast<pki_x509*>(pki);
   cert->setParent(nullptr);
   pki_base* root = cert->getSigner();
 
@@ -162,7 +162,7 @@ void db_x509::inToCont(pki_base* pki) {
     if (!other->compareNameAndKey(cert)) continue;
     if (cert->getNotAfter() < other->getNotAfter()) continue;
     foreach (pki_base* b, other->getChildItems()) {
-      pki_x509* child = dynamic_cast<pki_x509*>(b);
+      auto* child = dynamic_cast<pki_x509*>(b);
       if (!child) continue;
       child->delSigner(other);
       childs << child;
@@ -171,7 +171,7 @@ void db_x509::inToCont(pki_base* pki) {
   }
   /* Search rootItem childs, whether they are ours */
   foreach (pki_base* b, rootItem->getChildItems()) {
-    pki_x509* child = dynamic_cast<pki_x509*>(b);
+    auto* child = dynamic_cast<pki_x509*>(b);
     if (!child || child == cert || child->getSigner() == child) continue;
     if (child->verify_only(cert)) childs << child;
   }
@@ -278,8 +278,8 @@ a1int db_x509::getUniqueSerial(pki_x509* signer) {
 }
 
 pki_base* db_x509::insert(pki_base* item) {
-  pki_x509* cert = dynamic_cast<pki_x509*>(item);
-  pki_x509* oldcert = dynamic_cast<pki_x509*>(getByReference(cert));
+  auto* cert = dynamic_cast<pki_x509*>(item);
+  auto* oldcert = dynamic_cast<pki_x509*>(getByReference(cert));
   if (oldcert) {
     XCA_INFO(tr("The certificate already exists in the database as:\n'%1'\nand "
                 "so it was not imported")
@@ -325,7 +325,7 @@ void db_x509::markRequestSigned(pki_x509req* req, pki_x509* cert) {
 }
 
 void db_x509::newItem() {
-  NewX509* dlg = new NewX509();
+  auto* dlg = new NewX509();
   dlg->setCert();
   pki_x509* sigcert = get1SelectedCert();
   dlg->defineSigner((pki_x509*)sigcert, true);
@@ -336,7 +336,7 @@ void db_x509::newItem() {
 }
 
 void db_x509::newCert(pki_x509req* req) {
-  NewX509* dlg = new NewX509();
+  auto* dlg = new NewX509();
   pki_x509* sigcert = get1SelectedCert();
   dlg->setCert();
   dlg->defineRequest(req);
@@ -348,7 +348,7 @@ void db_x509::newCert(pki_x509req* req) {
 }
 
 void db_x509::newCert(pki_temp* temp) {
-  NewX509* dlg = new NewX509();
+  auto* dlg = new NewX509();
   dlg->setCert();
   dlg->defineTemplate(temp);
   if (dlg->exec()) {
@@ -358,7 +358,7 @@ void db_x509::newCert(pki_temp* temp) {
 }
 
 void db_x509::newCert(pki_x509* cert) {
-  NewX509* dlg = new NewX509();
+  auto* dlg = new NewX509();
   dlg->setCert();
   dlg->fromX509super(cert, false);
   if (dlg->exec()) {
@@ -461,7 +461,7 @@ pki_x509* db_x509::newCert(NewX509* dlg) {
     cert = dynamic_cast<pki_x509*>(insert(cert));
     createSuccess(cert);
     if (cert && clientkey->isToken()) {
-      pki_scard* card = (pki_scard*)clientkey;
+      auto* card = (pki_scard*)clientkey;
       if (XCA_YESNO(
               tr("Store the certificate to the key on the token '%1 (#%2)' ?")
                   .arg(card->getCardLabel())
@@ -491,7 +491,7 @@ int db_x509::exportFlags(const QModelIndex& idx) const {
   QStringList filt;
   int disable_flags = 0;
 
-  pki_x509* crt = fromIndex<pki_x509>(idx);
+  auto* crt = fromIndex<pki_x509>(idx);
   if (!crt) return 0;
 
   pki_key* privkey = crt->getRefKey();
@@ -515,7 +515,7 @@ void db_x509::exportItems(const QModelIndexList& list,
 
   QList<pki_x509*> certs;
   foreach (QModelIndex idx, list) {
-    pki_x509* x = fromIndex<pki_x509>(idx);
+    auto* x = fromIndex<pki_x509>(idx);
     if (x) certs << x;
   }
 
@@ -535,7 +535,7 @@ void db_x509::exportItems(const QModelIndexList& list,
     foreach (pki_x509* pki, Store.getAll<pki_x509>())
       pki->writeCert(file, true);
   } else if (xport->match_all(F_PEM | F_PRIVATE)) {
-    pki_evp* pkey = (pki_evp*)crt->getRefKey();
+    auto* pkey = (pki_evp*)crt->getRefKey();
     if (!pkey || pkey->isPubKey())
       throw errorEx(tr("There was no key found for the Certificate: '%1'")
                         .arg(crt->getIntName()));
@@ -581,7 +581,7 @@ void db_x509::writePKCS12(pki_x509* cert, XFile& file, bool chain) const {
   QStringList filt;
   pki_pkcs12* p12 = nullptr;
   try {
-    pki_evp* privkey = (pki_evp*)cert->getRefKey();
+    auto* privkey = (pki_evp*)cert->getRefKey();
     if (!privkey || privkey->isPubKey()) {
       XCA_WARN(tr("There was no key found for the Certificate: '%1'")
                    .arg(cert->getIntName()));
@@ -610,7 +610,7 @@ void db_x509::writePKCS7(pki_x509* cert,
                          XFile& file,
                          int flags,
                          const QModelIndexList& list) const {
-  pki_pkcs7* p7 = new pki_pkcs7(QString());
+  auto* p7 = new pki_pkcs7(QString());
 
   try {
     if (flags & F_CHAIN) {
@@ -657,7 +657,7 @@ void db_x509::certRenewal(QModelIndexList indexes) {
         !(signkey = signer->getRefKey()) || signkey->isPubKey())
       return;
     bool renew_myself = signer == oldcert;
-    CertExtend* extend_dialog =
+    auto* extend_dialog =
         new CertExtend(nullptr, renew_myself ? nullptr : signer);
     extend_dialog->revoke->setEnabled(!renew_myself);
     if (!extend_dialog->exec()) {
@@ -665,7 +665,7 @@ void db_x509::certRenewal(QModelIndexList indexes) {
       return;
     }
     if (extend_dialog->revoke->isChecked() && !renew_myself) {
-      Revocation* revoke = new Revocation(indexes);
+      auto* revoke = new Revocation(indexes);
       doRevoke = revoke->exec();
       r = revoke->getRevocation();
       delete revoke;
@@ -710,7 +710,7 @@ void db_x509::certRenewal(QModelIndexList indexes) {
 
 void db_x509::revoke(QModelIndexList indexes) {
   if (indexes.size() == 0) return;
-  Revocation* revoke = new Revocation(indexes);
+  auto* revoke = new Revocation(indexes);
   if (revoke->exec()) {
     do_revoke(indexes, revoke->getRevocation());
   }
@@ -751,7 +751,7 @@ void db_x509::unRevoke(QModelIndexList indexes) {
   x509revList revList;
 
   foreach (QModelIndex idx, indexes) {
-    pki_x509* cert = fromIndex<pki_x509>(idx);
+    auto* cert = fromIndex<pki_x509>(idx);
     if (!cert) continue;
     pki_x509* iss = cert->getSigner();
     if (parent == nullptr) {
@@ -770,7 +770,7 @@ void db_x509::unRevoke(QModelIndexList indexes) {
   foreach (QModelIndex idx, indexes) {
     int i;
     x509rev rev;
-    pki_x509* cert = fromIndex<pki_x509>(idx);
+    auto* cert = fromIndex<pki_x509>(idx);
 
     if (!cert) continue;
 
@@ -784,7 +784,7 @@ void db_x509::unRevoke(QModelIndexList indexes) {
 }
 
 void db_x509::toCertificate(QModelIndex index) {
-  pki_x509* cert = fromIndex<pki_x509>(index);
+  auto* cert = fromIndex<pki_x509>(index);
   if (!cert) return;
   if (!cert->getRefKey() && cert->getSigner() != cert) extractPubkey(index);
   cert->pkiSource = transformed;
@@ -792,12 +792,12 @@ void db_x509::toCertificate(QModelIndex index) {
 }
 
 void db_x509::toRequest(QModelIndex idx) {
-  db_x509req* reqs = Database.model<db_x509req>();
-  pki_x509* cert = fromIndex<pki_x509>(idx);
+  auto* reqs = Database.model<db_x509req>();
+  auto* cert = fromIndex<pki_x509>(idx);
   if (!cert) return;
 
   try {
-    pki_x509req* req = new pki_x509req();
+    auto* req = new pki_x509req();
     Q_CHECK_PTR(req);
     req->pkiSource = transformed;
     req->setIntName(cert->getIntName());
@@ -810,7 +810,7 @@ void db_x509::toRequest(QModelIndex idx) {
 }
 
 void db_x509::toToken(QModelIndex idx, bool alwaysSelect) {
-  pki_x509* cert = fromIndex<pki_x509>(idx);
+  auto* cert = fromIndex<pki_x509>(idx);
   if (!cert) return;
   try {
     cert->store_token(alwaysSelect);

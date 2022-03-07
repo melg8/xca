@@ -146,7 +146,7 @@ db_base* database_model::modelForPki(const pki_base* pki) const {
 pki_base* database_model::insert(pki_base* pki) {
   db_base* db = modelForPki(pki);
   if (db) return db->insert(pki);
-  pki_multi* multi = dynamic_cast<pki_multi*>(pki);
+  auto* multi = dynamic_cast<pki_multi*>(pki);
   if (multi) {
     QList<pki_base*> items = multi->pull();
     foreach (pki_base* i, items)
