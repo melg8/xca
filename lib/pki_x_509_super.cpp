@@ -10,7 +10,7 @@ pki_x509super::pki_x509super(const pki_x509super* x) : pki_x509name(x) {
   keySqlId = x->keySqlId;
 }
 
-pki_x509super::~pki_x509super() {}
+pki_x509super::~pki_x509super() = default;
 
 QSqlError pki_x509super::lookupKey() {
   XSqlQuery q;

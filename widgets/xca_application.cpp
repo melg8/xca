@@ -175,4 +175,4 @@ bool XcaApplication::notify(QObject* receiver, QEvent* event) {
   return false;
 }
 
-XcaApplication::~XcaApplication() {}
+XcaApplication::~XcaApplication() = default;

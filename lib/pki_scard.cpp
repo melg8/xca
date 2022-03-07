@@ -652,7 +652,7 @@ void pki_scard::generate(const keyjob& task) {
   load_token(p11, objects[0]);
 }
 
-pki_scard::~pki_scard() {}
+pki_scard::~pki_scard() = default;
 
 QString pki_scard::getTypeString() const {
   return tr("Token %1").arg(pki_key::getTypeString());

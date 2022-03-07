@@ -466,7 +466,7 @@ void pki_temp::fromPEM_BIO(BIO* bio, const QString& name) {
   if (!msg.isEmpty()) my_error(msg);
 }
 
-pki_temp::~pki_temp() {}
+pki_temp::~pki_temp() = default;
 
 bool pki_temp::compare(const pki_base*) const {
   // we don't care if templates with identical contents

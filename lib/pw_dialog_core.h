@@ -11,7 +11,7 @@ class PwDialogUI_i {
                                    Passwd* passwd,
                                    bool write = false,
                                    bool abort = false) = 0;
-  virtual ~PwDialogUI_i() {}
+  virtual ~PwDialogUI_i() = default;
 };
 
 class PwDialogCore {

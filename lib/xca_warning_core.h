@@ -26,7 +26,7 @@ class xcaWarning_i {
   virtual bool okcancel(const QString& msg) = 0;
   virtual void sqlerror(QSqlError err) = 0;
   virtual void error(const QString& msg) = 0;
-  virtual ~xcaWarning_i() {}
+  virtual ~xcaWarning_i() = default;
 };
 
 class xcaWarningCore final : public QObject, public xcaWarning_i {

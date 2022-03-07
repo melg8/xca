@@ -14,7 +14,7 @@ Validity::Validity(QWidget* parent) : QDateTimeEdit(parent) {
   updateFormatString();
 }
 
-Validity::~Validity() {}
+Validity::~Validity() = default;
 
 a1time Validity::getDate() const {
   a1time date(dateTime());

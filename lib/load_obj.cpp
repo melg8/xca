@@ -32,7 +32,7 @@ pki_base* load_base::loadItem(const QString& s) {
 
 pki_base* load_base::newItem() { return nullptr; }
 
-load_base::~load_base() {}
+load_base::~load_base() = default;
 
 /* Keys */
 load_key::load_key() : load_base() {
