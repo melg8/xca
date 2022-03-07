@@ -6,6 +6,7 @@
 #include <openssl/pem.h>
 #include <openssl/rsa.h>
 #include <QString>
+#include <utility>
 #include "pki_base.h"
 //#include "pki_export.h"
 #include "builtin_curves.h"
@@ -39,8 +40,8 @@ class keytype {
   CK_MECHANISM_TYPE mech;
   bool curve, length;
 
-  keytype(int t, const QString& n, CK_MECHANISM_TYPE m, bool c, bool l)
-      : type(t), name(n), mech(m), curve(c), length(l) {}
+  keytype(int t, QString n, CK_MECHANISM_TYPE m, bool c, bool l)
+      : type(t), name(std::move(n)), mech(m), curve(c), length(l) {}
   keytype() : type(-1), name(QString()), mech(0), curve(false), length(true) {}
   bool isValid() { return type != -1; }
   [[nodiscard]] QString traditionalPemName() const {

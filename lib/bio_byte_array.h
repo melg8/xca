@@ -3,6 +3,7 @@
 
 #include <QByteArray>
 #include <QString>
+#include <utility>
 
 #include <openssl/bio.h>
 
@@ -18,8 +19,8 @@ class BioByteArray {
   void cleanse_and_free(BIO* bio);
 
  public:
-  BioByteArray(const QByteArray& qba)
-      : read_write(nullptr), read_only(nullptr), store(qba) {}
+  BioByteArray(QByteArray qba)
+      : read_write(nullptr), read_only(nullptr), store(std::move(qba)) {}
   BioByteArray(const BioByteArray& bba)
       : read_write(nullptr), read_only(nullptr), store(bba.byteArray()) {}
   BioByteArray() : read_write(nullptr), read_only(nullptr), store() {}

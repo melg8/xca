@@ -4,6 +4,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QStringList>
+#include <utility>
 #include "click_label.h"
 #include "dist_name.h"
 #include "help.h"
@@ -57,7 +58,7 @@ class keyListItem {
                     .arg(maxKeySize);
     card = true;
   }
-  keyListItem(const keytype& t = keytype()) : ktype(t) {
+  keyListItem(keytype t = keytype()) : ktype(std::move(t)) {
     printname = ktype.name;
     card = false;
     slot = slotid();

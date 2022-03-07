@@ -19,7 +19,7 @@ class NewCrlWidget final : public QWidget, public Ui::NewCrl {
   CrlJobSettings task;
 
  public:
-  NewCrlWidget(const CrlJobSettings& task,
+  NewCrlWidget(CrlJobSettings task,
                const NewCrlOptions& options,
                QWidget* w = nullptr);
   ~NewCrlWidget() final;

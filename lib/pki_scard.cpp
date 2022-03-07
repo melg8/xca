@@ -18,6 +18,7 @@
 #include "xca_warning_core.h"
 
 #include <QThread>
+#include <utility>
 
 void pki_scard::init() {
   ownPass = ptPin;
@@ -612,8 +613,8 @@ class keygenThread final : public QThread {
   QString name;
   pkcs11* p11;
 
-  keygenThread(const keyjob& t, const QString& n, pkcs11* _p11)
-      : QThread(), task(t), name(n), p11(_p11) {}
+  keygenThread(keyjob t, QString n, pkcs11* _p11)
+      : QThread(), task(std::move(t)), name(std::move(n)), p11(_p11) {}
 
   void run() final {
     try {

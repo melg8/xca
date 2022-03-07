@@ -1,12 +1,15 @@
 #include "pki_export.h"
 
-pki_export::pki_export(int i,
-                       enum pki_type p,
-                       const QString& e,
-                       const QString& d,
-                       int f,
-                       const QString& h)
-    : id(i), pki_type(p), extension(e), flags(f), desc(d), help(h) {}
+#include <utility>
+
+pki_export::pki_export(
+    int i, enum pki_type p, QString e, QString d, int f, QString h)
+    : id(i),
+      pki_type(p),
+      extension(std::move(e)),
+      flags(f),
+      desc(std::move(d)),
+      help(std::move(h)) {}
 
 bool pki_export::match_all(int match_flags) const {
   return (flags & match_flags) == match_flags;

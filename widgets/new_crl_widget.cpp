@@ -1,11 +1,13 @@
 #include "new_crl_widget.h"
 
+#include <utility>
+
 #include "main_window.h"
 
-NewCrlWidget::NewCrlWidget(const CrlJobSettings& j,
+NewCrlWidget::NewCrlWidget(CrlJobSettings j,
                            const NewCrlOptions& options,
                            QWidget* w)
-    : QWidget(w ? w : mainwin), task(j) {
+    : QWidget(w ? w : mainwin), task(std::move(j)) {
   setupUi(this);
   dateBox->setTitle(options.title);
   validNumber->setText(

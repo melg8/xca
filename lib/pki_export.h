@@ -54,12 +54,7 @@ class pki_export : public QObject {
   QString desc;
   QString help;
 
-  pki_export(int i,
-             enum pki_type p,
-             const QString& e,
-             const QString& d,
-             int f,
-             const QString& h);
+  pki_export(int i, enum pki_type p, QString e, QString d, int f, QString h);
   static QList<const pki_export*> select(enum pki_type, int);
   static const pki_export* by_id(int id);
   [[nodiscard]] bool match_all(int match_flags) const;
