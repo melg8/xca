@@ -11,6 +11,7 @@
 
 #include "export_dialog.h"
 #include "import_multi.h"
+#include "lib/load_obj.h"
 #include "main_window.h"
 #include "oid_resolver.h"
 #include "xca_application.h"
@@ -18,9 +19,8 @@
 #include "xca_header_view.h"
 #include "xca_proxy_model.h"
 #include "xca_warning.h"
-#include "lib/load_obj.h"
 
-#include "ui_ItemProperties.h"
+#include "ui_item_properties.h"
 
 XcaTreeView::XcaTreeView(QWidget* parent) : QTreeView(parent) {
   mainwin = nullptr;

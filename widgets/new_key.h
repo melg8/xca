@@ -5,7 +5,7 @@
 #include "lib/builtin_curves.h"
 #include "lib/pkcs_11_lib.h"
 #include "lib/pki_key.h"
-#include "ui_NewKey.h"
+#include "ui_new_key.h"
 
 class NewKey final : public QDialog, public Ui::NewKey {
   Q_OBJECT

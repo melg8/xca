@@ -2,7 +2,7 @@
 #define EXPORT_DIALOG_H
 
 #include <QDialog>
-#include "ui_ExportDialog.h"
+#include "ui_export_dialog.h"
 
 #include "lib/pki_export.h"
 

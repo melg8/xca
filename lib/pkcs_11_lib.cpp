@@ -11,7 +11,7 @@
 #include <QMessageBox>
 #include <QTextCodec>
 
-#include "ui_SelectToken.h"
+#include "ui_select_token.h"
 
 pkcs11_lib::pkcs11_lib(const QString& f) {
   CK_RV (*c_get_function_list)(CK_FUNCTION_LIST_PTR_PTR);

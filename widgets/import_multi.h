@@ -2,7 +2,7 @@
 #define IMPORT_MULTI_H
 
 #include <QDialog>
-#include "ui_ImportMulti.h"
+#include "ui_import_multi.h"
 
 #include <QList>
 #include "lib/db_base.h"

@@ -2,11 +2,11 @@
 #define REVOCATION_LIST_H
 
 #include <QDialog>
-#include "ui_RevocationList.h"
+#include "ui_revocation_list.h"
 
 #include <QModelIndex>
 #include "lib/x_509_rev.h"
-#include "ui_Revoke.h"
+#include "ui_revoke.h"
 
 class pki_x509;
 

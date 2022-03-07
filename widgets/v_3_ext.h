@@ -2,7 +2,7 @@
 #define V3_EXT_H
 
 #include <QDialog>
-#include "ui_v3ext.h"
+#include "ui_v_3_ext.h"
 
 #include <openssl/x509v3.h>
 #include <QLineEdit>

@@ -15,7 +15,7 @@
 #include <openssl/ec.h>
 #endif
 #include "xca_dialog.h"
-#include "ui_Help.h"
+#include "ui_help.h"
 #include "lib/func.h"
 #include "lib/entropy.h"
 

@@ -1,15 +1,15 @@
 #include "cert_tree_view.h"
 
 #include "export_dialog.h"
-#include "main_window.h"
-#include "new_crl.h"
-#include "revocation_list.h"
-#include "xca_dialog.h"
-#include "xca_warning.h"
 #include "lib/database_model.h"
 #include "lib/db_crl.h"
 #include "lib/load_obj.h"
-#include "ui_CaProperties.h"
+#include "main_window.h"
+#include "new_crl.h"
+#include "revocation_list.h"
+#include "ui_ca_properties.h"
+#include "xca_dialog.h"
+#include "xca_warning.h"
 
 #include <QAbstractItemModel>
 #include <QAbstractItemView>

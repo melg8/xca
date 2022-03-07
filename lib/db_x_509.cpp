@@ -17,17 +17,17 @@
 #include "xca_warning_core.h"
 
 // TODO(melg8): drop UI dependencies.
-#include "ui_NewX509.h"
+#include "ui_new_x_509.h"
 #include "widgets/cert_extend.h"
 #include "widgets/main_window.h"
 #include "widgets/new_x_509.h"
 #include "widgets/revocation_list.h"
 
-#include "ui_CertExtend.h"
-#include "ui_Help.h"
-#include "ui_MainWindow.h"
-#include "ui_RevocationList.h"
-#include "ui_Revoke.h"
+#include "ui_cert_extend.h"
+#include "ui_help.h"
+#include "ui_main_window.h"
+#include "ui_revocation_list.h"
+#include "ui_revoke.h"
 
 #include <openssl/rand.h>
 

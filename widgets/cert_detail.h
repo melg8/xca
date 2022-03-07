@@ -2,7 +2,7 @@
 #define CERT_DETAIL_H
 
 #include <QDialog>
-#include "ui_CertDetail.h"
+#include "ui_cert_detail.h"
 
 #include "lib/pki_x_509.h"
 #include "lib/pki_x_509_req.h"

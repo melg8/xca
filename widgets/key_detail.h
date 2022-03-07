@@ -1,7 +1,7 @@
 #ifndef KEY_DETAIL_H
 #define KEY_DETAIL_H
 
-#include "ui_KeyDetail.h"
+#include "ui_key_detail.h"
 
 class pki_key;
 class pki_base;

@@ -3,7 +3,7 @@
 
 #include <QWidget>
 
-#include "ui_NewCrl.h"
+#include "ui_new_crl.h"
 
 #include "lib/crl_job_settings.h"
 

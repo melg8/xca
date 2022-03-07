@@ -1,7 +1,7 @@
 #ifndef CRL_DETAIL_H
 #define CRL_DETAIL_H
 
-#include "ui_CrlDetail.h"
+#include "ui_crl_detail.h"
 
 class pki_crl;
 class pki_base;

@@ -15,7 +15,7 @@
 #include "pki_evp.h"
 #include "pki_multi.h"
 #include "settings.h"
-#include "ui_MainWindow.h"
+#include "ui_main_window.h"
 #include "widgets/main_window.h"
 #include "widgets/xca_application.h"
 #include "x_file.h"

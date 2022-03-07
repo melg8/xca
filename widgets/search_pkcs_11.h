@@ -3,7 +3,7 @@
 
 #include <QThread>
 
-#include "ui_SearchPkcs11.h"
+#include "ui_search_pkcs_11.h"
 
 class SearchPkcs11;
 class searchThread final : public QThread {

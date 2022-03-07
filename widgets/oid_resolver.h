@@ -2,7 +2,7 @@
 #define OID_RESOLVER_H
 
 #include <QWidget>
-#include "ui_OidResolver.h"
+#include "ui_oid_resolver.h"
 
 class OidResolver : public QWidget, public Ui::OidResolver {
   Q_OBJECT

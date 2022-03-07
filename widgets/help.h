@@ -1,7 +1,7 @@
 #ifndef HELP_H
 #define HELP_H
 
-#include "ui_Help.h"
+#include "ui_help.h"
 
 #include <QDialog>
 

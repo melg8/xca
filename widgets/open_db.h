@@ -5,7 +5,7 @@
 
 #include <QDialog>
 #include <QSqlDatabase>
-#include "ui_OpenDb.h"
+#include "ui_open_db.h"
 
 class OpenDb final : public QDialog, public Ui::OpenDb {
   Q_OBJECT

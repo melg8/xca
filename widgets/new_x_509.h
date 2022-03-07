@@ -5,7 +5,7 @@
 #include <QListWidget>
 #include "kv_view.h"
 #include "lib/oid.h"
-#include "ui_NewX509.h"
+#include "ui_new_x_509.h"
 
 class MainWindow;
 class extList;

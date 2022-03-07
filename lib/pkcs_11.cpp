@@ -19,7 +19,7 @@
 
 // TODO(melg8): split PwDialog into console and GUI.
 #include <QPushButton>
-#include "ui_SelectToken.h"
+#include "ui_select_token.h"
 
 void waitcursor(int start, int line) {
   qDebug() << "Waitcursor" << (start ? "start" : "end") << line;

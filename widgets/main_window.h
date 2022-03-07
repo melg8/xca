@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include <QMenu>
-#include "ui_MainWindow.h"
+#include "ui_main_window.h"
 
 #include "lib/passwd.h"
 #include "lib/xca_progress.h"

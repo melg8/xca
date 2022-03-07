@@ -6,7 +6,7 @@
 
 #include "main_window.h"
 #include "search_pkcs_11.h"
-#include "ui_Options.h"
+#include "ui_options.h"
 
 class Options final : public QDialog, public Ui::Options {
   Q_OBJECT

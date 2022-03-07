@@ -2,10 +2,10 @@
 #define PW_DIALOG_H
 
 #include <QDialog>
-#include "ui_PwDialog.h"
+#include "ui_pw_dialog.h"
 
-#include "lib/pw_dialog_core.h"
 #include "lib/pass_info.h"
+#include "lib/pw_dialog_core.h"
 
 class PwDialog final : public QDialog, public Ui::PwDialog {
   Q_OBJECT

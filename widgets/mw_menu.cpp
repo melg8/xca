@@ -18,7 +18,7 @@
 #include "lib/func.h"
 #include "lib/db_x_509_super.h"
 #include "lib/database_model.h"
-#include "ui_Options.h"
+#include "ui_options.h"
 #include "hash_box.h"
 #include "oid_resolver.h"
 #include "open_db.h"

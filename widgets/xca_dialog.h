@@ -2,7 +2,7 @@
 #define XCA_DIALOG_H
 
 #include <QDialog>
-#include "ui_XcaDialog.h"
+#include "ui_xca_dialog.h"
 
 #include "lib/pki_base.h"
 
