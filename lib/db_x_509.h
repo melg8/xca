@@ -24,7 +24,7 @@ class db_x509 : public db_x509super {
   db_x509();
   pki_base* newPKI(enum pki_type type = none) override;
   pki_x509* findIssuer(pki_x509* client);
-  virtual void loadContainer() override;
+  void loadContainer() override;
 
   bool updateView();
   void updateViewAll();

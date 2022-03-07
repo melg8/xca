@@ -55,7 +55,7 @@ class pki_x509req final : public pki_x509super {
   void setDone(bool d = true) { done = d; }
   bool getDone() const { return done; }
   void resetX509count() const { x509count = -1; }
-  virtual QString getMsg(msg_type msg) const final;
+  QString getMsg(msg_type msg) const final;
   void d2i(QByteArray& ba);
   QByteArray i2d() const final;
   bool pem(BioByteArray&) final;

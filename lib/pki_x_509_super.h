@@ -36,7 +36,7 @@ class pki_x509super : public pki_x509name {
  public:
   pki_x509super(const QString& name = QString());
   pki_x509super(const pki_x509super* x);
-  virtual ~pki_x509super() override;
+  ~pki_x509super() override;
   [[nodiscard]] unsigned pubHash() const;
   [[nodiscard]] virtual pki_key* getPubKey() const = 0;
   [[nodiscard]] virtual extList getV3ext() const = 0;
