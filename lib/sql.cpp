@@ -145,7 +145,7 @@ QString XSqlQuery::query_details() {
   if (query != lastq) {
     lq = QString("%1 (PREFIX[%2]: %3)").arg(lastq).arg(table_prefix).arg(query);
   }
-  for (int i = 0; i < list.size(); ++i) sl << list.at(i).toString();
+  for (const auto& i : list) sl << i.toString();
   if (sl.size()) lq += QString("[%1]").arg(sl.join(", "));
   return QString("%1:%2 (%3)").arg(file).arg(line).arg(lq);
 }

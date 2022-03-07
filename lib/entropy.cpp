@@ -59,7 +59,7 @@ QString Entropy::makeSalt() {
   unsigned char rand[8];
 
   Entropy::get(rand, sizeof rand);
-  for (unsigned i = 0; i < sizeof rand; i++) s += QString("%1").arg(rand[i]);
+  for (unsigned char i : rand) s += QString("%1").arg(i);
   return s;
 }
 

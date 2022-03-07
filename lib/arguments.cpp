@@ -204,13 +204,13 @@ QString arguments::man() {
   QString s;
   QMap<QString, QString> passdoc = getPassDoc();
 
-  for (auto i = opts.begin(); i != opts.end(); ++i) {
-    QString longopt = i->long_opt;
-    if (i->arg) longopt += QString("=<%1>").arg(i->arg);
+  for (const auto& opt : opts) {
+    QString longopt = opt.long_opt;
+    if (opt.arg) longopt += QString("=<%1>").arg(opt.arg);
     s += QString(".TP\n.B \\-\\-%1%3\n%2\n")
              .arg(longopt)
-             .arg(i->help)
-             .arg(i->need_db ? " *" : "");
+             .arg(opt.help)
+             .arg(opt.need_db ? " *" : "");
   }
   s += ".br\n.TP\n"
        "Options marked with an asterisk need a database. Either from the "
@@ -235,13 +235,13 @@ QString arguments::rst() {
   QMap<QString, QString> passdoc = getPassDoc();
   int space = (maxOptWidth() + 4) * -1;
 
-  for (auto i = opts.begin(); i != opts.end(); ++i) {
-    QString longopt = i->long_opt;
-    if (i->arg) longopt += QString("=%1").arg(esc(i->arg));
+  for (const auto& opt : opts) {
+    QString longopt = opt.long_opt;
+    if (opt.arg) longopt += QString("=%1").arg(esc(opt.arg));
     s += QString("--%1 %2%3\n")
              .arg(esc(longopt), space)
-             .arg(esc(i->help))
-             .arg(i->need_db ? " [#need-db]_" : "");
+             .arg(esc(opt.help))
+             .arg(opt.need_db ? " [#need-db]_" : "");
   }
   s += "\n\n"
        ".. [#need-db] Requires a database. Either from the commandline or as "
@@ -256,8 +256,7 @@ QString arguments::rst() {
 
 QString arguments::completion() {
   QStringList sl;
-  for (auto i = opts.begin(); i != opts.end(); ++i)
-    sl << QString("--%1").arg(i->long_opt);
+  for (const auto& opt : opts) sl << QString("--%1").arg(opt.long_opt);
   return sl.join(" ");
 }
 
@@ -292,14 +291,14 @@ QString arguments::help() {
 
   len = maxOptWidth() + 4;
   offset = len + 7;
-  for (auto i = opts.begin(); i != opts.end(); ++i) {
-    QString longopt = i->long_opt;
-    if (i->arg) longopt += QString("=<%1>").arg(i->arg);
-    QString help = splitQstring(offset, width, i->help);
+  for (const auto& opt : opts) {
+    QString longopt = opt.long_opt;
+    if (opt.arg) longopt += QString("=<%1>").arg(opt.arg);
+    QString help = splitQstring(offset, width, opt.help);
     s += QString(" " COL_CYAN "%3 " COL_RESET COL_BOLD "--%1" COL_RESET " %2\n")
              .arg(longopt, len * -1)
              .arg(help)
-             .arg(i->need_db ? "*" : " ");
+             .arg(opt.need_db ? "*" : " ");
   }
   s += "\n[" COL_CYAN "*" COL_RESET "]" +
        splitQstring(sizeof("[*] ") - 1, width,
@@ -398,8 +397,8 @@ bool arguments::is_console(int argc, char* argv[]) {
 
   /* Setup "no-gui" options */
   QStringList console_opts;
-  for (auto i = opts.begin(); i != opts.end(); ++i) {
-    if (i->no_gui) console_opts << QString("-%1").arg(i->long_opt);
+  for (const auto& opt : opts) {
+    if (opt.no_gui) console_opts << QString("-%1").arg(opt.long_opt);
   }
 
   qDebug() << "NOGUI_OPTS" << console_opts;

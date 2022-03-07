@@ -60,8 +60,8 @@ x509v3ext& x509v3ext::create(int nid, const QString& et, X509V3_CTX* ctx) {
 
 x509v3ext& x509v3ext::create_ia5(int nid, const QString& et, X509V3_CTX* ctx) {
   QByteArray ba = et.toLocal8Bit();
-  for (int i = 0; i < ba.size(); i++) {
-    if (ba[i] & 0x80)
+  for (auto&& i : ba) {
+    if (i & 0x80)
       throw errorEx(
           QObject::tr("String '%1' for '%2' contains invalid characters")
               .arg(et)
@@ -189,8 +189,8 @@ static const char* asn1Type2Name(int type) {
       ASN1_GEN_STR("GENSTR", V_ASN1_GENERALSTRING),
       ASN1_GEN_STR("NUMERIC", V_ASN1_NUMERICSTRING),
   };
-  for (unsigned i = 0; i < ARRAY_SIZE(tags); i++) {
-    if (tags[i].tag == type) return tags[i].strnam;
+  for (auto& tag : tags) {
+    if (tag.tag == type) return tag.strnam;
   }
   return "UNKNOWN";
 }
