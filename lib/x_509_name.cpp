@@ -53,7 +53,7 @@ QString x509name::oneLine(unsigned long flags) const {
 
 QString x509name::getEntryByNid(int nid) const {
   int i = X509_NAME_get_index_by_NID(xn, nid, -1);
-  if (i < 0) return QString();
+  if (i < 0) return {};
   return getEntry(i);
 }
 
@@ -95,7 +95,7 @@ QString x509name::getEntryTag(int i) const {
 
 QString x509name::popEntryByNid(int nid) {
   int i = X509_NAME_get_index_by_NID(xn, nid, -1);
-  if (i < 0) return QString();
+  if (i < 0) return {};
   QString n = getEntry(i);
   X509_NAME_delete_entry(xn, i);
   return n;
@@ -133,7 +133,7 @@ QString x509name::getOid(int i) const {
   X509_NAME_ENTRY* ne;
 
   ne = X509_NAME_get_entry(xn, i);
-  if (ne == nullptr) return QString();
+  if (ne == nullptr) return {};
   return OBJ_obj2QString(X509_NAME_ENTRY_get_object(ne), 1);
 }
 

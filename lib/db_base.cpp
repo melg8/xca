@@ -340,12 +340,12 @@ QModelIndex db_base::index(int row,
 }
 
 QModelIndex db_base::index(pki_base* pki) const {
-  if (!pki) return QModelIndex();
+  if (!pki) return {};
   return createIndex(rownumber(pki), 0, pki);
 }
 
 QModelIndex db_base::parent(const QModelIndex& idx) const {
-  if (!idx.isValid()) return QModelIndex();
+  if (!idx.isValid()) return {};
 
   pki_base* childItem = fromIndex(idx);
   pki_base* parentItem = childItem->getParent();
@@ -368,7 +368,7 @@ int db_base::columnCount(const QModelIndex&) const {
 }
 
 QVariant db_base::data(const QModelIndex& index, int role) const {
-  if (!index.isValid()) return QVariant();
+  if (!index.isValid()) return {};
   dbheader* hd = allHeaders[index.column()];
   pki_base* item = fromIndex(index);
   switch (role) {
@@ -390,18 +390,18 @@ QVariant db_base::data(const QModelIndex& index, int role) const {
         return item->column_tooltip(hd);
       break;
   }
-  return QVariant();
+  return {};
 }
 static QVariant getHeaderViewInfo(dbheader* h) {
-  return QVariant(
+  return {
 #if 0
 	QString("H[%1] Show:%2%3 Size:%4 VI:%5 Indi:%6").
 		arg(sect).arg(h->show).arg(h->showDefault).arg(h->size).
 		arg(h->visualIndex).arg(h->sortIndicator)
 #else
-      h->getTooltip()
+    h->getTooltip()
 #endif
-  );
+  };
 }
 
 void db_base::changeView() {
@@ -413,16 +413,16 @@ void db_base::changeView() {
 QVariant db_base::headerData(int section,
                              Qt::Orientation orientation,
                              int role) const {
-  if (!isValidCol(section)) return QVariant();
+  if (!isValidCol(section)) return {};
   if (orientation == Qt::Horizontal) {
     switch (role) {
       case Qt::DisplayRole:
-        return QVariant(allHeaders[section]->getName());
+        return {allHeaders[section]->getName()};
       case Qt::ToolTipRole:
         return getHeaderViewInfo(allHeaders[section]);
     }
   }
-  return QVariant();
+  return {};
 }
 
 Qt::ItemFlags db_base::flags(const QModelIndex& index) const {

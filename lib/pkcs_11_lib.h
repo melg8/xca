@@ -39,7 +39,7 @@ class pkcs11_lib final : public QLibrary {
   }
   [[nodiscard]] QString toData() const { return toData(is_enabled); }
   [[nodiscard]] QString pixmap() const {
-    if (!is_enabled) return QString();
+    if (!is_enabled) return {};
     return isLoaded() ? ":doneIco" : ":warnIco";
   }
 };

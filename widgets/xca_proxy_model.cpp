@@ -55,7 +55,7 @@ QVariant XcaProxyModel::data(const QModelIndex& index, int role) const {
     case Qt::DisplayRole:
       for (i = index; i.isValid(); i = i.parent())
         number += QString(" %1").arg(i.row() + 1);
-      return QVariant(number);
+      return {number};
     default:
       return QSortFilterProxyModel::data(index, role);
   }

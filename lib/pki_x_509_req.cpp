@@ -270,9 +270,9 @@ QString pki_x509req::getAttribute(int nid) const {
   QStringList ret;
 
   n = X509_REQ_get_attr_by_NID(request, nid, -1);
-  if (n == -1) return QString("");
+  if (n == -1) return {""};
   X509_ATTRIBUTE* att = X509_REQ_get_attr(request, n);
-  if (!att) return QString("");
+  if (!att) return {""};
   int attribute_count = X509_ATTRIBUTE_count(att);
   for (int j = 0; j < attribute_count; j++)
     ret << asn1ToQString(X509_ATTRIBUTE_get0_type(att, j)->value.asn1_string);
@@ -331,13 +331,13 @@ void pki_x509req::print(BioByteArray& bba, enum print_opt opt) const {
 QVariant pki_x509req::column_data(const dbheader* hd) const {
   switch (hd->id) {
     case HD_req_signed:
-      return QVariant(done ? tr("Signed") : tr("Unhandled"));
+      return {done ? tr("Signed") : tr("Unhandled")};
     case HD_req_unstr_name:
       return getAttribute(NID_pkcs9_unstructuredName);
     case HD_req_chall_pass:
       return getAttribute(NID_pkcs9_challengePassword);
     case HD_req_certs:
-      return QVariant(issuedCerts());
+      return {issuedCerts()};
   }
   return pki_x509super::column_data(hd);
 }
@@ -352,7 +352,7 @@ QVariant pki_x509req::getIcon(const dbheader* hd) const {
     default:
       return pki_x509super::getIcon(hd);
   }
-  return QVariant();
+  return {};
 }
 
 bool pki_x509req::visible() const {

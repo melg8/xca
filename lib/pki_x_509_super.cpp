@@ -100,9 +100,7 @@ void pki_x509super::setRefKey(pki_key* ref) {
   keySqlId = ref ? ref->sqlItemId : QVariant();
 }
 
-QString pki_x509super::getSigAlg() const {
-  return QString(OBJ_nid2ln(sigAlg()));
-}
+QString pki_x509super::getSigAlg() const { return {OBJ_nid2ln(sigAlg())}; }
 
 const digest pki_x509super::getDigest() const { return digest(sigAlg()); }
 
@@ -121,11 +119,11 @@ QVariant pki_x509super::getIcon(const dbheader* hd) const {
 QVariant pki_x509super::column_data(const dbheader* hd) const {
   if (hd->id == HD_x509key_name) {
     pki_key* privkey = getRefKey();
-    if (!privkey) return QVariant("");
-    return QVariant(privkey->getIntName());
+    if (!privkey) return {""};
+    return {privkey->getIntName()};
   }
   if (hd->id == HD_x509_sigalg) {
-    return QVariant(getSigAlg());
+    return {getSigAlg()};
   }
 
   if (hd->type == dbheader::hd_key) {
@@ -139,8 +137,8 @@ QVariant pki_x509super::column_data(const dbheader* hd) const {
   if (hd->type == dbheader::hd_v3ext || hd->type == dbheader::hd_v3ext_ns) {
     extList el = getV3ext();
     int idx = el.idxByNid(hd->id);
-    if (idx == -1) return QVariant("");
-    return QVariant(el[idx].getConsoleValue(""));
+    if (idx == -1) return {""};
+    return {el[idx].getConsoleValue("")};
   }
   return pki_x509name::column_data(hd);
 }
@@ -227,13 +225,12 @@ void pki_x509name::autoIntName(const QString& file) {
 QVariant pki_x509name::column_data(const dbheader* hd) const {
   switch (hd->id) {
     case HD_subject_name:
-      return QVariant(
-          getSubject().oneLine(XN_FLAG_ONELINE & ~ASN1_STRFLGS_ESC_MSB));
+      return {getSubject().oneLine(XN_FLAG_ONELINE & ~ASN1_STRFLGS_ESC_MSB)};
     case HD_subject_hash:
-      return QVariant(getSubject().hash());
+      return {getSubject().hash()};
     default:
       if (hd->type == dbheader::hd_x509name)
-        return QVariant(getSubject().getEntryByNid(hd->id));
+        return {getSubject().getEntryByNid(hd->id)};
   }
   return pki_base::column_data(hd);
 }
@@ -244,7 +241,7 @@ bool pki_x509name::visible() const {
 }
 
 QByteArray pki_x509name::PEM_comment() const {
-  if (!pem_comment) return QByteArray();
+  if (!pem_comment) return {};
   return pki_base::PEM_comment() +
          getSubject().oneLine(XN_FLAG_RFC2253).toUtf8() + "\n";
 }

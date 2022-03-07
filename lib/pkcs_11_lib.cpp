@@ -243,27 +243,27 @@ pkcs11_lib* pkcs11_lib_list::libByModelIndex(const QModelIndex& index) const {
 
 QVariant pkcs11_lib_list::data(const QModelIndex& index, int role) const {
   pkcs11_lib* l = libByModelIndex(index);
-  if (!l) return QVariant();
+  if (!l) return {};
 
   QString pixmap;
 
   switch (role) {
     case Qt::DisplayRole:
-      return QVariant(nativeSeparator(l->filename()));
+      return {nativeSeparator(l->filename())};
     case Qt::DecorationRole:
       pixmap = l->pixmap();
       if (pixmap.isEmpty()) {
         QPixmap p(QSize(20, 20));
         p.fill(Qt::transparent);
-        return QVariant(p);
+        return {p};
       }
-      return QVariant(QPixmap(pixmap));
+      return {QPixmap(pixmap)};
     case Qt::ToolTipRole:
-      return QVariant(l->driverInfo().trimmed());
+      return {l->driverInfo().trimmed()};
     case Qt::CheckStateRole:
       return l->checked();
   }
-  return QVariant();
+  return {};
 }
 
 QMap<int, QVariant> pkcs11_lib_list::itemData(const QModelIndex& index) const {

@@ -492,7 +492,7 @@ QByteArray Digest(const QByteArray& data, const EVP_MD* type) {
 
   EVP_Digest(data.constData(), data.size(), m, &n, type, nullptr);
   openssl_error();
-  return QByteArray((char*)m, (int)n);
+  return {(char*)m, (int)n};
 }
 
 QString fingerprint(const QByteArray& data, const EVP_MD* type) {

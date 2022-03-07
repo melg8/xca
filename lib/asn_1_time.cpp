@@ -132,8 +132,8 @@ QString a1time::toPrettyGMT() const {
 QString a1time::toSortable() const { return toString("yyyy-MM-dd"); }
 
 QString a1time::toPlain(const QString& fmt) const {
-  if (isUndefined()) return QString(UNDEFINED_DATE);
-  if (!isValid()) return QString("Broken-InvalidZ");
+  if (isUndefined()) return {UNDEFINED_DATE};
+  if (!isValid()) return {"Broken-InvalidZ"};
   return toString(fmt.isEmpty() ? GEN_FORMAT : fmt);
 }
 

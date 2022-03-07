@@ -86,19 +86,19 @@ QVariant kvmodel::data(const QModelIndex& index, int role) const {
   switch (role) {
     case Qt::EditRole:
     case Qt::DisplayRole:
-      return QVariant(s);
+      return {s};
   }
-  return QVariant();
+  return {};
 }
 
 QVariant kvmodel::headerData(int section,
                              Qt::Orientation orientation,
                              int role) const {
   if (role == Qt::DisplayRole) {
-    if (orientation == Qt::Horizontal) return QVariant(header[section]);
-    if (orientation == Qt::Vertical) return QVariant(section);
+    if (orientation == Qt::Horizontal) return {header[section]};
+    if (orientation == Qt::Vertical) return {section};
   }
-  return QVariant();
+  return {};
 }
 
 bool kvmodel::insertRows(int row, int count, const QModelIndex&) {

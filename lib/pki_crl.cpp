@@ -135,7 +135,7 @@ void pki_crl::fload(const QString& fname) {
 }
 
 QString pki_crl::getSigAlg() const {
-  return QString(OBJ_nid2ln(X509_CRL_get_signature_nid(crl)));
+  return {OBJ_nid2ln(X509_CRL_get_signature_nid(crl))};
 }
 
 void pki_crl::createCrl(const QString d, pki_x509* iss) {
@@ -148,7 +148,7 @@ void pki_crl::createCrl(const QString d, pki_x509* iss) {
   pki_openssl_error();
 }
 
-a1int pki_crl::getVersion() { return a1int(X509_CRL_get_version(crl)); }
+a1int pki_crl::getVersion() { return {X509_CRL_get_version(crl)}; }
 
 void pki_crl::setLastUpdate(const a1time& a) {
   a1time t(a);
@@ -237,11 +237,11 @@ void pki_crl::writeCrl(XFile& file, bool pem) const {
 bool pki_crl::pem(BioByteArray& b) { return PEM_write_bio_X509_CRL(b, crl); }
 
 a1time pki_crl::getLastUpdate() const {
-  return a1time(X509_CRL_get0_lastUpdate(crl));
+  return {X509_CRL_get0_lastUpdate(crl)};
 }
 
 a1time pki_crl::getNextUpdate() const {
-  return a1time(X509_CRL_get0_nextUpdate(crl));
+  return {X509_CRL_get0_nextUpdate(crl)};
 }
 
 int pki_crl::numRev() const {
@@ -263,9 +263,7 @@ x509revList pki_crl::getRevList() {
   return ret;
 }
 
-x509name pki_crl::getSubject() const {
-  return x509name(X509_CRL_get_issuer(crl));
-}
+x509name pki_crl::getSubject() const { return {X509_CRL_get_issuer(crl)}; }
 
 bool pki_crl::verify(pki_x509* issuer) {
   if (!issuer) return false;
@@ -329,13 +327,13 @@ QString pki_crl::printV3ext() {
 QVariant pki_crl::column_data(const dbheader* hd) const {
   switch (hd->id) {
     case HD_crl_signer:
-      return QVariant(getIssuerName());
+      return {getIssuerName()};
     case HD_crl_revoked:
-      return QVariant(numRev());
+      return {numRev()};
     case HD_crl_crlnumber:
       a1int a;
-      if (getCrlNumber(&a)) return QVariant(a.toDec());
-      return QVariant();
+      if (getCrlNumber(&a)) return {a.toDec()};
+      return {};
   }
   return pki_x509name::column_data(hd);
 }

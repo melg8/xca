@@ -153,8 +153,8 @@ QString XSqlQuery::query_details() {
 QSqlError XSqlQuery::lastError() {
   QSqlError e = QSqlQuery::lastError();
   if (!e.isValid()) return e;
-  return QSqlError(QString("%1 - %2").arg(e.driverText()).arg(query_details()),
-                   e.databaseText(), e.type(), e.nativeErrorCode());
+  return {QString("%1 - %2").arg(e.driverText()).arg(query_details()),
+          e.databaseText(), e.type(), e.nativeErrorCode()};
 }
 
 XSqlQuery::XSqlQuery() : QSqlQuery() {}

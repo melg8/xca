@@ -265,7 +265,7 @@ QString arguments::doc(const QString& which) {
   if (which == "rst") return rst();
   if (which == "man") return man();
   if (which == "completion") return completion();
-  return QString();
+  return {};
 }
 
 size_t arguments::maxOptWidth() {

@@ -987,7 +987,7 @@ QString NewX509::mandatoryDnRemain() {
   x509name n;
   int i;
 
-  if (QString(Settings["mandatory_dn"]).isEmpty()) return QString();
+  if (QString(Settings["mandatory_dn"]).isEmpty()) return {};
 
   n = getX509name();
 
@@ -995,7 +995,7 @@ QString NewX509::mandatoryDnRemain() {
     int j = dnl.indexOf(QString(OBJ_nid2sn(n.nid(i))));
     if (j >= 0) dnl.removeAt(j);
   }
-  if (dnl.size() == 0) return QString();
+  if (dnl.size() == 0) return {};
 
   foreach (QString x, dnl)
     remain << QString(OBJ_sn2ln(x.toLatin1()));

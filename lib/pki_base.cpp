@@ -71,7 +71,7 @@ bool pki_base::visible() const {
 }
 
 QByteArray pki_base::PEM_comment() const {
-  if (!pem_comment) return QByteArray();
+  if (!pem_comment) return {};
 
   return QString("XCA internal name: %1\n%2\n")
       .arg(getIntName())
@@ -98,7 +98,7 @@ QString pki_base::getMsg(msg_type msg) const {
       .arg(msg);
 }
 
-QByteArray pki_base::i2d() const { return QByteArray(); }
+QByteArray pki_base::i2d() const { return {}; }
 
 bool pki_base::pem(BioByteArray&) { return false; }
 
@@ -180,10 +180,10 @@ QSqlError pki_base::deleteSql() {
 }
 
 QSqlError pki_base::sqlItemNotFound(QVariant sqlId) const {
-  return QSqlError(
+  return {
       QString("XCA SQL database inconsistent"),
       QString("Item %2 not found %1").arg(getClassName()).arg(sqlId.toString()),
-      QSqlError::UnknownError);
+      QSqlError::UnknownError};
 }
 
 pki_base* pki_base::getParent() const { return parent; }
@@ -234,19 +234,19 @@ QString pki_base::pki_source_name() const {
 QVariant pki_base::column_data(const dbheader* hd) const {
   switch (hd->id) {
     case HD_internal_name:
-      return QVariant(getIntName());
+      return {getIntName()};
     case HD_comment:
-      return QVariant(comment.section('\n', 0, 0));
+      return {comment.section('\n', 0, 0)};
     case HD_source:
-      return QVariant(pki_source_name());
+      return {pki_source_name()};
     case HD_primary_key:
       return sqlItemId;
   }
   if (hd->type == dbheader::hd_asn1time) {
     a1time t = column_a1time(hd);
-    if (!t.isUndefined()) return QVariant(t.toFancy());
+    if (!t.isUndefined()) return {t.toFancy()};
   }
-  return QVariant();
+  return {};
 }
 
 a1time pki_base::column_a1time(const dbheader* hd) const {
@@ -259,19 +259,19 @@ a1time pki_base::column_a1time(const dbheader* hd) const {
 
 QVariant pki_base::getIcon(const dbheader* hd) const {
   (void)hd;
-  return QVariant();
+  return {};
 }
 
 QVariant pki_base::column_tooltip(const dbheader* hd) const {
   switch (hd->id) {
     case HD_comment:
-      return QVariant(comment);
+      return {comment};
   }
   if (hd->type == dbheader::hd_asn1time) {
     a1time t = column_a1time(hd);
-    if (!t.isUndefined()) return QVariant(t.toPretty());
+    if (!t.isUndefined()) return {t.toPretty()};
   }
-  return QVariant();
+  return {};
 }
 
 bool pki_base::compare(const pki_base* ref) const {

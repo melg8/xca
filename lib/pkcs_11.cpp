@@ -217,13 +217,13 @@ QString pkcs11::tokenLogin(QString name, bool so, bool force) {
       delete pinpadbox;
       if (!ppt.err.isEmpty()) throw errorEx(ppt.err);
     } else {
-      if (PwDialogCore::execute(&p, &pin, false) != 1) return QString();
+      if (PwDialogCore::execute(&p, &pin, false) != 1) return {};
     }
     login(pin.constUchar(), pin.size(), so);
   } else {
-    return QString("");
+    return {""};
   }
-  return QString(pin);
+  return {pin};
 }
 
 bool pkcs11::selectToken(slotid* slot, QWidget* w) {

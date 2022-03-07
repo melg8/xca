@@ -32,7 +32,7 @@ void Help::content() {
 }
 
 QList<QHelpLink> Help::url_by_ctx(const QString& ctx) const {
-  if (!helpengine) return QList<QHelpLink>();
+  if (!helpengine) return {};
   return helpengine->documentsForIdentifier(QString("%1.%1").arg(ctx));
 }
 

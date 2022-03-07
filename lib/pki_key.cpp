@@ -141,7 +141,7 @@ QString pki_key::length() const {
     dsa_unset = p == nullptr;
   }
 
-  if (dsa_unset) return QString("???");
+  if (dsa_unset) return {"???"};
 
   return QString("%1 bit").arg(EVP_PKEY_bits(key));
 }
@@ -229,7 +229,7 @@ QString pki_key::modulus() const {
     RSA_get0_key(rsa, &n, nullptr, nullptr);
     return BN2QString(n);
   }
-  return QString();
+  return {};
 }
 
 QString pki_key::pubEx() const {
@@ -239,7 +239,7 @@ QString pki_key::pubEx() const {
     RSA_get0_key(rsa, nullptr, &e, nullptr);
     return BN2QString(e);
   }
-  return QString();
+  return {};
 }
 
 QString pki_key::subprime() const {
@@ -249,7 +249,7 @@ QString pki_key::subprime() const {
     if (dsa) DSA_get0_pqg(dsa, nullptr, &q, nullptr);
     return BN2QString(q);
   }
-  return QString();
+  return {};
 }
 
 QString pki_key::pubkey() const {
@@ -259,7 +259,7 @@ QString pki_key::pubkey() const {
     if (dsa) DSA_get0_key(dsa, &pubkey, nullptr);
     return BN2QString(pubkey);
   }
-  return QString();
+  return {};
 }
 #ifndef OPENSSL_NO_EC
 int pki_key::ecParamNid() const {
@@ -297,8 +297,8 @@ static QByteArray ed25519Key(int (*EVP_PKEY_get_raw)(const EVP_PKEY*,
   size_t len = sizeof k;
 
   if (EVP_PKEY_id(pkey) == EVP_PKEY_ED25519 && EVP_PKEY_get_raw(pkey, k, &len))
-    return QByteArray((char*)k, len);
-  return QByteArray();
+    return {(char*)k, static_cast<int>(len)};
+  return {};
 }
 
 QByteArray pki_key::ed25519PubKey() const {
@@ -397,20 +397,20 @@ QVariant pki_key::column_data(const dbheader* hd) const {
      << tr("Invalid");
   switch (hd->id) {
     case HD_key_type:
-      return QVariant(getTypeString());
+      return {getTypeString()};
     case HD_key_size:
-      return QVariant(length());
+      return {length()};
     case HD_key_use:
-      return QVariant(getUcount());
+      return {getUcount()};
     case HD_key_passwd:
-      if (isPubKey()) return QVariant(tr("No password"));
-      return QVariant(sl[ownPass]);
+      if (isPubKey()) return {tr("No password")};
+      return {sl[ownPass]};
     case HD_key_curve:
       QString r;
 #ifndef OPENSSL_NO_EC
       if (getKeyType() == EVP_PKEY_EC) r = OBJ_nid2sn(ecParamNid());
 #endif
-      return QVariant(r);
+      return {r};
   }
   return pki_base::column_data(hd);
 }
@@ -664,7 +664,7 @@ QByteArray pki_key::SSH2publicQByteArray(bool raw) const {
       break;
 #ifndef OPENSSL_NO_EC
     case EVP_PKEY_EC:
-      if (ecParamNid() != NID_X9_62_prime256v1) return QByteArray();
+      if (ecParamNid() != NID_X9_62_prime256v1) return {};
 
       txt = "ecdsa-sha2-nistp256";
       ssh_key_QBA2data(txt, &data);
@@ -685,7 +685,7 @@ QByteArray pki_key::SSH2publicQByteArray(bool raw) const {
 #endif
 #endif
     default:
-      return QByteArray();
+      return {};
   }
   if (raw) return data;
 
@@ -779,7 +779,7 @@ QByteArray pki_key::X509_PUBKEY_public_key() const {
 }
 
 QByteArray pki_key::PEM_comment() const {
-  if (!pem_comment) return QByteArray();
+  if (!pem_comment) return {};
   return pki_base::PEM_comment() +
          QString("%1 %2\n").arg(length(), getTypeString()).toUtf8();
 }

@@ -20,7 +20,7 @@ namespace db {
 
 static QByteArray intToData(uint32_t val) {
   uint32_t v = xhtonl(val);
-  return QByteArray((char*)&v, sizeof(uint32_t));
+  return {(char*)&v, sizeof(uint32_t)};
 }
 static uint32_t intFromData(QByteArray& ba) {
   uint32_t ret;

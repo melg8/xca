@@ -67,7 +67,7 @@ class settings {
   void clear();
   QString defaults(const QString& key);
 
-  svalue operator[](QString x) { return svalue(this, x); }
+  svalue operator[](QString x) { return {this, x}; }
 };
 
 extern settings Settings;

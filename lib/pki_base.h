@@ -132,7 +132,7 @@ class pki_base : public QObject {
   /* Qt Model-View methods */
   virtual QVariant bg_color(const dbheader* hd) const {
     (void)hd;
-    return QVariant();
+    return {};
   }
   virtual QVariant column_data(const dbheader* hd) const;
   virtual QVariant getIcon(const dbheader* hd) const;
@@ -144,9 +144,9 @@ class pki_base : public QObject {
 
   /* SQL management methods */
   QSqlError insertSql();
-  virtual QSqlError insertSqlData() { return QSqlError(); }
+  virtual QSqlError insertSqlData() { return {}; }
   QSqlError deleteSql();
-  virtual QSqlError deleteSqlData() { return QSqlError(); }
+  virtual QSqlError deleteSqlData() { return {}; }
   virtual void restoreSql(const QSqlRecord& rec);
   [[nodiscard]] QSqlError sqlItemNotFound(QVariant sqlId) const;
   [[nodiscard]] unsigned hash() const;

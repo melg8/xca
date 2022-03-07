@@ -550,7 +550,7 @@ QSqlError pki_evp::insertSqlData() {
   XSqlQuery q;
   QSqlError e = pki_key::insertSqlData();
   if (e.isValid()) return e;
-  if (isPubKey()) return QSqlError();
+  if (isPubKey()) return {};
 
   SQL_PREPARE(q,
               "INSERT INTO private_keys (item, ownPass, private) "
@@ -588,7 +588,7 @@ QByteArray pki_evp::getEncKey() const {
   q.bindValue(0, sqlItemId);
   q.exec();
   e = q.lastError();
-  if (e.isValid() || !q.first()) return QByteArray();
+  if (e.isValid() || !q.first()) return {};
   return QByteArray::fromBase64(q.value(0).toByteArray().trimmed());
 }
 
@@ -796,7 +796,7 @@ bool pki_evp::verify_priv(EVP_PKEY* pkey) const {
 }
 
 QVariant pki_evp::getIcon(const dbheader* hd) const {
-  if (hd->id != HD_internal_name) return QVariant();
+  if (hd->id != HD_internal_name) return {};
 
   return QVariant(QPixmap(isPubKey() ? ":pubkeyIco" : ":keyIco"));
 }
@@ -809,7 +809,7 @@ QString pki_evp::_sha512passwd(QByteArray pass,
                                QString salt,
                                int size,
                                int repeat) {
-  if (salt.length() < size) return QString();
+  if (salt.length() < size) return {};
 
   salt = salt.left(size);
   pass = salt.toLatin1() + pass;

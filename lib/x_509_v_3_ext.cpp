@@ -118,7 +118,7 @@ QString x509v3ext::getValue() const {
   int ret = X509V3_EXT_print(bba, ext, X509V3_EXT_DEFAULT, 0);
   if (ign_openssl_error() || !ret)
     ret = ASN1_STRING_print(bba, (ASN1_STRING*)getData());
-  if (ign_openssl_error() || !ret) return QString();
+  if (ign_openssl_error() || !ret) return {};
   return bba.qstring().trimmed();
 }
 
@@ -345,7 +345,7 @@ static bool genNameStack2conf(STACK_OF(GENERAL_NAME) * gens,
 }
 
 QString x509v3ext::parse_critical() const {
-  return QString(getCritical() ? "critical," : "");
+  return {getCritical() ? "critical," : ""};
 }
 
 bool x509v3ext::parse_ia5(QString* single, QString* adv) const {

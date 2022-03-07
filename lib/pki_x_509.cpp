@@ -696,7 +696,7 @@ x509v3ext pki_x509::getExtByNid(int nid) const {
   } catch (errorEx& err) {
     XCA_WARN(err.getString());
   }
-  if (i == -1) return x509v3ext();
+  if (i == -1) return {};
   return el[i];
 }
 
@@ -725,22 +725,22 @@ bool pki_x509::caAndPathLen(bool* ca, a1int* pathlen, bool* hasLen) const {
 QVariant pki_x509::column_data(const dbheader* hd) const {
   switch (hd->id) {
     case HD_cert_serial:
-      return QVariant(getSerial().toHex());
+      return {getSerial().toHex()};
     case HD_cert_md5fp:
-      return QVariant(fingerprint(EVP_md5()));
+      return {fingerprint(EVP_md5())};
     case HD_cert_sha1fp:
-      return QVariant(fingerprint(EVP_sha1()));
+      return {fingerprint(EVP_sha1())};
     case HD_cert_sha256fp:
-      return QVariant(fingerprint(EVP_sha256()));
+      return {fingerprint(EVP_sha256())};
     case HD_cert_ca: {
       a1int len;
       bool ca, haslen;
       if (caAndPathLen(&ca, &len, &haslen)) {
-        if (ca && haslen) return QVariant(len.toDec());
+        if (ca && haslen) return {len.toDec()};
         if (!ca)
-          return QVariant(tr("No"));
+          return {tr("No")};
         else
-          return QVariant(tr("Yes"));
+          return {tr("Yes")};
       }
       break;
     }
@@ -830,8 +830,8 @@ QVariant pki_x509::getIcon(const dbheader* hd) const {
                          ":invalidcertkeyIco"};
   switch (hd->id) {
     case HD_cert_ca:
-      if (!caAndPathLen(&ca, nullptr, nullptr)) return QVariant();
-      if (!ca) return QVariant();
+      if (!caAndPathLen(&ca, nullptr, nullptr)) return {};
+      if (!ca) return {};
       return QVariant(QPixmap(":doneIco"));
     case HD_internal_name:
       if (hasPrivKey()) pixnum += 1;
@@ -858,7 +858,7 @@ QVariant pki_x509::bg_color(const dbheader* hd) const {
 #define BG_YELLOW QBrush(QColor(255, 255, 0))
 #define BG_CYAN QBrush(QColor(127, 255, 212))
 
-  if (Settings["no_expire_colors"]) return QVariant();
+  if (Settings["no_expire_colors"]) return {};
 
   QString unit, cert_expiry_num = Settings["cert_expiry"];
   unit = cert_expiry_num.right(1);
@@ -901,5 +901,5 @@ QVariant pki_x509::bg_color(const dbheader* hd) const {
         }
       }
   }
-  return QVariant();
+  return {};
 }

@@ -32,7 +32,7 @@ static QString CurveComment(int nid) {
   foreach (builtin_curve curve, builtinCurves) {
     if (curve.nid == nid) return curve.comment;
   }
-  return QString();
+  return {};
 }
 #endif
 

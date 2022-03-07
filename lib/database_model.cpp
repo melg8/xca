@@ -42,7 +42,7 @@ QSqlError database_model::initSqlDB() {
   QStringList tables;
   unsigned int i;
 
-  if (!db.isOpen()) return QSqlError();
+  if (!db.isOpen()) return {};
 
   Transaction;
   if (!TransBegin()) return db.lastError();
@@ -64,7 +64,7 @@ QSqlError database_model::initSqlDB() {
         "Failed to update the database schema to the current version"));
 
   TransCommit();
-  return QSqlError();
+  return {};
 }
 
 bool database_model::checkForOldDbFormat(const QString& dbfile) const {
@@ -206,21 +206,21 @@ void database_model::dump_database(const QString& dirname) const {
 static QString defaultdb() { return getUserSettingsDir() + "/defaultdb"; }
 
 QString database_model::get_default_db() const {
-  if (QSqlDatabase::database().isOpen()) return QString();
+  if (QSqlDatabase::database().isOpen()) return {};
 
   QFile inputFile(defaultdb());
-  if (!inputFile.open(QIODevice::ReadOnly)) return QString();
+  if (!inputFile.open(QIODevice::ReadOnly)) return {};
 
   char buf[2048];
   int ret = inputFile.readLine(buf, sizeof buf);
-  if (ret < 1) return QString();
+  if (ret < 1) return {};
 
   inputFile.close();
 
   QString dbfile = QString::fromUtf8(QByteArray(buf, ret)).trimmed();
 
   if (QFile::exists(dbfile) || isRemoteDB(dbfile)) return dbfile;
-  return QString();
+  return {};
 }
 
 void database_model::as_default_database(const QString& db) {
