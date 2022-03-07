@@ -19,7 +19,9 @@ svalue::svalue(settings* s, const QString& k) {
 
 QString svalue::get() const { return setting ? setting->get(key) : QString(); }
 void svalue::set(const QString& val) {
-  if (setting) setting->set(key, val);
+  if (setting) {
+    setting->set(key, val);
+  }
 }
 
 settings::settings() {
@@ -49,20 +51,24 @@ void settings::clear() {
 }
 
 void settings::setAction(const QString& key, const QString& value) {
-  if (key == "string_opt")
+  if (key == "string_opt") {
     ASN1_STRING_set_default_mask_asc(CCHAR(value));
-  else if (key == "default_hash")
+  } else if (key == "default_hash") {
     digest::setDefault(value);
-  else if (key == "defaultkey")
+  } else if (key == "defaultkey") {
     keyjob::defaultjob = keyjob(value);
-  else if (key == "optionflags") {
+  } else if (key == "optionflags") {
     XSqlQuery q;
     Transaction;
-    if (!TransBegin()) return;
+    if (!TransBegin()) {
+      return;
+    }
     SQL_PREPARE(q, "DELETE FROM settings where key_='optionflags'");
     q.exec();
     foreach (QString flag, value.split(",")) {
-      if (flag == "dont_colorize_expiries") flag = "no_expire_colors";
+      if (flag == "dont_colorize_expiries") {
+        flag = "no_expire_colors";
+      }
       setAction(flag, "yes");
     }
     TransCommit();
@@ -74,18 +80,27 @@ void settings::setAction(const QString& key, const QString& value) {
 QString settings::defaults(const QString& key) { return defaul[key]; }
 
 void settings::load_settings() {
-  if (loaded || !QSqlDatabase::database().isOpen()) return;
+  if (loaded || !QSqlDatabase::database().isOpen()) {
+    return;
+  }
   XSqlQuery q("SELECT key_, value FROM settings");
   while (q.next()) {
     QString key = q.value(0).toString().simplified();
     QString value = q.value(1).toString();
     QStringList l = key.split(":");
-    if (l.size() == 2 && l[1] != hostId())
+    if (l.size() == 2 && l[1] != hostId()) {
       continue;  // Skip key with non-matching host ID
+    }
     if (l[0] == "workingdir") {
-      if (!QDir(value).exists()) continue;  // Skip non-existing working-dir
-      if (!value.isEmpty() && !value.endsWith("/")) value += "/";
-      if (value.isEmpty()) value = getHomeDir() + "/";
+      if (!QDir(value).exists()) {
+        continue;  // Skip non-existing working-dir
+      }
+      if (!value.isEmpty() && !value.endsWith("/")) {
+        value += "/";
+      }
+      if (value.isEmpty()) {
+        value = getHomeDir() + "/";
+      }
     }
     db_keys << key;          // Key with host ID
     setAction(l[0], value);  // Key without host ID
@@ -97,7 +112,9 @@ QString settings::get(QString key) {
   load_settings();
   if (key == "schema" && QSqlDatabase::database().isOpen()) {
     XSqlQuery q("SELECT value FROM settings WHERE key_='schema'");
-    if (q.first()) setAction("schema", q.value(0).toString());
+    if (q.first()) {
+      setAction("schema", q.value(0).toString());
+    }
   }
   return values.contains(key) ? values[key] : QString();
 }
@@ -108,15 +125,25 @@ void settings::set(QString key, QString value) {
   QString origkey = key;
 
   if (key == "workingdir") {
-    if (!QDir(value).exists()) return;
+    if (!QDir(value).exists()) {
+      return;
+    }
     value = relativePath(value);
-    if (!value.isEmpty() && !value.endsWith("/")) value += "/";
+    if (!value.isEmpty() && !value.endsWith("/")) {
+      value += "/";
+    }
   }
-  if (hostspecific.contains(key)) key += QString(":%1").arg(hostId());
-  if (db_keys.contains(key) && values[origkey] == value) return;
+  if (hostspecific.contains(key)) {
+    key += QString(":%1").arg(hostId());
+  }
+  if (db_keys.contains(key) && values[origkey] == value) {
+    return;
+  }
 
   Transaction;
-  if (!TransBegin()) return;
+  if (!TransBegin()) {
+    return;
+  }
 
   if (db_keys.contains(key)) {
     SQL_PREPARE(q, "UPDATE settings SET value=? WHERE key_=?");

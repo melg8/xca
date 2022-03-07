@@ -26,8 +26,9 @@ class comboDelegate final : public kvDelegate {
     keys = k;
   }
   void addKey(QString& key) final {
-    if (!key.isEmpty() && (keys.count() == 0 || !keys.contains(key)))
+    if (!key.isEmpty() && (keys.count() == 0 || !keys.contains(key))) {
       keys << key;
+    }
   }
   QWidget* createEditor(QWidget* parent,
                         const QStyleOptionViewItem& option,

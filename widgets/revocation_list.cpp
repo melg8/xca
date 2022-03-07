@@ -30,7 +30,9 @@ static void setup_revRevItem(QTreeWidgetItem* item,
                              const pki_x509* iss) {
   pki_x509* rev = iss ? iss->getBySerial(revit.getSerial()) : nullptr;
   if (rev != nullptr) {
-    for (int i = 0; i < Cmax; i++) item->setToolTip(i, rev->getIntName());
+    for (int i = 0; i < Cmax; i++) {
+      item->setToolTip(i, rev->getIntName());
+    }
   }
   item->setText(Cserial, revit.getSerial());
   item->setText(Cdate, revit.getDate().toSortable());
@@ -40,7 +42,9 @@ static void setup_revRevItem(QTreeWidgetItem* item,
   item->setTextAlignment(Cserial, Qt::AlignRight);
 
   a1time a = revit.getInvalDate();
-  if (!a.isUndefined()) item->setText(CiDate, a.toSortable());
+  if (!a.isUndefined()) {
+    item->setText(CiDate, a.toSortable());
+  }
 }
 
 static void addRevItem(QTreeWidget* certList,
@@ -73,7 +77,9 @@ void RevocationList::setupRevocationView(QTreeWidget* certsWidget,
 
   i = 1;
   foreach (x509rev revit, revList) { addRevItem(certsWidget, revit, i++, iss); }
-  for (i = 0; i < cols; i++) certsWidget->resizeColumnToContents(i);
+  for (i = 0; i < cols; i++) {
+    certsWidget->resizeColumnToContents(i);
+  }
   certsWidget->setSortingEnabled(true);
   certsWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
   certsWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -119,12 +125,16 @@ void RevocationList::on_delRev_clicked() {
   x509rev rev;
   int idx;
 
-  if (!current) return;
+  if (!current) {
+    return;
+  }
   idx = certList->indexOfTopLevelItem(current);
   certList->takeTopLevelItem(idx);
   rev.setSerial(a1int(current->text(Cserial)));
   idx = revList.indexOf(rev);
-  if (idx != -1) revList.takeAt(idx);
+  if (idx != -1) {
+    revList.takeAt(idx);
+  }
 }
 
 void RevocationList::on_editRev_clicked() {
@@ -135,11 +145,15 @@ void RevocationList::on_certList_itemDoubleClicked(QTreeWidgetItem* current) {
   x509rev rev;
   int idx;
 
-  if (!current) return;
+  if (!current) {
+    return;
+  }
 
   rev.setSerial(a1int(current->text(Cserial)));
   idx = revList.indexOf(rev);
-  if (idx == -1) return;
+  if (idx == -1) {
+    return;
+  }
 
   rev = revList[idx];
 
@@ -171,7 +185,9 @@ Revocation::Revocation(QModelIndexList indexes, QWidget* w)
         QString("Batch revocation of %1 Certificates").arg(indexes.size()));
     foreach (QModelIndex idx, indexes) {
       auto* cert = db_base::fromIndex<pki_x509>(idx);
-      if (cert) serials << cert->getSerial();
+      if (cert) {
+        serials << cert->getSerial();
+      }
     }
     std::sort(serials.begin(), serials.end());
     foreach (a1int a, serials)
@@ -202,6 +218,8 @@ void Revocation::setRevocation(x509rev r) {
   serial->setText(r.getSerial());
   invalid->setDate(r.getInvalDate());
   int i = reason->findText(r.getReason());
-  if (i == -1) i = 0;
+  if (i == -1) {
+    i = 0;
+  }
   reason->setCurrentIndex(i);
 }

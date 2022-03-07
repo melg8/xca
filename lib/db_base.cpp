@@ -10,7 +10,9 @@
 #include <QMimeData>
 
 void db_base::restart_timer() {
-  if (!IS_GUI_APP) return;
+  if (!IS_GUI_APP) {
+    return;
+  }
   killTimer(secondsTimer);
   killTimer(minutesTimer);
   killTimer(hoursTimer);
@@ -42,15 +44,21 @@ pki_base* db_base::newPKI(enum pki_type type) {
 }
 
 void db_base::createSuccess(const pki_base* pki) {
-  if (!pki) return;
+  if (!pki) {
+    return;
+  }
 
-  if (Settings["suppress_messages"]) return;
+  if (Settings["suppress_messages"]) {
+    return;
+  }
 
   XCA_INFO(pki->getMsg(pki_base::msg_create).arg(pki->getIntName()));
 }
 
 void db_base::remFromCont(const QModelIndex& idx) {
-  if (!idx.isValid()) return;
+  if (!idx.isValid()) {
+    return;
+  }
   pki_base* pki = fromIndex(idx);
   pki_base* parent_pki = pki->getParent();
   int row = rownumber(pki);
@@ -82,7 +90,8 @@ void db_base::loadContainer() {
   e = q.lastError();
   XCA_SQLERROR(e);
 
-  while (q.next()) try {
+  while (q.next()) {
+    try {
       enum pki_type t;
       QSqlRecord rec = q.record();
       t = (enum pki_type)q.value(VIEW_item_type).toInt();
@@ -93,6 +102,7 @@ void db_base::loadContainer() {
     } catch (errorEx& ex) {
       XCA_ERROR(ex);
     }
+  }
 
   QString view = Settings[class_name + "_hdView"];
   if (view.isEmpty()) {
@@ -115,7 +125,9 @@ void db_base::reloadContainer(const QList<enum pki_type>& typelist) {
       break;
     }
   }
-  if (!match) return;
+  if (!match) {
+    return;
+  }
   qDebug() << "RELOAD" << class_name << all_types << typelist;
   beginResetModel();
   rootItem->clear();
@@ -150,17 +162,22 @@ dbheaderList db_base::getHeaders() {
 }
 
 void db_base::saveHeaderState() {
-  if (QSqlDatabase::database().isOpen())
+  if (QSqlDatabase::database().isOpen()) {
     Settings[class_name + "_hdView"] = allHeaders.toData();
+  }
 }
 
 void db_base::setVisualIndex(int i, int visualIndex) {
-  if (colResizing) return;
+  if (colResizing) {
+    return;
+  }
   allHeaders[i]->visualIndex = visualIndex;
 }
 
 void db_base::sectionResized(int i, int, int newSize) {
-  if (!allHeaders[i]->show || newSize <= 0 || colResizing) return;
+  if (!allHeaders[i]->show || newSize <= 0 || colResizing) {
+    return;
+  }
   allHeaders[i]->size = newSize;
 }
 
@@ -173,7 +190,9 @@ void db_base::initHeaderView(QHeaderView* hv) {
     allHeaders[i]->setupHeaderView(i, hv);
   }
   for (int i = 0; i < max; i++) {
-    if (allHeaders[i]->visualIndex == -1) continue;
+    if (allHeaders[i]->visualIndex == -1) {
+      continue;
+    }
     if (hv->visualIndex(i) != allHeaders[i]->visualIndex) {
       hv->moveSection(hv->visualIndex(i), allHeaders[i]->visualIndex);
     }
@@ -183,7 +202,9 @@ void db_base::initHeaderView(QHeaderView* hv) {
 
 void db_base::sortIndicatorChanged(int logicalIndex, Qt::SortOrder order) {
   int max = allHeaders.count();
-  if (!isValidCol(logicalIndex)) return;
+  if (!isValidCol(logicalIndex)) {
+    return;
+  }
   for (int i = 0; i < max; i++) {
     allHeaders[i]->sortIndicator = -1;
   }
@@ -220,7 +241,9 @@ QString db_base::pem2QString(QModelIndexList indexes) const {
   BioByteArray bba;
 
   foreach (QModelIndex idx, indexes) {
-    if (idx.column() != 0) continue;
+    if (idx.column() != 0) {
+      continue;
+    }
     pki_base* pki = fromIndex(idx);
     pki->pem(bba);
     openssl_error();
@@ -241,7 +264,9 @@ void db_base::deletePKI(QModelIndex idx) {
     if (TransBegin()) {
       QSqlError e = pki->deleteSql();
       TransDone(e);
-      if (!e.isValid()) remFromCont(idx);
+      if (!e.isValid()) {
+        remFromCont(idx);
+      }
       AffectedItems(pki->getSqlItemId());
       XCA_SQLERROR(e);
     }
@@ -254,18 +279,24 @@ void db_base::insertChild(pki_base* child, pki_base* parent) {
   QModelIndex idx = QModelIndex();
   pki_base* curr_parent = child->getParent();
 
-  if (!parent || parent == child) parent = treeItem;
+  if (!parent || parent == child) {
+    parent = treeItem;
+  }
 
   if (curr_parent) {
     /* Need to take it */
-    if (curr_parent != treeItem && treeview) idx = index(curr_parent);
+    if (curr_parent != treeItem && treeview) {
+      idx = index(curr_parent);
+    }
     int row = rownumber(child);
     beginRemoveRows(idx, row, row);
     curr_parent->takeChild(child);
     endRemoveRows();
   }
 
-  if (parent != treeItem && treeview) idx = index(parent);
+  if (parent != treeItem && treeview) {
+    idx = index(parent);
+  }
 
   beginInsertRows(idx, 0, 0);
   parent->insert(child);
@@ -305,7 +336,9 @@ pki_base* db_base::getByReference(pki_base* refpki) {
       QString("SELECT item FROM %1 WHERE hash=?").arg(sqlHashTable),
       QList<QVariant>() << QVariant(refpki->hash()));
   foreach (pki_base* pki, list) {
-    if (refpki->compare(pki)) return pki;
+    if (refpki->compare(pki)) {
+      return pki;
+    }
   }
   return nullptr;
 }
@@ -333,24 +366,32 @@ QModelIndex db_base::index(int row,
                            const QModelIndex& parent) const {
   pki_base* parentItem = treeview ? treeItem : rootItem;
 
-  if (parent.isValid() && treeview) parentItem = fromIndex(parent);
+  if (parent.isValid() && treeview) {
+    parentItem = fromIndex(parent);
+  }
 
   pki_base* childItem = parentItem->child(row);
   return childItem ? createIndex(row, column, childItem) : QModelIndex();
 }
 
 QModelIndex db_base::index(pki_base* pki) const {
-  if (!pki) return {};
+  if (!pki) {
+    return {};
+  }
   return createIndex(rownumber(pki), 0, pki);
 }
 
 QModelIndex db_base::parent(const QModelIndex& idx) const {
-  if (!idx.isValid()) return {};
+  if (!idx.isValid()) {
+    return {};
+  }
 
   pki_base* childItem = fromIndex(idx);
   pki_base* parentItem = childItem->getParent();
 
-  if (parentItem == treeItem || !treeview) parentItem = nullptr;
+  if (parentItem == treeItem || !treeview) {
+    parentItem = nullptr;
+  }
 
   return index(parentItem);
 }
@@ -358,7 +399,9 @@ QModelIndex db_base::parent(const QModelIndex& idx) const {
 int db_base::rowCount(const QModelIndex& parent) const {
   pki_base* parentItem = treeview ? treeItem : rootItem;
 
-  if (parent.isValid()) parentItem = treeview ? fromIndex(parent) : nullptr;
+  if (parent.isValid()) {
+    parentItem = treeview ? fromIndex(parent) : nullptr;
+  }
 
   return parentItem ? parentItem->childCount() : 0;
 }
@@ -368,14 +411,17 @@ int db_base::columnCount(const QModelIndex&) const {
 }
 
 QVariant db_base::data(const QModelIndex& index, int role) const {
-  if (!index.isValid()) return {};
+  if (!index.isValid()) {
+    return {};
+  }
   dbheader* hd = allHeaders[index.column()];
   pki_base* item = fromIndex(index);
   switch (role) {
     case Qt::EditRole:
     case Qt::DisplayRole:
-      if (hd->id == HD_internal_name || item->isVisible() == 1)
+      if (hd->id == HD_internal_name || item->isVisible() == 1) {
         return item->column_data(hd);
+      }
       break;
     case Qt::DecorationRole:
       return item->getIcon(hd);
@@ -386,8 +432,9 @@ QVariant db_base::data(const QModelIndex& index, int role) const {
     case Qt::UserRole:
       return item->isVisible();
     case Qt::ToolTipRole:
-      if (hd->id == HD_internal_name || item->isVisible() == 1)
+      if (hd->id == HD_internal_name || item->isVisible() == 1) {
         return item->column_tooltip(hd);
+      }
       break;
   }
   return {};
@@ -413,7 +460,9 @@ void db_base::changeView() {
 QVariant db_base::headerData(int section,
                              Qt::Orientation orientation,
                              int role) const {
-  if (!isValidCol(section)) return {};
+  if (!isValidCol(section)) {
+    return {};
+  }
   if (orientation == Qt::Horizontal) {
     switch (role) {
       case Qt::DisplayRole:
@@ -426,15 +475,18 @@ QVariant db_base::headerData(int section,
 }
 
 Qt::ItemFlags db_base::flags(const QModelIndex& index) const {
-  if (!index.isValid()) return Qt::NoItemFlags;
+  if (!index.isValid()) {
+    return Qt::NoItemFlags;
+  }
 
   Qt::ItemFlags flags =
       QAbstractItemModel::flags(index) | Qt::ItemIsDragEnabled;
   pki_base* item = fromIndex(index);
-  if (item->isVisible() == 2)
+  if (item->isVisible() == 2) {
     flags &= ~Qt::ItemIsEnabled;
-  else if (index.column() == 0)
+  } else if (index.column() == 0) {
     flags |= Qt::ItemIsEditable;
+  }
   return flags;
 }
 
@@ -447,7 +499,9 @@ bool db_base::setData(const QModelIndex& index,
     nn = value.toString();
     item = fromIndex(index);
     on = item->getIntName();
-    if (nn == on) return true;
+    if (nn == on) {
+      return true;
+    }
     updateItem(item, nn, item->getComment());
     return true;
   }
@@ -460,7 +514,9 @@ void db_base::updateItem(pki_base* pki,
   XSqlQuery q;
   QSqlError e;
 
-  if (name == pki->getIntName() && comment == pki->getComment()) return;
+  if (name == pki->getIntName() && comment == pki->getComment()) {
+    return;
+  }
 
   Transaction;
   TransThrow()
@@ -493,20 +549,34 @@ void db_base::timerEvent(QTimerEvent* event) {
   foreach (pki_base* pki, Store.getAll<pki_base>()) {
     for (int idx = 0; idx < allHeaders.count(); idx++) {
       dbheader* hd = allHeaders[idx];
-      if (hd->type != dbheader::hd_asn1time) continue;
+      if (hd->type != dbheader::hd_asn1time) {
+        continue;
+      }
       a1time t = pki->column_a1time(hd);
-      if (t.isUndefined()) continue;
+      if (t.isUndefined()) {
+        continue;
+      }
       int age = t.age();
-      if (age < 0) age *= -1;
+      if (age < 0) {
+        age *= -1;
+      }
       bool do_emit = false;
-      if (age < youngest) youngest = age;
-      if (!hd->show) continue;
+      if (age < youngest) {
+        youngest = age;
+      }
+      if (!hd->show) {
+        continue;
+      }
       if (id == secondsTimer &&
-          (age < SECS_PER_MINUTE * 2 || age % SECS_PER_MINUTE < 2))
+          (age < SECS_PER_MINUTE * 2 || age % SECS_PER_MINUTE < 2)) {
         do_emit = true;
-      if (id == minutesTimer && (age % SECS_PER_HOUR < 60)) do_emit = true;
-      if (id == hoursTimer && (age % SECS_PER_DAY < SECS_PER_HOUR))
+      }
+      if (id == minutesTimer && (age % SECS_PER_HOUR < 60)) {
         do_emit = true;
+      }
+      if (id == hoursTimer && (age % SECS_PER_DAY < SECS_PER_HOUR)) {
+        do_emit = true;
+      }
       if (do_emit) {
         qDebug() << "Date changed for" << pki->getIntName() << ":"
                  << hd->getName() << "Col:" << idx << t.toSortable();
@@ -527,10 +597,13 @@ void db_base::timerEvent(QTimerEvent* event) {
 }
 
 bool db_base::columnHidden(int col) const {
-  if (!isValidCol(col)) return true;
-  if (Settings["disable_netscape"] &&
-      allHeaders[col]->type == dbheader::hd_v3ext_ns)
+  if (!isValidCol(col)) {
     return true;
+  }
+  if (Settings["disable_netscape"] &&
+      allHeaders[col]->type == dbheader::hd_v3ext_ns) {
+    return true;
+  }
   return !allHeaders[col]->show;
 }
 
@@ -547,7 +620,9 @@ bool db_base::isValidCol(int col) const {
 QMimeData* db_base::mimeData(const QModelIndexList& indexes) const {
   QString data = pem2QString(indexes);
 
-  if (data.isEmpty()) return nullptr;
+  if (data.isEmpty()) {
+    return nullptr;
+  }
 
   auto* mimeData = new QMimeData();
   mimeData->setText(data.toLatin1());
@@ -575,9 +650,10 @@ int db_base::exportFlags(const QModelIndexList& indexes) const {
   int disabled_flags = 0;
   foreach (const QModelIndex& idx, indexes)
     disabled_flags |= exportFlags(idx);
-  if (indexes.size() > 1)
+  if (indexes.size() > 1) {
     disabled_flags |= F_SINGLE;
-  else
+  } else {
     disabled_flags |= F_MULTI;
+  }
   return disabled_flags;
 }

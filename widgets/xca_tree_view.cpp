@@ -56,20 +56,25 @@ XcaTreeView::~XcaTreeView() { delete proxy; }
 
 void XcaTreeView::contextMenuEvent(QContextMenuEvent* e) {
   QModelIndex index;
-  if (!basemodel) return;
+  if (!basemodel) {
+    return;
+  }
   index = indexAt(e->pos());
   showContextMenu(e, getIndex(index));
 }
 
 void XcaTreeView::showHideSections() {
-  if (!basemodel) return;
+  if (!basemodel) {
+    return;
+  }
   int i, max = basemodel->columnCount(QModelIndex());
   basemodel->colResizeStart();
   for (i = 0; i < max; i++) {
-    if (basemodel->columnHidden(i))
+    if (basemodel->columnHidden(i)) {
       header()->hideSection(i);
-    else
+    } else {
       header()->showSection(i);
+    }
   }
   basemodel->colResizeEnd();
   columnsResize();
@@ -126,10 +131,11 @@ QModelIndexList XcaTreeView::getSelectedIndexes() {
   /* Reduce list to column 0 items */
   QModelIndexList::iterator it = list.begin();
   while (it != list.end()) {
-    if ((*it).column() != 0)
+    if ((*it).column() != 0) {
       it = list.erase(it);
-    else
+    } else {
       ++it;
+    }
   }
   return list;
 }
@@ -138,7 +144,9 @@ void XcaTreeView::columnsChanged() { throttle.start(200); }
 
 void XcaTreeView::columnsResize() {
   int cnt, i;
-  if (!basemodel) return;
+  if (!basemodel) {
+    return;
+  }
   cnt = basemodel->columnCount(QModelIndex());
   basemodel->colResizeStart();
   for (i = 0; i < cnt; i++) {
@@ -162,7 +170,9 @@ QModelIndex XcaTreeView::currentIndex() {
   idx = basemodel->index(idx.row(), 0, idx.parent());
   if (!idx.isValid()) {
     QModelIndexList l = getSelectedIndexes();
-    if (l.size() > 0) idx = l[0];
+    if (l.size() > 0) {
+      idx = l[0];
+    }
   }
   return idx;
 }
@@ -183,7 +193,9 @@ void XcaTreeView::deleteItems() {
   int count = 0;
   pki_base* pki = nullptr;
 
-  if (indexes.count() == 0 || !basemodel) return;
+  if (indexes.count() == 0 || !basemodel) {
+    return;
+  }
 
   foreach (index, indexes) {
     pki = db_base::fromIndex(index);
@@ -192,14 +204,19 @@ void XcaTreeView::deleteItems() {
   }
 
   Transaction;
-  if (!TransBegin()) return;
+  if (!TransBegin()) {
+    return;
+  }
 
-  if (count == 1)
+  if (count == 1) {
     msg = pki->getMsg(pki_base::msg_delete).arg(pki->getIntName());
-  else
+  } else {
     msg = pki->getMsg(pki_base::msg_delete_multi).arg(count).arg(items);
+  }
 
-  if (!XCA_OKCANCEL(msg)) return;
+  if (!XCA_OKCANCEL(msg)) {
+    return;
+  }
 
   foreach (index, indexes) { basemodel->deletePKI(index); }
   TransCommit();
@@ -214,7 +231,9 @@ void XcaTreeView::showItems() {
 }
 
 void XcaTreeView::newItem() {
-  if (basemodel) basemodel->newItem();
+  if (basemodel) {
+    basemodel->newItem();
+  }
 }
 
 void XcaTreeView::load_default(load_base* load) {
@@ -222,7 +241,9 @@ void XcaTreeView::load_default(load_base* load) {
   QStringList slist = QFileDialog::getOpenFileNames(
       nullptr, load->caption, Settings["workingdir"], load->filter);
 
-  if (!slist.count()) return;
+  if (!slist.count()) {
+    return;
+  }
 
   update_workingdir(slist[0]);
 
@@ -245,7 +266,9 @@ void XcaTreeView::doubleClick(const QModelIndex& m) { showItem(getIndex(m)); }
 
 void XcaTreeView::editComment() {
   pki_base* item = db_base::fromIndex(currentIndex());
-  if (!basemodel || !item) return;
+  if (!basemodel || !item) {
+    return;
+  }
 
   auto* w = new QWidget(nullptr);
   auto* prop = new Ui::ItemProperties();
@@ -256,29 +279,37 @@ void XcaTreeView::editComment() {
   prop->insertionDate->setText(item->getInsertionDate().toPretty());
   auto* d = new XcaDialog(this, item->getType(), w, tr("Item properties"),
                           QString(), "itemproperties");
-  if (d->exec())
+  if (d->exec()) {
     basemodel->updateItem(item, prop->name->text(),
                           prop->comment->toPlainText());
+  }
   delete d;
 }
 
 void XcaTreeView::pem2clipboard() {
-  if (!basemodel) return;
+  if (!basemodel) {
+    return;
+  }
 
   QString msg = basemodel->pem2QString(getSelectedIndexes());
   QClipboard* cb = QApplication::clipboard();
 
-  if (cb->supportsSelection()) cb->setText(msg, QClipboard::Selection);
+  if (cb->supportsSelection()) {
+    cb->setText(msg, QClipboard::Selection);
+  }
   cb->setText(msg);
 }
 
 void XcaTreeView::headerDetails() {
-  if (curr_hd && curr_hd->id > 0 && mainwin)
+  if (curr_hd && curr_hd->id > 0 && mainwin) {
     mainwin->getResolver()->searchOid(QString::number(curr_hd->id));
+  }
 }
 
 void XcaTreeView::columnRemove() {
-  if (curr_hd->action) curr_hd->action->setChecked(false);
+  if (curr_hd->action) {
+    curr_hd->action->setChecked(false);
+  }
 }
 
 void XcaTreeView::showItem(const QModelIndex& index) {
@@ -292,14 +323,17 @@ void XcaTreeView::showItem(const QString& name) {
 }
 
 void XcaTreeView::showItem(pki_base* pki) {
-  if (pki && pki->isVisible() == 1) showPki(pki);
+  if (pki && pki->isVisible() == 1) {
+    showPki(pki);
+  }
 }
 
 static void addSubmenu(tipMenu* menu, tipMenu* sub) {
-  if (sub->isEmpty())
+  if (sub->isEmpty()) {
     delete sub;
-  else
+  } else {
     menu->addMenu(sub);
+  }
 }
 
 void XcaTreeView::contextMenu(QContextMenuEvent* e, QMenu* parent, int col) {
@@ -318,8 +352,9 @@ void XcaTreeView::contextMenu(QContextMenuEvent* e, QMenu* parent, int col) {
   if (col >= 0 && col < allHeaders.size()) {
     curr_hd = allHeaders[col];
     menu->addAction(tr("Hide Column"), this, SLOT(columnRemove()));
-    if (curr_hd->id > 0)
+    if (curr_hd->id > 0) {
       menu->addAction(tr("Details"), this, SLOT(headerDetails()));
+    }
   } else {
     curr_hd = nullptr;
   }
@@ -333,7 +368,9 @@ void XcaTreeView::contextMenu(QContextMenuEvent* e, QMenu* parent, int col) {
         current = v3ext;
         break;
       case dbheader::hd_v3ext_ns:
-        if (Settings["disable_netscape"]) continue;
+        if (Settings["disable_netscape"]) {
+          continue;
+        }
         current = v3ns;
         break;
       case dbheader::hd_key:
@@ -365,25 +402,33 @@ void XcaTreeView::contextMenu(QContextMenuEvent* e, QMenu* parent, int col) {
     menu->exec(e->globalPos());
   }
   foreach (hd, allHeaders) {
-    if (hd->action) hd->show = hd->action->isChecked();
+    if (hd->action) {
+      hd->show = hd->action->isChecked();
+    }
     shown += hd->show ? 1 : 0;
     hd->action = nullptr;
   }
-  if (!shown) allHeaders[0]->show = true;
+  if (!shown) {
+    allHeaders[0]->show = true;
+  }
   delete menu;
   delete parent;
   showHideSections();
 }
 
 void XcaTreeView::changeView() {
-  if (!basemodel) return;
+  if (!basemodel) {
+    return;
+  }
   hide();
   basemodel->changeView();
   show();
 }
 
 void XcaTreeView::exportItems(const QModelIndexList& indexes) {
-  if (!basemodel || indexes.empty()) return;
+  if (!basemodel || indexes.empty()) {
+    return;
+  }
 
   ExportDialog* dlg = exportDialog(indexes);
 
@@ -392,10 +437,11 @@ void XcaTreeView::exportItems(const QModelIndexList& indexes) {
       const pki_export* xport = dlg->export_type();
       XFile file(dlg->filename->text());
 
-      if (xport->match_all(F_PRIVATE))
+      if (xport->match_all(F_PRIVATE)) {
         file.open_key();
-      else
+      } else {
         file.open_write();
+      }
 
       basemodel->exportItems(indexes, xport, file);
     } catch (errorEx& err) {
@@ -449,7 +495,9 @@ void XcaTreeView::keyPressEvent(QKeyEvent* event) {
       return;
     case Qt::Key_Enter:
     case Qt::Key_Return:
-      if (state() != QAbstractItemView::EditingState) showItems();
+      if (state() != QAbstractItemView::EditingState) {
+        showItems();
+      }
       return;
     case Qt::Key_F2:
       editIdx();

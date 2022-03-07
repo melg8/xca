@@ -54,7 +54,9 @@ void MainWindow::initResolver() {
   }
   resolver = new OidResolver(nullptr);
   resolver->setWindowTitle(XCA_TITLE);
-  if (shown) resolver->searchOid(search);
+  if (shown) {
+    resolver->searchOid(search);
+  }
 }
 
 MainWindow::MainWindow() : QMainWindow() {
@@ -163,10 +165,13 @@ void MainWindow::openURLs() {
 }
 
 void MainWindow::dragEnterEvent(QDragEnterEvent* event) {
-  if (event->mimeData()->hasFormat(X_XCA_DRAG_DATA)) return;
+  if (event->mimeData()->hasFormat(X_XCA_DRAG_DATA)) {
+    return;
+  }
 
-  if (event->mimeData()->hasUrls() || event->mimeData()->hasText())
+  if (event->mimeData()->hasUrls() || event->mimeData()->hasText()) {
     event->acceptProposedAction();
+  }
 }
 
 void MainWindow::setItemEnabled(bool enable) {
@@ -193,7 +198,9 @@ void MainWindow::loadPem() {
 bool MainWindow::pastePem(QString text, bool silent) {
   bool success = false;
   QByteArray pemdata = text.toLatin1();
-  if (pemdata.size() == 0) return false;
+  if (pemdata.size() == 0) {
+    return false;
+  }
 
   pki_multi* pem = nullptr;
   try {
@@ -203,7 +210,9 @@ bool MainWindow::pastePem(QString text, bool silent) {
     importMulti(pem, 1);
   } catch (errorEx& err) {
     delete pem;
-    if (!silent) XCA_ERROR(err);
+    if (!silent) {
+      XCA_ERROR(err);
+    }
   }
   return success;
 }
@@ -213,10 +222,15 @@ void MainWindow::pastePem() {
   QString text;
 
   text = cb->text(QClipboard::Selection);
-  if (text.isEmpty()) text = cb->text(QClipboard::Clipboard);
+  if (text.isEmpty()) {
+    text = cb->text(QClipboard::Clipboard);
+  }
 
-  if (!text.isEmpty())
-    if (pastePem(text, true)) return;
+  if (!text.isEmpty()) {
+    if (pastePem(text, true)) {
+      return;
+    }
+  }
 
   auto* textbox = new QTextEdit();
   textbox->setPlainText(text);
@@ -225,21 +239,27 @@ void MainWindow::pastePem() {
   input->noSpacer();
   if (input->exec()) {
     text = textbox->toPlainText();
-    if (!text.isEmpty()) pastePem(text);
+    if (!text.isEmpty()) {
+      pastePem(text);
+    }
   }
   delete input;
 }
 
 void MainWindow::initToken() {
   bool ok;
-  if (!pkcs11::libraries.loaded()) return;
+  if (!pkcs11::libraries.loaded()) {
+    return;
+  }
   try {
     pkcs11 p11;
     slotid slot;
     Passwd pin;
     int ret;
 
-    if (!p11.selectToken(&slot, this)) return;
+    if (!p11.selectToken(&slot, this)) {
+      return;
+    }
 
     tkInfo ti = p11.tokenInfo(slot);
     QString slotname = QString("%1 (#%2)").arg(ti.label()).arg(ti.serial());
@@ -258,11 +278,15 @@ void MainWindow::initToken() {
           "\n" + ti.pinInfo());
       ret = PwDialogCore::execute(&p, &pin, true);
     }
-    if (ret != 1) return;
+    if (ret != 1) {
+      return;
+    }
     QString label = QInputDialog::getText(
         this, XCA_TITLE, tr("The new label of the token '%1'").arg(slotname),
         QLineEdit::Normal, QString(), &ok);
-    if (!ok) return;
+    if (!ok) {
+      return;
+    }
     p11.initToken(slot, pin.constUchar(), pin.size(), label);
   } catch (errorEx& err) {
     XCA_ERROR(err);
@@ -270,12 +294,16 @@ void MainWindow::initToken() {
 }
 
 void MainWindow::changePin(bool so) {
-  if (!pkcs11::libraries.loaded()) return;
+  if (!pkcs11::libraries.loaded()) {
+    return;
+  }
   try {
     pkcs11 p11;
     slotid slot;
 
-    if (!p11.selectToken(&slot, this)) return;
+    if (!p11.selectToken(&slot, this)) {
+      return;
+    }
     p11.changePin(slot, so);
   } catch (errorEx& err) {
     XCA_ERROR(err);
@@ -285,12 +313,16 @@ void MainWindow::changePin(bool so) {
 void MainWindow::changeSoPin() { changePin(true); }
 
 void MainWindow::initPin() {
-  if (!pkcs11::libraries.loaded()) return;
+  if (!pkcs11::libraries.loaded()) {
+    return;
+  }
   try {
     pkcs11 p11;
     slotid slot;
 
-    if (!p11.selectToken(&slot, this)) return;
+    if (!p11.selectToken(&slot, this)) {
+      return;
+    }
     p11.initPin(slot);
   } catch (errorEx& err) {
     XCA_ERROR(err);
@@ -304,10 +336,14 @@ void MainWindow::manageToken() {
   pki_x509* cert = nullptr;
   ImportMulti* dlgi = nullptr;
 
-  if (!pkcs11::libraries.loaded()) return;
+  if (!pkcs11::libraries.loaded()) {
+    return;
+  }
 
   try {
-    if (!p11.selectToken(&slot, this)) return;
+    if (!p11.selectToken(&slot, this)) {
+      return;
+    }
 
     auto* import_dialog = new ImportMulti(this);
 
@@ -315,7 +351,9 @@ void MainWindow::manageToken() {
     QList<CK_OBJECT_HANDLE> objects;
 
     QList<CK_MECHANISM_TYPE> ml = p11.mechanismList(slot);
-    if (ml.count() == 0) ml << CKM_SHA1_RSA_PKCS;
+    if (ml.count() == 0) {
+      ml << CKM_SHA1_RSA_PKCS;
+    }
     pk11_attlist atts(pk11_attr_ulong(CKA_CLASS, CKO_PUBLIC_KEY));
 
     p11.startSession(slot);
@@ -400,7 +438,9 @@ int MainWindow::checkOldGetNewPass(Passwd& pass) {
     /* Try empty password */
     if (pki_evp::sha512passwT(pass, passHash) != passHash) {
       /* Not the empty password, check it */
-      if (PwDialogCore::execute(&p, &pass, false) != 1) return 0;
+      if (PwDialogCore::execute(&p, &pass, false) != 1) {
+        return 0;
+      }
     }
 
     if (pki_evp::sha512passwT(pass, passHash) != passHash) {
@@ -422,7 +462,9 @@ void MainWindow::changeDbPass() {
   XSqlQuery q;
   QSqlDatabase db = QSqlDatabase::database();
 
-  if (!checkOldGetNewPass(pass)) return;
+  if (!checkOldGetNewPass(pass)) {
+    return;
+  }
 
   QString salt = Entropy::makeSalt();
   QString passhash = pki_evp::sha512passwT(pass, salt);
@@ -465,7 +507,9 @@ void MainWindow::importAnything(const QStringList& files) {
 }
 
 void MainWindow::importMulti(pki_multi* multi, int force) {
-  if (!multi) return;
+  if (!multi) {
+    return;
+  }
 
   QStringList failed_files = multi->failed_files;
   auto* dlgi = new ImportMulti(this);
@@ -489,7 +533,9 @@ void MainWindow::openRemoteSqlDB() {
   }
   delete opendb;
 
-  if (descriptor.isEmpty()) return;
+  if (descriptor.isEmpty()) {
+    return;
+  }
 
   init_database(descriptor, pass);
 }
@@ -509,19 +555,23 @@ enum open_result MainWindow::init_database(const QString& name,
 }
 
 enum open_result MainWindow::setup_open_database() {
-  if (!Database.isOpen()) return open_abort;
+  if (!Database.isOpen()) {
+    return open_abort;
+  }
 
-  if (!database_model::isRemoteDB(Database.name()))
+  if (!database_model::isRemoteDB(Database.name())) {
     homedir = QFileInfo(Database.name()).canonicalPath();
+  }
 
   setItemEnabled(true);
   dbindex->setText(tr("Database") + ": " + compressFilename(Database.name()));
   set_geometry(Settings["mw_geometry"]);
 
-  if (pki_evp::passwd.isNull())
+  if (pki_evp::passwd.isNull()) {
     XCA_INFO(
         tr("Using or exporting private keys will not be possible without "
            "providing the correct password"));
+  }
 
   enableTokenMenu(pkcs11::libraries.loaded());
 
@@ -553,14 +603,20 @@ enum open_result MainWindow::setup_open_database() {
 
 void MainWindow::set_geometry(QString geo) {
   QStringList sl = geo.split(",");
-  if (sl.size() != 3) return;
+  if (sl.size() != 3) {
+    return;
+  }
   resize(sl[0].toInt(), sl[1].toInt());
   int i = sl[2].toInt();
-  if (i != -1) tabView->setCurrentIndex(i);
+  if (i != -1) {
+    tabView->setCurrentIndex(i);
+  }
 }
 
 void MainWindow::close_database() {
-  if (!Database.isOpen()) return;
+  if (!Database.isOpen()) {
+    return;
+  }
 
   Settings["mw_geometry"] = QString("%1,%2,%3")
                                 .arg(size().width())
@@ -594,18 +650,21 @@ void MainWindow::exportIndexHierarchy() {
 
 void MainWindow::exportIndex(const QString& fname, bool hierarchy) const {
   qDebug() << fname << hierarchy;
-  if (fname.isEmpty() || !Database.isOpen()) return;
+  if (fname.isEmpty() || !Database.isOpen()) {
+    return;
+  }
   auto* certs = Database.model<db_x509>();
   certs->writeIndex(fname, hierarchy);
 }
 
 void MainWindow::generateDHparamDone() {
   errorEx e(dhgen->error());
-  if (e.isEmpty())
+  if (e.isEmpty()) {
     XCA_INFO(
         tr("Diffie-Hellman parameters saved as: %1").arg(dhgen->filename()));
-  else
+  } else {
     XCA_ERROR(e);
+  }
   dhgen->deleteLater();
   dhgen = nullptr;
   delete dhgenProgress;
@@ -613,7 +672,9 @@ void MainWindow::generateDHparamDone() {
 }
 
 void MainWindow::generateDHparam() {
-  if (dhgen) return;
+  if (dhgen) {
+    return;
+  }
 
   bool ok;
   int bits = QInputDialog::getInt(
@@ -621,7 +682,9 @@ void MainWindow::generateDHparam() {
       tr("Diffie-Hellman parameters are needed for different applications, but "
          "not handled by XCA.\nPlease enter the DH parameter bits"),
       1024, 1024, 4096, 1, &ok);
-  if (!ok) return;
+  if (!ok) {
+    return;
+  }
 
   /*
    * 1024:   6 sec
@@ -634,7 +697,9 @@ void MainWindow::generateDHparam() {
     QString fname = QString("%1/dh%2.pem").arg(homedir).arg(bits);
     fname = QFileDialog::getSaveFileName(this, QString(), fname,
                                          tr("All files ( * )"), nullptr);
-    if (fname == "") throw errorEx("");
+    if (fname == "") {
+      throw errorEx("");
+    }
     dhgen = new DHgen(fname, bits);
     dhgenProgress = new XcaProgress(QString("Diffie-Hellman"), 0);
     dhgen->start(QThread::LowestPriority);
@@ -652,8 +717,9 @@ void MainWindow::changeEvent(QEvent* event) {
     foreach (db_base* model, Database.getModels())
       model->updateHeaders();
 
-    if (Database.isOpen())
+    if (Database.isOpen()) {
       dbindex->setText(tr("Database") + ": " + Database.name());
+    }
     searchEdit->setPlaceholderText(tr("Search"));
   }
   QMainWindow::changeEvent(event);

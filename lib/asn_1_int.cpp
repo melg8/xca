@@ -11,7 +11,9 @@ ASN1_INTEGER* a1int::dup(const ASN1_INTEGER* a) const {
   // declared ASN1_STRING_dup (actually it is const
   ASN1_INTEGER* r = ASN1_INTEGER_dup(const_cast<ASN1_INTEGER*>(a));
   openssl_error();
-  if (!r) r = ASN1_INTEGER_new();
+  if (!r) {
+    r = ASN1_INTEGER_new();
+  }
   Q_CHECK_PTR(r);
   return r;
 }
@@ -77,10 +79,11 @@ a1int& a1int::setQString(const QString& s, int dec) {
   if (s.isEmpty()) {
     return *this;
   }
-  if (dec)
+  if (dec) {
     BN_dec2bn(&bn, s.toLatin1());
-  else
+  } else {
     BN_hex2bn(&bn, s.toLatin1());
+  }
   openssl_error();
   BN_to_ASN1_INTEGER(bn, in);
   openssl_error();
@@ -94,7 +97,9 @@ a1int& a1int::setDec(const QString& s) { return setQString(s, 1); }
 
 a1int& a1int::setRaw(const unsigned char* data, unsigned len) {
   BIGNUM* bn = BN_bin2bn(data, len, nullptr);
-  if (!bn) openssl_error();
+  if (!bn) {
+    openssl_error();
+  }
   BN_to_ASN1_INTEGER(bn, in);
   openssl_error();
   BN_free(bn);

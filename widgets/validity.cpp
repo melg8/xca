@@ -32,7 +32,9 @@ a1time Validity::getDate() const {
 }
 
 void Validity::localTime(int state) {
-  if (midnight) return;
+  if (midnight) {
+    return;
+  }
   switch (state) {
     case Qt::Checked:
       setTimeSpec(Qt::LocalTime);
@@ -60,10 +62,14 @@ void Validity::hideTimeCheck(int state) {
 
 void Validity::hideTime(bool hide) {
   if (hide) {
-    if (!midnight && endDate) setDateTime(dateTime().addDays(-1));
+    if (!midnight && endDate) {
+      setDateTime(dateTime().addDays(-1));
+    }
     midnight = true;
   } else {
-    if (midnight && endDate) setDateTime(dateTime().addDays(1));
+    if (midnight && endDate) {
+      setDateTime(dateTime().addDays(1));
+    }
     midnight = false;
     setTime(mytime);
   }
@@ -75,10 +81,11 @@ void Validity::updateFormatString() {
   QString format;
 
   if (midnight) {
-    if (!endDate)
+    if (!endDate) {
       format = QTime(0, 0, 0).toString(formatDate);
-    else
+    } else {
       format = QTime(23, 59, 59).toString(formatDate);
+    }
   } else {
     format = formatDate;
   }
@@ -108,7 +115,9 @@ void Validity::setDiff(const Validity* start, int number, int range) {
   }
 
   // one day less if we go from 0:00:00 to 23:59:59
-  if (midnight) dt = dt.addDays(-1);
+  if (midnight) {
+    dt = dt.addDays(-1);
+  }
 
   setDateTime(dt);
   setMyTime(start->mytime);

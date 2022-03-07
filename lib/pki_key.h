@@ -50,19 +50,25 @@ class keytype {
   }
   static const keytype byType(int type) {
     foreach (const keytype t, types()) {
-      if (t.type == type) return t;
+      if (t.type == type) {
+        return t;
+      }
     }
     return keytype();
   }
   static const keytype byMech(CK_MECHANISM_TYPE mech) {
     foreach (const keytype t, types()) {
-      if (t.mech == mech) return t;
+      if (t.mech == mech) {
+        return t;
+      }
     }
     return keytype();
   }
   static const keytype byName(const QString& name) {
     foreach (const keytype t, types()) {
-      if (t.name == name.toUpper()) return t;
+      if (t.name == name.toUpper()) {
+        return t;
+      }
     }
     return keytype();
   }
@@ -86,19 +92,26 @@ class keyjob {
   }
   keyjob(const QString& desc) {
     QStringList sl = desc.split(':');
-    if (sl.size() == 1) sl += "";
-    if (sl.size() != 2) return;
+    if (sl.size() == 1) {
+      sl += "";
+    }
+    if (sl.size() != 2) {
+      return;
+    }
     ktype = keytype::byName(sl[0]);
     size = DEFAULT_KEY_LENGTH;
     ec_nid = NID_undef;
-    if (isEC())
+    if (isEC()) {
       ec_nid = OBJ_txt2nid(sl[1].toLatin1());
-    else if (!isED25519())
+    } else if (!isED25519()) {
       size = sl[1].toInt();
+    }
     slot = slotid();
   }
   QString toString() {
-    if (isED25519()) return ktype.name;
+    if (isED25519()) {
+      return ktype.name;
+    }
     return QString("%1:%2")
         .arg(ktype.name)
         .arg(isEC() ? OBJ_obj2QString(OBJ_nid2obj(ec_nid))
@@ -114,10 +127,18 @@ class keyjob {
 #endif
   }
   bool isValid() {
-    if (!ktype.isValid()) return false;
-    if (isED25519()) return true;
-    if (isEC() && builtinCurves.containNid(ec_nid)) return true;
-    if (!isEC() && size > 0) return true;
+    if (!ktype.isValid()) {
+      return false;
+    }
+    if (isED25519()) {
+      return true;
+    }
+    if (isEC() && builtinCurves.containNid(ec_nid)) {
+      return true;
+    }
+    if (!isEC() && size > 0) {
+      return true;
+    }
     return false;
   }
 };

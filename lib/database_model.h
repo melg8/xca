@@ -53,7 +53,9 @@ class database_model final : public QObject {
   T* model() const {
     foreach (db_base* model, models) {
       T* m = dynamic_cast<T*>(model);
-      if (m) return m;
+      if (m) {
+        return m;
+      }
     }
     return nullptr;
   }
@@ -94,7 +96,9 @@ class xca_db {
     return db ? db->model<T>() : nullptr;
   }
   void dump(const QString& dirname) const {
-    if (db) db->dump_database(dirname);
+    if (db) {
+      db->dump_database(dirname);
+    }
   }
   void as_default() const { database_model::as_default_database(name()); }
   [[nodiscard]] QList<db_base*> getModels() const {
@@ -105,7 +109,9 @@ class xca_db {
     return db ? db->modelForPki(pki) : nullptr;
   }
   void connectToDbChangeEvt(QObject* o, const char* slot) {
-    if (db) QObject::connect(db, SIGNAL(pkiChanged(pki_base*)), o, slot);
+    if (db) {
+      QObject::connect(db, SIGNAL(pkiChanged(pki_base*)), o, slot);
+    }
   }
 };
 

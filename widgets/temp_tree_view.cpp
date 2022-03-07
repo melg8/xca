@@ -14,7 +14,9 @@ void TempTreeView::fillContextMenu(QMenu* menu,
                                    QMenu*,
                                    const QModelIndex&,
                                    QModelIndexList indexes) {
-  if (indexes.size() != 1) return;
+  if (indexes.size() != 1) {
+    return;
+  }
 
   menu->addAction(tr("Duplicate"), this, SLOT(duplicateTemp()));
   menu->addAction(tr("Create certificate"), this, SLOT(certFromTemp()));
@@ -24,7 +26,9 @@ void TempTreeView::fillContextMenu(QMenu* menu,
 void TempTreeView::duplicateTemp() {
   auto* temp = db_base::fromIndex<pki_temp>(currentIndex());
   db_temp* db_temp = temps();
-  if (!temp || !basemodel || !db_temp) return;
+  if (!temp || !basemodel || !db_temp) {
+    return;
+  }
 
   auto* newtemp = new pki_temp(temp);
   newtemp->setIntName(newtemp->getIntName() + " " + tr("copy"));
@@ -33,12 +37,16 @@ void TempTreeView::duplicateTemp() {
 
 void TempTreeView::certFromTemp() {
   auto* temp = db_base::fromIndex<pki_temp>(currentIndex());
-  if (temp) emit newCert(temp);
+  if (temp) {
+    emit newCert(temp);
+  }
 }
 
 void TempTreeView::reqFromTemp() {
   auto* temp = db_base::fromIndex<pki_temp>(currentIndex());
-  if (temp) emit newReq(temp);
+  if (temp) {
+    emit newReq(temp);
+  }
 }
 
 void TempTreeView::showPki(pki_base* pki) {
@@ -62,7 +70,9 @@ void TempTreeView::newItem() {
   pki_temp* temp = nullptr;
   QString type;
 
-  if (!basemodel) return;
+  if (!basemodel) {
+    return;
+  }
 
   auto* ic = new itemComboTemp(nullptr);
   ic->insertPkiItems(temps()->getPredefs());
@@ -84,9 +94,13 @@ void TempTreeView::newItem() {
 }
 
 bool TempTreeView::alterTemp(pki_temp* temp) {
-  if (!basemodel || !temp) return false;
+  if (!basemodel || !temp) {
+    return false;
+  }
 
-  if (!runTempDlg(temp)) return false;
+  if (!runTempDlg(temp)) {
+    return false;
+  }
 
   temps()->alterTemp(temp);
   return true;

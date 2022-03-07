@@ -19,7 +19,9 @@ QSqlError pki_x509super::lookupKey() {
   SQL_PREPARE(q, "SELECT item FROM public_keys WHERE hash=?");
   q.bindValue(0, hash);
   q.exec();
-  if (q.lastError().isValid()) return q.lastError();
+  if (q.lastError().isValid()) {
+    return q.lastError();
+  }
   while (q.next()) {
     auto* x = Store.lookupPki<pki_key>(q.value(0));
     if (!x) {
@@ -37,7 +39,9 @@ QSqlError pki_x509super::lookupKey() {
 
 QSqlError pki_x509super::insertSqlData() {
   QSqlError e = lookupKey();
-  if (e.isValid()) return e;
+  if (e.isValid()) {
+    return e;
+  }
 
   XSqlQuery q;
   SQL_PREPARE(q,
@@ -59,7 +63,9 @@ void pki_x509super::restoreSql(const QSqlRecord& rec) {
 QSqlError pki_x509super::deleteSqlData() {
   XSqlQuery q;
   pki_key* privkey = getRefKey();
-  if (privkey) privkey->resetUcount();
+  if (privkey) {
+    privkey->resetUcount();
+  }
   SQL_PREPARE(q, "DELETE FROM x509super WHERE item=?");
   q.bindValue(0, sqlItemId);
   q.exec();
@@ -88,9 +94,13 @@ unsigned pki_x509super::pubHash() const {
 bool pki_x509super::compareRefKey(pki_key* ref) const {
   bool x;
 
-  if (ref == nullptr) return false;
+  if (ref == nullptr) {
+    return false;
+  }
   pki_key* mk = getPubKey();
-  if (mk == nullptr) return false;
+  if (mk == nullptr) {
+    return false;
+  }
   x = ref->compare(mk);
   delete mk;
   return x;
@@ -110,8 +120,9 @@ bool pki_x509super::hasPrivKey() const {
 }
 
 QVariant pki_x509super::getIcon(const dbheader* hd) const {
-  if (hd->id == HD_x509key_name)
+  if (hd->id == HD_x509key_name) {
     return hasPrivKey() ? QVariant(QPixmap(":doneIco")) : QVariant();
+  }
 
   return pki_base::getIcon(hd);
 }
@@ -119,7 +130,9 @@ QVariant pki_x509super::getIcon(const dbheader* hd) const {
 QVariant pki_x509super::column_data(const dbheader* hd) const {
   if (hd->id == HD_x509key_name) {
     pki_key* privkey = getRefKey();
-    if (!privkey) return {""};
+    if (!privkey) {
+      return {""};
+    }
     return {privkey->getIntName()};
   }
   if (hd->id == HD_x509_sigalg) {
@@ -129,15 +142,21 @@ QVariant pki_x509super::column_data(const dbheader* hd) const {
   if (hd->type == dbheader::hd_key) {
     QVariant v;
     pki_key *key = getRefKey(), *tmpkey = nullptr;
-    if (!key) tmpkey = key = getPubKey();
-    if (key) v = key->column_data(hd);
+    if (!key) {
+      tmpkey = key = getPubKey();
+    }
+    if (key) {
+      v = key->column_data(hd);
+    }
     delete tmpkey;
     return v;
   }
   if (hd->type == dbheader::hd_v3ext || hd->type == dbheader::hd_v3ext_ns) {
     extList el = getV3ext();
     int idx = el.idxByNid(hd->id);
-    if (idx == -1) return {""};
+    if (idx == -1) {
+      return {""};
+    }
     return {el[idx].getConsoleValue("")};
   }
   return pki_x509name::column_data(hd);
@@ -149,7 +168,9 @@ static QString oid_sect() {
 
   for (i = first_additional_oid; i < max; i++) {
     const char* sn = OBJ_nid2sn(i);
-    if (!sn) break;
+    if (!sn) {
+      break;
+    }
     ret += QString("%1 = %2\n")
                .arg(OBJ_nid2sn(i))
                .arg(OBJ_obj2QString(OBJ_nid2obj(i), 1));
@@ -196,14 +217,20 @@ void pki_x509super::opensslConf(QString fname) {
 }
 
 bool pki_x509super::visible() const {
-  if (pki_x509name::visible()) return true;
-  if (getSigAlg().contains(limitPattern)) return true;
+  if (pki_x509name::visible()) {
+    return true;
+  }
+  if (getSigAlg().contains(limitPattern)) {
+    return true;
+  }
   return getV3ext().search(limitPattern);
 }
 
 void pki_x509super::collect_properties(QMap<QString, QString>& prp) const {
   pki_key* key = getPubKey();
-  if (key) key->collect_properties(prp);
+  if (key) {
+    key->collect_properties(prp);
+  }
   delete key;
 
   prp["Signature"] = getSigAlg();
@@ -219,7 +246,9 @@ pki_x509name::pki_x509name(const pki_x509name* n) : pki_base(n) {}
 void pki_x509name::autoIntName(const QString& file) {
   QString name = getSubject().getMostPopular();
   pki_base::autoIntName(file);
-  if (!name.isEmpty()) setIntName(name);
+  if (!name.isEmpty()) {
+    setIntName(name);
+  }
 }
 
 QVariant pki_x509name::column_data(const dbheader* hd) const {
@@ -229,19 +258,24 @@ QVariant pki_x509name::column_data(const dbheader* hd) const {
     case HD_subject_hash:
       return {getSubject().hash()};
     default:
-      if (hd->type == dbheader::hd_x509name)
+      if (hd->type == dbheader::hd_x509name) {
         return {getSubject().getEntryByNid(hd->id)};
+      }
   }
   return pki_base::column_data(hd);
 }
 
 bool pki_x509name::visible() const {
-  if (pki_base::visible()) return true;
+  if (pki_base::visible()) {
+    return true;
+  }
   return getSubject().search(limitPattern);
 }
 
 QByteArray pki_x509name::PEM_comment() const {
-  if (!pem_comment) return {};
+  if (!pem_comment) {
+    return {};
+  }
   return pki_base::PEM_comment() +
          getSubject().oneLine(XN_FLAG_RFC2253).toUtf8() + "\n";
 }

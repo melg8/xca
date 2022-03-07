@@ -39,8 +39,9 @@ pki_base::pki_base(const pki_base* p) {
 }
 
 pki_base::~pki_base() {
-  if (!allitems.removeOne(this))
+  if (!allitems.removeOne(this)) {
     qDebug() << "DEL" << getIntName() << "NOT FOUND";
+  }
   qDebug() << "DEL pki_base::count" << allitems.count();
 }
 
@@ -61,17 +62,23 @@ QString pki_base::getUnderlinedName() const {
   QString name = getIntName();
   QRegExp rx("^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])$");
 
-  if (rx.indexIn(name) != -1) name += "_";
+  if (rx.indexIn(name) != -1) {
+    name += "_";
+  }
   return name.replace(QRegExp(R"([ $&;`/\\<>:"/\|?*]+)"), "_");
 }
 
 bool pki_base::visible() const {
-  if (limitPattern.isEmpty()) return true;
+  if (limitPattern.isEmpty()) {
+    return true;
+  }
   return getIntName().contains(limitPattern) || comment.contains(limitPattern);
 }
 
 QByteArray pki_base::PEM_comment() const {
-  if (!pem_comment) return {};
+  if (!pem_comment) {
+    return {};
+  }
 
   return QString("XCA internal name: %1\n%2\n")
       .arg(getIntName())
@@ -83,12 +90,16 @@ void pki_base::clear() { childItems.clear(); }
 
 bool pki_base::childVisible() const {
   foreach (pki_base* child, childItems)
-    if (child->isVisible()) return true;
+    if (child->isVisible()) {
+      return true;
+    }
   return false;
 }
 
 int pki_base::isVisible() {
-  if (limitPattern.isEmpty()) return 1;
+  if (limitPattern.isEmpty()) {
+    return 1;
+  }
   return visible() ? 1 : childVisible() ? 2 : 0;
 }
 
@@ -132,9 +143,13 @@ QSqlError pki_base::insertSql() {
 
   SQL_PREPARE(q, "SELECT MAX(id) +1 from items");
   q.exec();
-  if (q.first()) sqlItemId = q.value(0);
+  if (q.first()) {
+    sqlItemId = q.value(0);
+  }
 
-  if (sqlItemId.toULongLong() == 0) sqlItemId = 1;
+  if (sqlItemId.toULongLong() == 0) {
+    sqlItemId = 1;
+  }
 
   SQL_PREPARE(q,
               "INSERT INTO items "
@@ -172,7 +187,9 @@ QSqlError pki_base::deleteSql() {
     return sqlItemNotFound(QVariant());
   }
   e = deleteSqlData();
-  if (e.isValid()) return e;
+  if (e.isValid()) {
+    return e;
+  }
   SQL_PREPARE(q, "UPDATE items SET del=1 WHERE id=?");
   q.bindValue(0, sqlItemId);
   q.exec();
@@ -193,7 +210,9 @@ void pki_base::setParent(pki_base* p) { parent = p; }
 pki_base* pki_base::child(int row) { return childItems.value(row); }
 
 void pki_base::insert(pki_base* item) {
-  if (!childItems.contains(item)) childItems.prepend(item);
+  if (!childItems.contains(item)) {
+    childItems.prepend(item);
+  }
 }
 
 int pki_base::childCount() const { return childItems.size(); }
@@ -244,7 +263,9 @@ QVariant pki_base::column_data(const dbheader* hd) const {
   }
   if (hd->type == dbheader::hd_asn1time) {
     a1time t = column_a1time(hd);
-    if (!t.isUndefined()) return {t.toFancy()};
+    if (!t.isUndefined()) {
+      return {t.toFancy()};
+    }
   }
   return {};
 }
@@ -269,7 +290,9 @@ QVariant pki_base::column_tooltip(const dbheader* hd) const {
   }
   if (hd->type == dbheader::hd_asn1time) {
     a1time t = column_a1time(hd);
-    if (!t.isUndefined()) return {t.toPretty()};
+    if (!t.isUndefined()) {
+      return {t.toPretty()};
+    }
   }
   return {};
 }
@@ -299,7 +322,9 @@ QString pki_base::get_dump_filename(const QString& dir,
   int index = 0;
   while (index++ < 1000) {
     fn = dir + "/" + getUnderlinedName() + ctr + ext;
-    if (!QFile::exists(fn)) return fn;
+    if (!QFile::exists(fn)) {
+      return fn;
+    }
     ctr = QString("_%1").arg(index);
   }
   return fn;
@@ -312,8 +337,9 @@ void pki_base::selfComment(QString msg) {
 void pki_base::collect_properties(QMap<QString, QString>& prp) const {
   QString t;
   prp["Descriptor"] = getIntName();
-  if (getComment().size() > 0)
+  if (getComment().size() > 0) {
     prp["Comment"] = "\n" + getComment().replace('\n', "\n    ");
+  }
   prp["Type"] = getTypeString();
 }
 
@@ -372,13 +398,18 @@ void pki_base::print(BioByteArray& bba, enum print_opt opt) const {
     keys = prp.keys();
 
     foreach (const QString& key, keys) {
-      if (key.size() > w) w = key.size();
-      if (!order.contains(key))
+      if (key.size() > w) {
+        w = key.size();
+      }
+      if (!order.contains(key)) {
         XCA_WARN(tr("Property '%1' not listed in 'pki_base::print'").arg(key));
+      }
     }
     w = (w + 1) * -1;
     foreach (const QString& key, order) {
-      if (!prp.contains(key)) continue;
+      if (!prp.contains(key)) {
+        continue;
+      }
 
       bba += QString(COL_YELL "%1" COL_RESET " %2\n")
                  .arg(key + ":", w)
@@ -398,7 +429,9 @@ static QString icsValue(QString s) {
   qDebug() << "S:" << s;
   for (int j = n; !s.isEmpty(); j--) {
     QString sub = s.left(j);
-    if (sub.endsWith("\\") || sub.toUtf8().length() > n) continue;
+    if (sub.endsWith("\\") || sub.toUtf8().length() > n) {
+      continue;
+    }
     s.remove(0, j);
     lines << sub;
     j = n = 74;

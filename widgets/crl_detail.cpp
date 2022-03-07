@@ -76,8 +76,12 @@ void CrlDetail::setCrl(pki_crl* crl) {
 void CrlDetail::itemChanged(pki_base* pki) {
   QVariant pkiSqlId = pki->getSqlItemId();
 
-  if (pkiSqlId == issuerSqlId) issuerIntName->setText(pki->getIntName());
-  if (pkiSqlId == crlSqlId) descr->setText(pki->getIntName());
+  if (pkiSqlId == issuerSqlId) {
+    issuerIntName->setText(pki->getIntName());
+  }
+  if (pkiSqlId == crlSqlId) {
+    descr->setText(pki->getIntName());
+  }
 }
 
 void CrlDetail::showIssuer() {
@@ -86,7 +90,9 @@ void CrlDetail::showIssuer() {
 
 void CrlDetail::showCrl(QWidget* parent, pki_crl* crl) {
   auto* dlg = new CrlDetail(parent);
-  if (!dlg) return;
+  if (!dlg) {
+    return;
+  }
 
   dlg->setCrl(crl);
   if (dlg->exec()) {

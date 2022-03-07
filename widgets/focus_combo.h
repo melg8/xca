@@ -16,7 +16,9 @@ class focusCombo final : public QComboBox {
     Q_ASSERT(textdata.size() % 2 == 0);
     for (int i = 0; i < textdata.size(); i += 2) {
       addItem(textdata[i], textdata[i + 1]);
-      if (textdata[i + 1] == selected) c = i / 2;
+      if (textdata[i + 1] == selected) {
+        c = i / 2;
+      }
     }
     setCurrentIndex(c);
   }

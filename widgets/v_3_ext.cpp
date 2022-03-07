@@ -34,8 +34,12 @@ void v3ext::addInfo(QLineEdit* myle,
   connect(tab->itemDelegateForColumn(1),
           SIGNAL(setupLineEdit(const QString&, QLineEdit*)), this,
           SLOT(setupLineEdit(const QString&, QLineEdit*)));
-  if (le && !le->text().trimmed().isEmpty()) addItem(le->text());
-  if (n != NID_subject_alt_name) copy_cn->hide();
+  if (le && !le->text().trimmed().isEmpty()) {
+    addItem(le->text());
+  }
+  if (n != NID_subject_alt_name) {
+    copy_cn->hide();
+  }
 }
 
 void v3ext::addItem(QString list) {
@@ -47,10 +51,11 @@ void v3ext::addItem(QString list) {
     critical->setChecked(true);
   }
   for (i = 0; i < sl.count(); i++) {
-    if (sl[i] == "DNS:copycn" && nid == NID_subject_alt_name)
+    if (sl[i] == "DNS:copycn" && nid == NID_subject_alt_name) {
       copy_cn->setChecked(true);
-    else
+    } else {
       addEntry(sl[i]);
+    }
   }
 }
 
@@ -59,10 +64,11 @@ void v3ext::setupLineEdit(const QString& s, QLineEdit* l) {
   QValidator* v = nullptr;
 
   if (s == "email") {
-    if (nid == NID_subject_alt_name)
+    if (nid == NID_subject_alt_name) {
       tt = tr("An email address or 'copy'");
-    else
+    } else {
       tt = tr("An email address");
+    }
   } else if (s == "RID") {
     tt = tr("A registered ID: OBJECT IDENTIFIER");
     QRegExp rx("[a-zA-Z0-9.]+");
@@ -72,10 +78,11 @@ void v3ext::setupLineEdit(const QString& s, QLineEdit* l) {
     QRegExp rx(R"([a-z][a-z0-9\.\+\-]*://.*)");
     v = new QRegExpValidator(rx, this);
   } else if (s == "DNS") {
-    if (nid == NID_subject_alt_name)
+    if (nid == NID_subject_alt_name) {
       tt = tr("A DNS domain name or 'copycn'");
-    else
+    } else {
       tt = tr("A DNS domain name");
+    }
   } else if (s == "IP") {
     tt = tr("An IP address");
     v = new ipValidator();
@@ -119,8 +126,12 @@ QString v3ext::toString() {
   QStringList str;
   int i, row = tab->rowCount();
 
-  if (critical->isChecked()) str << "critical";
-  if (copy_cn->isChecked()) str << "DNS:copycn";
+  if (critical->isChecked()) {
+    str << "critical";
+  }
+  if (copy_cn->isChecked()) {
+    str << "DNS:copycn";
+  }
 
   for (i = 0; i < row; i++) {
     QStringList s = tab->getRow(i);
@@ -131,7 +142,9 @@ QString v3ext::toString() {
 
 void v3ext::on_apply_clicked() {
   __validate(false);
-  if (le) le->setText(toString());
+  if (le) {
+    le->setText(toString());
+  }
   accept();
 }
 

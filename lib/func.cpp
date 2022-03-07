@@ -43,7 +43,9 @@
 bool is_gui_app = false;
 
 int console_write(FILE* fp, const QByteArray& ba) {
-  if (ba.size() == 0) return 0;
+  if (ba.size() == 0) {
+    return 0;
+  }
 #if defined(Q_OS_WIN32)
   HANDLE con =
       GetStdHandle(fp == stderr ? STD_ERROR_HANDLE : STD_OUTPUT_HANDLE);
@@ -62,24 +64,33 @@ Passwd readPass() {
   Passwd pw;
 #if !defined(Q_OS_WIN32)
   struct termios t, back;
-  if (tcgetattr(0, &t)) throw errorEx(strerror(errno));
+  if (tcgetattr(0, &t)) {
+    throw errorEx(strerror(errno));
+  }
   back = t;
   t.c_lflag &= ~(ECHO | ICANON);
-  if (tcsetattr(0, TCSAFLUSH, &t)) throw errorEx(strerror(errno));
+  if (tcsetattr(0, TCSAFLUSH, &t)) {
+    throw errorEx(strerror(errno));
+  }
 #else
   qFatal("Password input not supported");
 #endif
   while (true) {
     char p = static_cast<char>(getch());
-    if (p == '\n' || p == '\r') break;
-    if (p == 0x7f)
+    if (p == '\n' || p == '\r') {
+      break;
+    }
+    if (p == 0x7f) {
       pw.chop(1);
-    else
+    } else {
       pw += p;
+    }
   }
   fputc('\n', stdout);
 #if !defined(Q_OS_WIN32)
-  if (tcsetattr(0, TCSAFLUSH, &back)) throw errorEx(strerror(errno));
+  if (tcsetattr(0, TCSAFLUSH, &back)) {
+    throw errorEx(strerror(errno));
+  }
 #endif
   return pw;
 }
@@ -165,7 +176,9 @@ QString relativePath(QString path) {
   path = fi_path.absoluteFilePath();
 
   if (portable_app()) {
-    if (path.startsWith(prefix)) path = path.mid(prefix.length() + 1);
+    if (path.startsWith(prefix)) {
+      path = path.mid(prefix.length() + 1);
+    }
   }
   return path;
 }
@@ -183,7 +196,9 @@ const QString getLibDir() {
   if (f.open(QIODevice::ReadOnly)) {
     QTextStream in(&f);
     multi = in.readLine();
-    if (!multi.isEmpty()) multi += "/";
+    if (!multi.isEmpty()) {
+      multi += "/";
+    }
   }
   QStringList dirs;
   dirs << ulib + multi + "pkcs11/" << lib + multi + "pkcs11/"
@@ -202,7 +217,9 @@ const QString getLibDir() {
 const QString getDocDir() {
   static QString docdir;
 
-  if (!docdir.isEmpty()) return docdir;
+  if (!docdir.isEmpty()) {
+    return docdir;
+  }
 
   QStringList docs;
 #ifdef DOCDIR
@@ -227,7 +244,9 @@ const QString getDocDir() {
 const QString getUserSettingsDir() {
   static QString dir;
 
-  if (!dir.isEmpty()) return dir;
+  if (!dir.isEmpty()) {
+    return dir;
+  }
 
   dir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 
@@ -236,7 +255,9 @@ const QString getUserSettingsDir() {
     dir = QCoreApplication::applicationDirPath() + "/settings";
 
 #endif
-  if (!QDir().mkpath(dir)) qCritical("Failed to create Path: '%s'", CCHAR(dir));
+  if (!QDir().mkpath(dir)) {
+    qCritical("Failed to create Path: '%s'", CCHAR(dir));
+  }
 
   return dir;
 }
@@ -257,7 +278,9 @@ void migrateOldPaths() {
         "/data/" + QCoreApplication::applicationName();
 #endif
   QDir old_dir(old);
-  if (old.isEmpty() || !old_dir.exists()) return;
+  if (old.isEmpty() || !old_dir.exists()) {
+    return;
+  }
   qDebug() << "Old XCA directory exists" << old;
   QString new_dir = getUserSettingsDir() + "/";
   foreach (QString n,
@@ -286,7 +309,9 @@ QString hostId() {
   static QString id;
   unsigned char guid[100] = "", md[SHA_DIGEST_LENGTH];
 
-  if (!id.isEmpty()) return id;
+  if (!id.isEmpty()) {
+    return id;
+  }
 
 #if defined(Q_OS_WIN32)
 #define REG_CRYPTO "SOFTWARE\\Microsoft\\Cryptography"
@@ -336,7 +361,9 @@ QString hostId() {
       break;
     }
   }
-  if (mach_id.isEmpty()) sprintf((char*)guid, "%ld", gethostid());
+  if (mach_id.isEmpty()) {
+    sprintf((char*)guid, "%ld", gethostid());
+  }
 #endif
   guid[sizeof guid - 1] = 0;
   SHA1(guid, strlen((char*)guid), md);
@@ -375,7 +402,9 @@ QString asn1ToQString(const ASN1_STRING* str, bool quote) {
     utf8 = QString::fromUtf8((const char*)out, len);
     OPENSSL_free(out);
   }
-  if (quote) utf8.replace('\n', "\\n\\");
+  if (quote) {
+    utf8.replace('\n', "\\n\\");
+  }
   return utf8;
 }
 
@@ -391,7 +420,9 @@ ASN1_STRING* QStringToAsn1(const QString s, int nid) {
   tbl = ASN1_STRING_TABLE_get(nid);
   if (tbl) {
     mask = tbl->mask;
-    if (!(tbl->flags & STABLE_NO_MASK)) mask &= global_mask;
+    if (!(tbl->flags & STABLE_NO_MASK)) {
+      mask &= global_mask;
+    }
   }
   ASN1_mbstring_copy(&out, utf8, -1, MBSTRING_UTF8, mask);
   openssl_error(QString("'%1' (%2)").arg(s).arg(OBJ_nid2ln(nid)));
@@ -451,9 +482,10 @@ void _openssl_error(const QString& txt, const char* file, int line) {
           stderr);
   }
   if (!error.isEmpty()) {
-    if (!txt.isEmpty())
+    if (!txt.isEmpty()) {
       error =
           txt + "\n" + error + "\n" + QString("(%1:%2)").arg(file).arg(line);
+    }
     throw errorEx(error);
   }
 }
@@ -552,6 +584,8 @@ void dn_translations_setup() {
 }
 
 QString appendXcaComment(QString current, QString msg) {
-  if (!current.endsWith("\n") && !current.isEmpty()) current += "\n";
+  if (!current.endsWith("\n") && !current.isEmpty()) {
+    current += "\n";
+  }
   return current + QString("(%1)\n").arg(msg);
 }

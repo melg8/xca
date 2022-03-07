@@ -24,10 +24,14 @@ static void addToLowerMap(int nid) {
   QString n = OBJ_nid2sn(nid);
   QString l = n.toLower();
 
-  if (n != l) oid_lower_map[l] = nid;
+  if (n != l) {
+    oid_lower_map[l] = nid;
+  }
   n = OBJ_nid2ln(nid);
   l = n.toLower();
-  if (n != l) oid_lower_map[l] = nid;
+  if (n != l) {
+    oid_lower_map[l] = nid;
+  }
 }
 
 /* reads additional OIDs from a file: oid, sn, ln */
@@ -65,8 +69,12 @@ static void insert_new_oid(const QStringList& sl, QString fname, int line) {
   } else {
     /* Check whether ShortName or LongName are already in use
      * for a different OID */
-    if (OBJ_txt2nid(sn.constData()) != NID_undef) in_use = sn;
-    if (OBJ_txt2nid(ln.constData()) != NID_undef) in_use = ln;
+    if (OBJ_txt2nid(sn.constData()) != NID_undef) {
+      in_use = sn;
+    }
+    if (OBJ_txt2nid(ln.constData()) != NID_undef) {
+      in_use = ln;
+    }
   }
   ign_openssl_error();
   if (differs) {
@@ -113,13 +121,17 @@ static void insert_new_oid(const QStringList& sl, QString fname, int line) {
 static void readOIDs(const QString& fname) {
   int line = 0;
   QFile file(fname);
-  if (!file.open(QIODevice::ReadOnly)) return;
+  if (!file.open(QIODevice::ReadOnly)) {
+    return;
+  }
   qDebug() << "Read additional OIDs from" << fname;
   QTextStream in(&file);
   while (!in.atEnd()) {
     QString entry = in.readLine().trimmed();
     line++;
-    if (entry.startsWith('#') || entry.isEmpty()) continue;
+    if (entry.startsWith('#') || entry.isEmpty()) {
+      continue;
+    }
     insert_new_oid(entry.split(QRegExp("\\s*:\\s*")), fname, line);
   }
 }
@@ -132,24 +144,31 @@ static NIDlist readNIDlist(const QString& fname) {
   int line = 0, nid;
   NIDlist nl;
   QFile file(fname);
-  if (!file.open(QIODevice::ReadOnly)) return nl;
+  if (!file.open(QIODevice::ReadOnly)) {
+    return nl;
+  }
 
   QTextStream in(&file);
   while (!in.atEnd()) {
     const char* userdefined;
     QString entry = in.readLine().trimmed();
     line++;
-    if (entry.startsWith('#') || entry.isEmpty()) continue;
+    if (entry.startsWith('#') || entry.isEmpty()) {
+      continue;
+    }
     userdefined = oid_name_clash[entry];
-    if (userdefined) entry = userdefined;
+    if (userdefined) {
+      entry = userdefined;
+    }
     nid = OBJ_txt2nid(CCHAR(entry));
-    if (nid == NID_undef)
+    if (nid == NID_undef) {
       XCA_WARN(QObject::tr("Unknown object '%1' in file %2 line %3")
                    .arg(entry)
                    .arg(fname)
                    .arg(line));
-    else
+    } else {
       nl += nid;
+    }
   }
   openssl_error();
   return nl;
@@ -163,7 +182,9 @@ static NIDlist read_nidlist(const QString& name) {
            QStandardPaths::standardLocations(QStandardPaths::AppDataLocation)) {
     nl = readNIDlist(d + "/" + name);
     qDebug() << "Read" << nl.count() << "NIDs from" << d + "/" + name;
-    if (nl.count() > 0) break;
+    if (nl.count() > 0) {
+      break;
+    }
   }
   return nl;
 }
@@ -171,7 +192,9 @@ static NIDlist read_nidlist(const QString& name) {
 void initOIDs() {
   first_additional_oid = OBJ_new_nid(0);
   openssl_error();
-  for (int i = 0; i < first_additional_oid; i++) addToLowerMap(i);
+  for (int i = 0; i < first_additional_oid; i++) {
+    addToLowerMap(i);
+  }
   ign_openssl_error();
 
   foreach (QString d,

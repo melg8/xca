@@ -16,7 +16,9 @@ enum open_result PwDialogCore::execute(pass_info* p,
                                        Passwd* passwd,
                                        bool,
                                        bool) {
-  if (pwdialog) return pwdialog->execute(p, passwd);
+  if (pwdialog) {
+    return pwdialog->execute(p, passwd);
+  }
 #if !defined(Q_OS_WIN32)
   console_write(stdout, QString(COL_CYAN "%1\n" COL_LRED "%2:" COL_RESET)
                             .arg(p->getDescription())

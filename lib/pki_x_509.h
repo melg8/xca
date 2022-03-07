@@ -93,12 +93,16 @@ class pki_x509 final : public pki_x509super {
   [[nodiscard]] pki_x509* getBySerial(const a1int& a) const;
   [[nodiscard]] a1int getCrlNumber() const { return crlNumber; }
   void setCrlNumber(a1int n) {
-    if (n > crlNumber) crlNumber = n;
+    if (n > crlNumber) {
+      crlNumber = n;
+    }
   }
   void setTemplateSqlId(QVariant sqlId) { caTemplateSqlId = sqlId; }
   QVariant getTemplateSqlId() { return caTemplateSqlId; }
   void setCrlDays(int s) {
-    if (s > 0) crlDays = s;
+    if (s > 0) {
+      crlDays = s;
+    }
   }
   int getCrlDays() { return crlDays; }
   x509rev getRevocation() { return revocation; }

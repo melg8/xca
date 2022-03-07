@@ -34,9 +34,13 @@ int a1time::from_asn1(const ASN1_TIME* a) {
   QString t;
 
   *this = QDateTime();
-  if (!a) return -1;
+  if (!a) {
+    return -1;
+  }
   gt = ASN1_TIME_to_generalizedtime(a, nullptr);
-  if (!gt) return -1;
+  if (!gt) {
+    return -1;
+  }
   t = QString::fromLatin1((char*)gt->data, gt->length);
   ASN1_GENERALIZEDTIME_free(gt);
   return fromPlain(t);
@@ -44,19 +48,26 @@ int a1time::from_asn1(const ASN1_TIME* a) {
 
 int a1time::fromPlain(const QString& plain) {
   setTimeSpec(Qt::LocalTime);
-  if (plain == UNDEFINED_DATE)
+  if (plain == UNDEFINED_DATE) {
     setUndefined();
-  else
+  } else {
     *this = fromString(plain, GEN_FORMAT);
+  }
   setTimeSpec(Qt::UTC);
   return isValid() ? 0 : -1;
 }
 
 int a1time::set_asn1(const QString& str, int type) {
-  if (!atime) atime = ASN1_TIME_new();
-  if (!atime) return -1;
+  if (!atime) {
+    atime = ASN1_TIME_new();
+  }
+  if (!atime) {
+    return -1;
+  }
   atime->type = type;
-  if (ASN1_STRING_set(atime, str.toLatin1(), str.length())) return -1;
+  if (ASN1_STRING_set(atime, str.toLatin1(), str.length())) {
+    return -1;
+  }
   return 0;
 }
 
@@ -65,7 +76,9 @@ a1time::a1time(const QDateTime& a) : QDateTime(a) { atime = nullptr; }
 a1time::a1time(const a1time& a) : QDateTime(a) { atime = nullptr; }
 
 a1time& a1time::operator=(const a1time& a) {
-  if (atime) ASN1_TIME_free(atime);
+  if (atime) {
+    ASN1_TIME_free(atime);
+  }
   atime = nullptr;
   QDateTime::operator=(a);
   return *this;
@@ -87,25 +100,30 @@ a1time::a1time(const QString& plain) {
 }
 
 a1time::~a1time() {
-  if (atime) ASN1_TIME_free(atime);
+  if (atime) {
+    ASN1_TIME_free(atime);
+  }
 }
 
 ASN1_TIME* a1time::get_utc() {
   int year = date().year();
 
-  if (!isValid() || isUndefined() || year > 2049 || year < 1950) return get();
+  if (!isValid() || isUndefined() || year > 2049 || year < 1950) {
+    return get();
+  }
 
   set_asn1(toUTC().toString(UTC_FORMAT), V_ASN1_UTCTIME);
   return atime;
 }
 
 ASN1_TIME* a1time::get() {
-  if (isUndefined())
+  if (isUndefined()) {
     set_asn1(UNDEFINED_DATE, V_ASN1_GENERALIZEDTIME);
-  else if (!isValid())
+  } else if (!isValid()) {
     throw errorEx("Invalid Time");
-  else
+  } else {
     set_asn1(toUTC().toString(GEN_FORMAT), V_ASN1_GENERALIZEDTIME);
+  }
   return atime;
 }
 
@@ -115,8 +133,12 @@ a1time& a1time::set(const ASN1_TIME* a) {
 }
 
 QString a1time::toString(QString fmt, Qt::TimeSpec spec) const {
-  if (isUndefined()) return QObject::tr("Undefined");
-  if (!isValid()) return QObject::tr("Broken / Invalid");
+  if (isUndefined()) {
+    return QObject::tr("Undefined");
+  }
+  if (!isValid()) {
+    return QObject::tr("Broken / Invalid");
+  }
   return QLocale().toString(spec == Qt::UTC ? toUTC() : toLocalTime(), fmt);
 }
 
@@ -132,8 +154,12 @@ QString a1time::toPrettyGMT() const {
 QString a1time::toSortable() const { return toString("yyyy-MM-dd"); }
 
 QString a1time::toPlain(const QString& fmt) const {
-  if (isUndefined()) return {UNDEFINED_DATE};
-  if (!isValid()) return {"Broken-InvalidZ"};
+  if (isUndefined()) {
+    return {UNDEFINED_DATE};
+  }
+  if (!isValid()) {
+    return {"Broken-InvalidZ"};
+  }
   return toString(fmt.isEmpty() ? GEN_FORMAT : fmt);
 }
 

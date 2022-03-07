@@ -40,12 +40,20 @@ class tkInfo {
     memcpy(&token_info, ti, sizeof(token_info));
     // sanitize strings
     for (int i = 0; i < 32; i++) {
-      if (token_info.label[i] == 0) token_info.label[i] = ' ';
-      if (token_info.manufacturerID[i] == 0) token_info.manufacturerID[i] = ' ';
+      if (token_info.label[i] == 0) {
+        token_info.label[i] = ' ';
+      }
+      if (token_info.manufacturerID[i] == 0) {
+        token_info.manufacturerID[i] = ' ';
+      }
     }
     for (int i = 0; i < 16; i++) {
-      if (token_info.model[i] == 0) token_info.model[i] = ' ';
-      if (token_info.serialNumber[i] == 0) token_info.serialNumber[i] = ' ';
+      if (token_info.model[i] == 0) {
+        token_info.model[i] = ' ';
+      }
+      if (token_info.serialNumber[i] == 0) {
+        token_info.serialNumber[i] = ' ';
+      }
     }
   }
   [[nodiscard]] QString label() const {

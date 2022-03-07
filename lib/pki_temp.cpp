@@ -33,7 +33,9 @@ static uint32_t intFromData(QByteArray& ba) {
 }
 static bool boolFromData(QByteArray& ba) {
   unsigned char c;
-  if (ba.count() < 1) throw errorEx(QObject::tr("Out of data"));
+  if (ba.count() < 1) {
+    throw errorEx(QObject::tr("Out of data"));
+  }
 
   c = ba.constData()[0];
   ba = ba.mid(1);
@@ -42,8 +44,9 @@ static bool boolFromData(QByteArray& ba) {
 static QString stringFromData(QByteArray& ba) {
   int idx = ba.indexOf('\0');
 
-  if (idx == -1)
+  if (idx == -1) {
     throw errorEx(QObject::tr("Error finding endmarker of string"));
+  }
 
   QString ret = QString::fromUtf8(ba.constData(), idx);
   ba = ba.mid(idx + 1);
@@ -105,7 +108,9 @@ QString pki_temp::comboText() const {
 QSqlError pki_temp::insertSqlData() {
   XSqlQuery q;
   QSqlError e = pki_x509name::insertSqlData();
-  if (e.isValid()) return e;
+  if (e.isValid()) {
+    return e;
+  }
   SQL_PREPARE(q,
               "INSERT INTO templates (item, version, template) "
               "VALUES (?, ?, ?)");
@@ -127,7 +132,9 @@ void pki_temp::restoreSql(const QSqlRecord& rec) {
 QSqlError pki_temp::deleteSqlData() {
   XSqlQuery q;
   QSqlError e = pki_x509name::deleteSqlData();
-  if (e.isValid()) return e;
+  if (e.isValid()) {
+    return e;
+  }
   SQL_PREPARE(q, "DELETE FROM templates WHERE item=?");
   q.bindValue(0, sqlItemId);
   q.exec();
@@ -161,12 +168,16 @@ static int bitsToInt(extList& el, int nid, bool* crit) {
   int ret = 0, i = el.idxByNid(nid);
 
   if (i != -1) {
-    if (crit) *crit = el[i].getCritical();
+    if (crit) {
+      *crit = el[i].getCritical();
+    }
     ASN1_BIT_STRING* bits;
     bits = (ASN1_BIT_STRING*)el[i].d2i();
 
     for (int j = 0; j < 9; j++) {
-      if (ASN1_BIT_STRING_get_bit(bits, j)) ret |= 1 << j;
+      if (ASN1_BIT_STRING_get_bit(bits, j)) {
+        ret |= 1 << j;
+      }
     }
     el.removeAt(i);
   }
@@ -190,11 +201,15 @@ extList pki_temp::fromCert(pki_x509super* cert_or_req) {
   foreach (QString sn, Settings["explicit_dn"].split(",")) {
     int nid = OBJ_sn2nid(CCHAR(sn));
     QString ne = n.popEntryByNid(nid);
-    if (!ne.isNull()) xname.addEntryByNid(nid, ne);
+    if (!ne.isNull()) {
+      xname.addEntryByNid(nid, ne);
+    }
   }
   for (int i = 0; i < n.entryCount(); i++) {
     int nid = n.nid(i);
-    if (nid != NID_undef) xname.addEntryByNid(nid, n.getEntry(i));
+    if (nid != NID_undef) {
+      xname.addEntryByNid(nid, n.getEntry(i));
+    }
   }
 
   fromExtList(&el, NID_subject_alt_name, "subAltName");
@@ -212,7 +227,9 @@ extList pki_temp::fromCert(pki_x509super* cert_or_req) {
   QString r;
   if (el.genConf(NID_basic_constraints, &r)) {
     QStringList sl = r.split(",");
-    if (sl.contains("critical")) settings["bcCritical"] = "1";
+    if (sl.contains("critical")) {
+      settings["bcCritical"] = "1";
+    }
     settings["ca"] = sl.contains("CA:TRUE") ? "1" : "2";
     settings["basicPath"] = sl.filter("pathlen:").join("").mid(8, -1);
   } else {
@@ -300,7 +317,9 @@ void pki_temp::old_fromData(const unsigned char* p, int size, int version) {
     settings["basicPath"] = db::stringFromData(ba);
   } else {
     settings["basicPath"] = QString::number(db::intFromData(ba));
-    if (settings["basicPath"] == "0") settings["basicPath"] = "";
+    if (settings["basicPath"] == "0") {
+      settings["basicPath"] = "";
+    }
   }
   settings["validN"] = QString::number(db::intFromData(ba));
   settings["validM"] = QString::number(db::intFromData(ba));
@@ -326,9 +345,12 @@ void pki_temp::old_fromData(const unsigned char* p, int size, int version) {
   settings["authInfAcc"] = db::stringFromData(ba);
   /* certPol = */ db::stringFromData(ba);
   settings["validMidn"] = QString::number(db::boolFromData(ba));
-  if (version > 2) settings["adv_ext"] = db::stringFromData(ba);
-  if (version > 3)
+  if (version > 2) {
+    settings["adv_ext"] = db::stringFromData(ba);
+  }
+  if (version > 3) {
     settings["noWellDefinedExpDate"] = QString::number(db::boolFromData(ba));
+  }
 
   if (ba.count() > 0) {
     my_error(tr("Wrong Size %1").arg(ba.count()));
@@ -361,7 +383,9 @@ void pki_temp::fromData(QByteArray& ba, int version) {
   translate["keyUseCritical"] = "kuCritical";
 
   foreach (QString key, translate.keys()) {
-    if (settings.contains(key)) settings[translate[key]] = settings.take(key);
+    if (settings.contains(key)) {
+      settings[translate[key]] = settings.take(key);
+    }
   }
   buf.close();
   (void)version;
@@ -405,8 +429,9 @@ bool pki_temp::pem(BioByteArray& b) {
 void pki_temp::fromExportData(QByteArray data) {
   int version;
 
-  if (data.size() < (int)sizeof(uint32_t))
+  if (data.size() < (int)sizeof(uint32_t)) {
     my_error(tr("Template file content error (too small)"));
+  }
 
   db::intFromData(data);
   version = db::intFromData(data);
@@ -450,8 +475,9 @@ void pki_temp::fromPEM_BIO(BIO* bio, const QString& name) {
 
   PEM_read_bio(bio, &nm, &header, &data, &len);
 
-  if (ign_openssl_error())
+  if (ign_openssl_error()) {
     throw errorEx(tr("Not a PEM encoded XCA Template"), getClassName());
+  }
 
   if (!strcmp(nm, PEM_STRING_XCA_TEMPLATE)) {
     ba = QByteArray::fromRawData((char*)data, len);
@@ -463,7 +489,9 @@ void pki_temp::fromPEM_BIO(BIO* bio, const QString& name) {
   OPENSSL_free(nm);
   OPENSSL_free(header);
   OPENSSL_free(data);
-  if (!msg.isEmpty()) my_error(msg);
+  if (!msg.isEmpty()) {
+    my_error(msg);
+  }
 }
 
 pki_temp::~pki_temp() = default;

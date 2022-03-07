@@ -36,11 +36,15 @@ pki_pkcs12::pki_pkcs12(const QString& fname) : pki_multi(fname) {
 
   PKCS12* pkcs12 = d2i_PKCS12_bio(b.ro(), nullptr);
   if (pki_ign_openssl_error()) {
-    if (pkcs12) PKCS12_free(pkcs12);
+    if (pkcs12) {
+      PKCS12_free(pkcs12);
+    }
     throw errorEx(tr("Unable to load the PKCS#12 (pfx) file %1.").arg(fname));
   }
   while (!PKCS12_verify_mac(pkcs12, pass.constData(), pass.size())) {
-    if (pass.size() > 0) XCA_PASSWD_ERROR();
+    if (pass.size() > 0) {
+      XCA_PASSWD_ERROR();
+    }
     enum open_result result = PwDialogCore::execute(&p, &pass);
     if (result != pw_ok) {
       /* cancel pressed */
@@ -64,7 +68,9 @@ pki_pkcs12::pki_pkcs12(const QString& fname) : pki_multi(fname) {
   pki_ign_openssl_error();
   if (mycert) {
     unsigned char* str = X509_alias_get0(mycert, nullptr);
-    if (str) alias = QString::fromUtf8((const char*)str);
+    if (str) {
+      alias = QString::fromUtf8((const char*)str);
+    }
     alias = QString::fromUtf8(alias.toLatin1());
     cert = new pki_x509(mycert);
     Q_CHECK_PTR(cert);
@@ -88,7 +94,9 @@ pki_pkcs12::pki_pkcs12(const QString& fname) : pki_multi(fname) {
   }
   for (int i = 0; i < sk_X509_num(certstack); ++i) {
     X509* crt = sk_X509_value(certstack, i);
-    if (!crt) continue;
+    if (!crt) {
+      continue;
+    }
     auto* cacert = new pki_x509(crt);
     Q_CHECK_PTR(cacert);
     if (alias.isEmpty()) {
@@ -111,15 +119,20 @@ void pki_pkcs12::writePKCS12(XFile& file) const {
   pass_info p(XCA_TITLE,
               tr("Please enter the password to encrypt the PKCS#12 file"));
 
-  if (cert == nullptr || key == nullptr)
+  if (cert == nullptr || key == nullptr) {
     my_error(tr("No key or no Cert and no pkcs12"));
+  }
 
-  if (PwDialogCore::execute(&p, &pass, true) != 1) return;
+  if (PwDialogCore::execute(&p, &pass, true) != 1) {
+    return;
+  }
 
   STACK_OF(X509)* certstack = sk_X509_new_null();
   foreach (pki_base* pki, multi) {
     auto* x = dynamic_cast<pki_x509*>(pki);
-    if (x && x != cert) sk_X509_push(certstack, x->getCert());
+    if (x && x != cert) {
+      sk_X509_push(certstack, x->getCert());
+    }
   }
   pkcs12 = PKCS12_create(pass.data(), getIntName().toUtf8().data(),
                          key->decryptKey(), cert->getCert(), certstack, 0,

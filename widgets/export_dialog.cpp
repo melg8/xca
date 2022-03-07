@@ -42,17 +42,19 @@ ExportDialog::ExportDialog(QWidget* w,
   filter = filt + ";;" + tr("All files ( * )");
 
   foreach (const pki_export* t, types) {
-    if (t->flags & F_USUAL)
+    if (t->flags & F_USUAL) {
       usual << t;
-    else
+    } else {
       normal << t;
+    }
   }
   foreach (const pki_export* t, usual + normal) {
     exportFormat->addItem(QString("%1 (*.%2)").arg(t->desc).arg(t->extension),
                           QVariant(t->id));
   }
-  if (usual.size() > 0 && normal.size() > 0)
+  if (usual.size() > 0 && normal.size() > 0) {
     exportFormat->insertSeparator(usual.size());
+  }
 
   exportFormat->setCurrentIndex(0);
   on_exportFormat_highlighted(0);
@@ -65,7 +67,9 @@ void ExportDialog::on_fileBut_clicked() {
       QFileDialog::getSaveFileName(this, QString(), filename->text(), filter,
                                    nullptr, QFileDialog::DontConfirmOverwrite);
 
-  if (!s.isEmpty()) filename->setText(nativeSeparator(s));
+  if (!s.isEmpty()) {
+    filename->setText(nativeSeparator(s));
+  }
 }
 
 void ExportDialog::on_exportFormat_activated(int selected) {
@@ -79,7 +83,9 @@ void ExportDialog::on_exportFormat_activated(int selected) {
       break;
     }
   }
-  if (filename->isEnabled()) filename->setText(fn);
+  if (filename->isEnabled()) {
+    filename->setText(fn);
+  }
   on_exportFormat_highlighted(selected);
 }
 
@@ -88,7 +94,9 @@ bool ExportDialog::mayWriteFile(const QString& fname) {
     xcaWarningBox msg(nullptr, tr("The file: '%1' already exists!").arg(fname));
     msg.addButton(QMessageBox::Ok, tr("Overwrite"));
     msg.addButton(QMessageBox::Cancel, tr("Do not overwrite"));
-    if (msg.exec() != QMessageBox::Ok) return false;
+    if (msg.exec() != QMessageBox::Ok) {
+      return false;
+    }
   }
   return true;
 }
@@ -112,14 +120,18 @@ void ExportDialog::accept() {
 }
 
 const pki_export* ExportDialog::export_type(int idx) const {
-  if (idx == -1) idx = exportFormat->currentIndex();
+  if (idx == -1) {
+    idx = exportFormat->currentIndex();
+  }
   idx = exportFormat->itemData(idx).toInt();
   return idx ? pki_export::by_id(idx) : nullptr;
 }
 
 void ExportDialog::on_exportFormat_highlighted(int index) {
   const pki_export* x = export_type(index);
-  if (!x) return;
+  if (!x) {
+    return;
+  }
   infoBox->setText(x->help);
   pemComment->setEnabled(x->flags & F_PEM);
 }

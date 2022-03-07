@@ -6,10 +6,11 @@
 
 void DoubleClickLabel::mouseDoubleClickEvent(QMouseEvent* e) {
   QWidget::mouseDoubleClickEvent(e);
-  if (clicktext.isEmpty())
+  if (clicktext.isEmpty()) {
     emit doubleClicked(text());
-  else
+  } else {
     emit doubleClicked(clicktext);
+  }
 }
 
 void DoubleClickLabel::setClickText(QString s) { clicktext = s; }

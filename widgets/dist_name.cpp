@@ -67,7 +67,9 @@ void DistName::setX509name(const x509name& n) {
     l1->setTextFormat(Qt::PlainText);
     l1->setText(label);
     l1->setClickText(sl[1]);
-    if (l1->text().isEmpty()) l1->setText(sl[0]);
+    if (l1->text().isEmpty()) {
+      l1->setText(sl[0]);
+    }
     l2->setText(sl[2]);
 
     l1->setToolTip(QString("[%1] %2").arg(sl[0]).arg(toolt));

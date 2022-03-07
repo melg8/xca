@@ -15,18 +15,27 @@ void OidResolver::searchOid(QString s) {
   bool ok;
   int n;
 
-  if (input->text() != s)  // Avoid moving the cursor at end if unchanged.
+  if (input->text() != s) {  // Avoid moving the cursor at end if unchanged.
     input->setText(s);
+  }
   s = s.trimmed();
   n = s.toUInt(&ok);
-  if (!ok) n = OBJ_txt2nid(CCHAR(s));
+  if (!ok) {
+    n = OBJ_txt2nid(CCHAR(s));
+  }
   if (n == NID_undef) {
     const char* clash = oid_name_clash[s];
-    if (clash) n = OBJ_txt2nid(clash);
+    if (clash) {
+      n = OBJ_txt2nid(clash);
+    }
   }
   QString lo = s.toLower();
-  if (n == NID_undef && s != lo) n = OBJ_txt2nid(CCHAR(lo));
-  if (n == NID_undef && oid_lower_map.contains(lo)) n = oid_lower_map[lo];
+  if (n == NID_undef && s != lo) {
+    n = OBJ_txt2nid(CCHAR(lo));
+  }
+  if (n == NID_undef && oid_lower_map.contains(lo)) {
+    n = oid_lower_map[lo];
+  }
   ign_openssl_error();
   if (n == NID_undef) {
     ln->clear();

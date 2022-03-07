@@ -59,7 +59,9 @@ QString Entropy::makeSalt() {
   unsigned char rand[8];
 
   Entropy::get(rand, sizeof rand);
-  for (unsigned char i : rand) s += QString("%1").arg(i);
+  for (unsigned char i : rand) {
+    s += QString("%1").arg(i);
+  }
   return s;
 }
 
@@ -79,7 +81,9 @@ int Entropy::get(unsigned char* buf, int num) {
 }
 
 void Entropy::seed_rng() {
-  if (pool_pos > pool_siz) pool_pos = pool_siz;
+  if (pool_pos > pool_siz) {
+    pool_pos = pool_siz;
+  }
 
   RAND_seed(pool, pool_pos);
   seed_strength += pool_pos;
@@ -112,9 +116,13 @@ int Entropy::random_from_file(QString fname, unsigned amount, int weakness) {
     return 0;
   }
   fd = file.handle();
-  if (fd == -1) return 0;
+  if (fd == -1) {
+    return 0;
+  }
 #if !defined(Q_OS_WIN32)
-  if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1) return 0;
+  if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1) {
+    return 0;
+  }
 #endif
   for (sum = 0; amount > 0;) {
     int len = read(fd, buf, amount > sizeof buf ? sizeof buf : amount);
@@ -125,12 +133,15 @@ int Entropy::random_from_file(QString fname, unsigned amount, int weakness) {
       sum += len;
     }
     if (len == -1) {
-      if (errno != EWOULDBLOCK)
+      if (errno != EWOULDBLOCK) {
         qWarning("Error '%s' while reading '%s'\n", strerror(errno),
                  CCHAR(fname));
+      }
       len = 0;
     }
-    if (len == 0) break;
+    if (len == 0) {
+      break;
+    }
   }
 #ifdef DEBUG_ENTROPY
   qDebug("Entropy from file '%s' = %d bytes", CCHAR(fname), sum);

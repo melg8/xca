@@ -38,7 +38,9 @@ void XcaDialog::noSpacer() {
   verticalLayout->removeItem(bottomSpacer);
   delete topSpacer;
   delete bottomSpacer;
-  if (widg) widg->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+  if (widg) {
+    widg->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+  }
 }
 
 void XcaDialog::aboutDialog(const QPixmap& left) {

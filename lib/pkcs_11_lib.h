@@ -39,7 +39,9 @@ class pkcs11_lib final : public QLibrary {
   }
   [[nodiscard]] QString toData() const { return toData(is_enabled); }
   [[nodiscard]] QString pixmap() const {
-    if (!is_enabled) return {};
+    if (!is_enabled) {
+      return {};
+    }
     return isLoaded() ? ":doneIco" : ":warnIco";
   }
 };
@@ -54,7 +56,9 @@ class slotid {
     id = i;
   }
   void isValid() const {
-    if (!lib) throw errorEx("InternalError: slotid is invalid");
+    if (!lib) {
+      throw errorEx("InternalError: slotid is invalid");
+    }
   }
   [[nodiscard]] CK_FUNCTION_LIST* p11() const { return lib->ptr(); }
 };

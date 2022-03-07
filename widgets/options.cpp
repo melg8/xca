@@ -96,7 +96,9 @@ void Options::on_expDNdefault_clicked() {
 void Options::setDnString(QString dn, QListWidget* w) {
   QStringList dnl;
 
-  if (!dn.isEmpty()) dnl = dn.split(",");
+  if (!dn.isEmpty()) {
+    dnl = dn.split(",");
+  }
   w->clear();
   for (int i = 0; i < dnl.count(); i++) {
     int nid = OBJ_sn2nid(CCHAR(dnl[i]));
@@ -115,10 +117,14 @@ QString Options::getDnString(QListWidget* w) {
 }
 
 int Options::exec() {
-  if (QDialog::exec() == QDialog::Rejected) return QDialog::Rejected;
+  if (QDialog::exec() == QDialog::Rejected) {
+    return QDialog::Rejected;
+  }
 
   Transaction;
-  if (!TransBegin()) return QDialog::Rejected;
+  if (!TransBegin()) {
+    return QDialog::Rejected;
+  }
 
   Settings["suppress_messages"] = suppress->checkState();
   Settings["no_expire_colors"] = noColorize->checkState();
@@ -155,9 +161,10 @@ void Options::addLib(QString fname) {
   fname = QFileInfo(fname).canonicalFilePath();
   pkcs11_lib* l = pkcs11::libraries.add_lib(fname);
 
-  if (searchP11 && l)
+  if (searchP11 && l) {
     QToolTip::showText(searchP11->mapToGlobal(QPoint(0, 0)),
                        l->driverInfo().trimmed());
+  }
 }
 
 void Options::on_removeButton_clicked() {

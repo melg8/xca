@@ -55,7 +55,9 @@ QString pki_scard::getMsg(msg_type msg) const {
 QSqlError pki_scard::insertSqlData() {
   XSqlQuery q;
   QSqlError e = pki_key::insertSqlData();
-  if (e.isValid()) return e;
+  if (e.isValid()) {
+    return e;
+  }
 
   SQL_PREPARE(q,
               "INSERT INTO tokens (item, card_manufacturer, card_serial, "
@@ -71,7 +73,9 @@ QSqlError pki_scard::insertSqlData() {
   q.bindValue(6, object_id);
   q.exec();
   e = q.lastError();
-  if (e.isValid()) return e;
+  if (e.isValid()) {
+    return e;
+  }
   SQL_PREPARE(q,
               "INSERT INTO token_mechanism (item, mechanism) "
               "VALUES (?, ?)");
@@ -100,12 +104,16 @@ void pki_scard::restoreSql(const QSqlRecord& rec) {
 QSqlError pki_scard::deleteSqlData() {
   XSqlQuery q;
   QSqlError e = pki_key::deleteSqlData();
-  if (e.isValid()) return e;
+  if (e.isValid()) {
+    return e;
+  }
   SQL_PREPARE(q, "DELETE FROM tokens WHERE item=?");
   q.bindValue(0, sqlItemId);
   q.exec();
   e = q.lastError();
-  if (e.isValid()) return e;
+  if (e.isValid()) {
+    return e;
+  }
   SQL_PREPARE(q, "DELETE FROM token_mechanism WHERE item=?");
   q.bindValue(0, sqlItemId);
   q.exec();
@@ -249,7 +257,9 @@ void pki_scard::load_token(pkcs11& p11, CK_OBJECT_HANDLE object) {
   }
   EVP_PKEY* pkey = load_pubkey(p11, object);
   if (pkey) {
-    if (key) EVP_PKEY_free(key);
+    if (key) {
+      EVP_PKEY_free(key);
+    }
     key = pkey;
   }
   setIntName(slot_label);
@@ -258,7 +268,9 @@ void pki_scard::load_token(pkcs11& p11, CK_OBJECT_HANDLE object) {
 
 pk11_attr_data pki_scard::getIdAttr() const {
   pk11_attr_data id(CKA_ID);
-  if (object_id.isEmpty()) return id;
+  if (object_id.isEmpty()) {
+    return id;
+  }
   BIGNUM* bn = nullptr;
   BN_hex2bn(&bn, CCHAR(object_id));
   id.setBignum(bn, true);
@@ -268,7 +280,9 @@ pk11_attr_data pki_scard::getIdAttr() const {
 void pki_scard::deleteFromToken() {
   slotid slot;
 
-  if (!prepare_card(&slot)) return;
+  if (!prepare_card(&slot)) {
+    return;
+  }
   deleteFromToken(slot);
 }
 
@@ -333,10 +347,13 @@ void pki_scard::deleteFromToken(const slotid& slot) {
   if (!XCA_YESNO(tr("Delete the private key '%1' from the token '%2 (#%3)' ?")
                      .arg(getIntName())
                      .arg(ti.label())
-                     .arg(ti.serial())))
+                     .arg(ti.serial()))) {
     return;
+  }
 
-  if (p11.tokenLogin(card_label, false).isNull()) return;
+  if (p11.tokenLogin(card_label, false).isNull()) {
+    return;
+  }
 
   pk11_attlist atts = objectAttributes(true);
   QList<CK_OBJECT_HANDLE> priv_objects = p11.objectList(atts);
@@ -352,20 +369,26 @@ int pki_scard::renameOnToken(const slotid& slot, const QString& name) {
   p11.startSession(slot, true);
   QList<CK_OBJECT_HANDLE> objs;
 
-  if (p11.tokenLogin(card_label, false).isNull()) return 0;
+  if (p11.tokenLogin(card_label, false).isNull()) {
+    return 0;
+  }
   pk11_attr_data label(CKA_LABEL, name.toUtf8());
 
   /* Private key */
   pk11_attlist attrs = objectAttributes(true);
 
   objs = p11.objectList(attrs);
-  if (!objs.count()) return 0;
+  if (!objs.count()) {
+    return 0;
+  }
   p11.storeAttribute(label, objs[0]);
 
   /* Public key */
   attrs = objectAttributes(false);
   objs = p11.objectList(attrs);
-  if (objs.count()) p11.storeAttribute(label, objs[0]);
+  if (objs.count()) {
+    p11.storeAttribute(label, objs[0]);
+  }
 
   return 1;
 }
@@ -396,7 +419,9 @@ void pki_scard::store_token(const slotid& slot, EVP_PKEY* pkey) {
   p11.startSession(slot, true);
 
   QList<CK_OBJECT_HANDLE> objs = p11.objectList(pub_atts);
-  if (objs.count() == 0) objs = p11.objectList(priv_atts);
+  if (objs.count() == 0) {
+    objs = p11.objectList(priv_atts);
+  }
   if (objs.count() != 0) {
     XCA_INFO(tr("This Key is already on the token"));
     load_token(p11, objs[0]);
@@ -476,8 +501,9 @@ void pki_scard::store_token(const slotid& slot, EVP_PKEY* pkey) {
   }
 
   tkInfo ti = p11.tokenInfo();
-  if (p11.tokenLogin(ti.label(), false).isNull())
+  if (p11.tokenLogin(ti.label(), false).isNull()) {
     throw errorEx(tr("PIN input aborted"));
+  }
 
   p11.createObject(pub_atts);
   p11.createObject(priv_atts);
@@ -488,8 +514,9 @@ void pki_scard::store_token(const slotid& slot, EVP_PKEY* pkey) {
   pub_atts << new_id;
 
   objs = p11.objectList(pub_atts);
-  if (objs.count() == 0)
+  if (objs.count() == 0) {
     throw errorEx(tr("Unable to find copied key on the token"));
+  }
 
   load_token(p11, objs[0]);
 }
@@ -497,7 +524,9 @@ void pki_scard::store_token(const slotid& slot, EVP_PKEY* pkey) {
 QList<int> pki_scard::possibleHashNids() {
   QList<int> nids;
 
-  if (!Settings["only_token_hashes"]) return pki_key::possibleHashNids();
+  if (!Settings["only_token_hashes"]) {
+    return pki_key::possibleHashNids();
+  }
 
   foreach (CK_MECHANISM_TYPE mechanism, mech_list) {
     switch (EVP_PKEY_type(getKeyType())) {
@@ -586,7 +615,9 @@ bool pki_scard::find_key_on_card(slotid* slot) const {
 /* Assures the correct card is inserted and
  * returns the slot ID in slot true on success */
 bool pki_scard::prepare_card(slotid* slot) const {
-  if (!pkcs11::libraries.loaded()) return false;
+  if (!pkcs11::libraries.loaded()) {
+    return false;
+  }
 
   QString msg = tr("Please insert card: %1 %2 [%3] with Serial: %4")
                     .arg(card_manufacturer)
@@ -595,7 +626,9 @@ bool pki_scard::prepare_card(slotid* slot) const {
                     .arg(card_serial);
   do {
     try {
-      if (find_key_on_card(slot)) return true;
+      if (find_key_on_card(slot)) {
+        return true;
+      }
     } catch (errorEx& err) {
       qDebug() << "find_key_on_card:" << err.getString();
     } catch (...) {
@@ -633,7 +666,9 @@ void pki_scard::generate(const keyjob& task) {
   p11.getRandom();
   tkInfo ti = p11.tokenInfo();
 
-  if (p11.tokenLogin(ti.label(), false).isNull()) return;
+  if (p11.tokenLogin(ti.label(), false).isNull()) {
+    return;
+  }
 
   XcaProgress progress;
   keygenThread kt(task, getIntName(), &p11);
@@ -641,14 +676,19 @@ void pki_scard::generate(const keyjob& task) {
   while (!kt.wait(20)) {
     progress.increment();
   }
-  if (!kt.err.isEmpty()) throw errorEx(kt.err);
+  if (!kt.err.isEmpty()) {
+    throw errorEx(kt.err);
+  }
 
   atts << pk11_attr_ulong(CKA_CLASS, CKO_PUBLIC_KEY) << kt.id;
   QList<CK_OBJECT_HANDLE> objects = p11.objectList(atts);
-  if (objects.count() != 1) qCritical() << "OBJECTS found:" << objects.count();
+  if (objects.count() != 1) {
+    qCritical() << "OBJECTS found:" << objects.count();
+  }
 
-  if (objects.count() == 0)
+  if (objects.count() == 0) {
     throw errorEx(tr("Unable to find generated key on card"));
+  }
 
   load_token(p11, objects[0]);
 }
@@ -663,8 +703,9 @@ EVP_PKEY* pki_scard::decryptKey() const {
   slotid slot_id;
   QString pin, key_id;
 
-  if (!prepare_card(&slot_id))
+  if (!prepare_card(&slot_id)) {
     throw errorEx(tr("Failed to find the key on the token"));
+  }
 
   auto* p11 = new pkcs11();
   p11->startSession(slot_id);
@@ -692,7 +733,9 @@ EVP_PKEY* pki_scard::decryptKey() const {
 void pki_scard::changePin() {
   slotid slot;
 
-  if (!prepare_card(&slot)) return;
+  if (!prepare_card(&slot)) {
+    return;
+  }
 
   pkcs11 p11;
   p11.changePin(slot, false);
@@ -701,7 +744,9 @@ void pki_scard::changePin() {
 void pki_scard::changeSoPin() {
   slotid slot;
 
-  if (!prepare_card(&slot)) return;
+  if (!prepare_card(&slot)) {
+    return;
+  }
 
   pkcs11 p11;
   p11.changePin(slot, true);
@@ -710,7 +755,9 @@ void pki_scard::changeSoPin() {
 void pki_scard::initPin() {
   slotid slot;
 
-  if (!prepare_card(&slot)) return;
+  if (!prepare_card(&slot)) {
+    return;
+  }
 
   pkcs11 p11;
   p11.initPin(slot);
@@ -727,12 +774,16 @@ QVariant pki_scard::getIcon(const dbheader* hd) const {
 
 bool pki_scard::visible() const {
   QStringList sl;
-  if (pki_base::visible()) return true;
+  if (pki_base::visible()) {
+    return true;
+  }
 
   sl << card_serial << card_manufacturer << card_model << card_label
      << slot_label << object_id;
   foreach (QString s, sl) {
-    if (s.contains(limitPattern)) return true;
+    if (s.contains(limitPattern)) {
+      return true;
+    }
   }
   return false;
 }
@@ -741,8 +792,12 @@ void pki_scard::updateLabel(QString label) {
   XSqlQuery q;
   Transaction;
 
-  if (slot_label == label) return;
-  if (!TransBegin()) return;
+  if (slot_label == label) {
+    return;
+  }
+  if (!TransBegin()) {
+    return;
+  }
   slot_label = label;
 
   SQL_PREPARE(q, "UPDATE tokens SET slot_label=? WHERE item=?");

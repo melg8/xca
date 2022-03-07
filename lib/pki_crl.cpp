@@ -63,7 +63,9 @@ QSqlError pki_crl::lookupIssuer() {
               "WHERE x509super.subj_hash=? AND certs.ca=1");
   q.bindValue(0, name_hash);
   q.exec();
-  if (q.lastError().isValid()) return q.lastError();
+  if (q.lastError().isValid()) {
+    return q.lastError();
+  }
   while (q.next()) {
     auto* x = Store.lookupPki<pki_x509>(q.value(0));
     if (!x) {
@@ -78,7 +80,9 @@ QSqlError pki_crl::lookupIssuer() {
 QSqlError pki_crl::insertSqlData() {
   QSqlError e = lookupIssuer();
 
-  if (e.isValid()) return e;
+  if (e.isValid()) {
+    return e;
+  }
 
   XSqlQuery q;
   SQL_PREPARE(q,
@@ -125,7 +129,9 @@ void pki_crl::fload(const QString& fname) {
     _crl = d2i_X509_CRL_bio(BioByteArray(ba).ro(), nullptr);
   }
   if (pki_ign_openssl_error() || !_crl) {
-    if (_crl) X509_CRL_free(_crl);
+    if (_crl) {
+      X509_CRL_free(_crl);
+    }
     throw errorEx(tr("Unable to load the revocation list in file %1. Tried PEM "
                      "and DER formatted CRL.")
                       .arg(fname));
@@ -140,7 +146,9 @@ QString pki_crl::getSigAlg() const {
 
 void pki_crl::createCrl(const QString d, pki_x509* iss) {
   setIntName(d);
-  if (!iss) my_error(tr("No issuer given"));
+  if (!iss) {
+    my_error(tr("No issuer given"));
+  }
   X509_CRL_set_version(crl, 1); /* version 2 CRL */
   X509_CRL_set_issuer_name(crl,
                            const_cast<X509_NAME*>(iss->getSubject().get0()));
@@ -201,14 +209,20 @@ extList pki_crl::extensions() const {
 }
 
 bool pki_crl::visible() const {
-  if (pki_x509name::visible()) return true;
-  if (getSigAlg().contains(limitPattern)) return true;
+  if (pki_x509name::visible()) {
+    return true;
+  }
+  if (getSigAlg().contains(limitPattern)) {
+    return true;
+  }
   return extensions().search(limitPattern);
 }
 
 void pki_crl::sign(pki_key* key, const digest& digest) {
   EVP_PKEY* pkey;
-  if (!key || key->isPubKey()) return;
+  if (!key || key->isPubKey()) {
+    return;
+  }
   X509_CRL_sort(crl);
   pkey = key->decryptKey();
   X509_CRL_sign(crl, pkey, digest.MD());
@@ -266,10 +280,16 @@ x509revList pki_crl::getRevList() {
 x509name pki_crl::getSubject() const { return {X509_CRL_get_issuer(crl)}; }
 
 bool pki_crl::verify(pki_x509* issuer) {
-  if (!issuer) return false;
-  if (getSubject() != issuer->getSubject()) return false;
+  if (!issuer) {
+    return false;
+  }
+  if (getSubject() != issuer->getSubject()) {
+    return false;
+  }
   pki_key* key = issuer->getPubKey();
-  if (!key) return false;
+  if (!key) {
+    return false;
+  }
   int ret = X509_CRL_verify(crl, key->getPubKey());
   pki_ign_openssl_error();
   if (ret != 1) {
@@ -278,7 +298,9 @@ bool pki_crl::verify(pki_x509* issuer) {
   }
   delete key;
   pki_x509* curr = getIssuer();
-  if (curr && curr->getNotAfter() > issuer->getNotAfter()) return true;
+  if (curr && curr->getNotAfter() > issuer->getNotAfter()) {
+    return true;
+  }
   setIssuer(issuer);
   return true;
 }
@@ -293,7 +315,9 @@ void pki_crl::setCrlNumber(a1int num) {
 
 a1int pki_crl::getCrlNumber() const {
   a1int num;
-  if (!getCrlNumber(&num)) num.set(0L);
+  if (!getCrlNumber(&num)) {
+    num.set(0L);
+  }
   return num;
 }
 
@@ -302,7 +326,9 @@ bool pki_crl::getCrlNumber(a1int* num) const {
   ASN1_INTEGER* i;
   i = (ASN1_INTEGER*)X509_CRL_get_ext_d2i(crl, NID_crl_number, &j, nullptr);
   pki_openssl_error();
-  if (j == -1) return false;
+  if (j == -1) {
+    return false;
+  }
   num->set(i);
   ASN1_INTEGER_free(i);
   return true;
@@ -313,7 +339,9 @@ x509v3ext pki_crl::getExtByNid(int nid) {
   x509v3ext e;
 
   for (int i = 0; i < el.count(); i++) {
-    if (el[i].nid() == nid) return el[i];
+    if (el[i].nid() == nid) {
+      return el[i];
+    }
   }
   return e;
 }
@@ -332,7 +360,9 @@ QVariant pki_crl::column_data(const dbheader* hd) const {
       return {numRev()};
     case HD_crl_crlnumber:
       a1int a;
-      if (getCrlNumber(&a)) return {a.toDec()};
+      if (getCrlNumber(&a)) {
+        return {a.toDec()};
+      }
       return {};
   }
   return pki_x509name::column_data(hd);

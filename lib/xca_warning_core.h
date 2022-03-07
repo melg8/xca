@@ -58,11 +58,17 @@ class xcaWarning {
   static bool yesno(const QString& msg) { return gui->yesno(msg); }
   static bool okcancel(const QString& msg) { return gui->okcancel(msg); }
   static void sqlerror(QSqlError err) {
-    if (!err.isValid()) err = QSqlDatabase::database().lastError();
-    if (err.isValid()) gui->sqlerror(err);
+    if (!err.isValid()) {
+      err = QSqlDatabase::database().lastError();
+    }
+    if (err.isValid()) {
+      gui->sqlerror(err);
+    }
   }
   static void error(const errorEx& err) {
-    if (err.isEmpty()) return;
+    if (err.isEmpty()) {
+      return;
+    }
     QString msg =
         QObject::tr("The following error occurred:") + "\n" + err.getString();
     gui->error(msg);

@@ -34,7 +34,9 @@ void NewX509::setupExplicitDN(NIDlist my_dn_nid = NIDlist()) {
   if (!Settings["explicit_dn"].empty()) {
     foreach (QString dn, Settings["explicit_dn"].split(",")) {
       int nid = OBJ_sn2nid(CCHAR(dn));
-      if (!my_dn_nid.contains(nid)) expl_dn_nid << nid;
+      if (!my_dn_nid.contains(nid)) {
+        expl_dn_nid << nid;
+      }
     }
   }
   nameEdits =
@@ -70,11 +72,15 @@ QList<nameEdit> NewX509::setupExplicitInputs(NIDlist nid_list,
     if (Settings["translate_dn"] && !trans.isEmpty()) {
       double_click_label->setText(trans);
       double_click_label->setToolTip(QString("[%1] %2").arg(sn, ln));
-      if (sn == ln) double_click_label->setToolTip(ln);
+      if (sn == ln) {
+        double_click_label->setToolTip(ln);
+      }
     } else {
       double_click_label->setText(ln);
       double_click_label->setToolTip(QString("[%1] %2").arg(sn, trans));
-      if (trans == sn) double_click_label->setToolTip(trans);
+      if (trans == sn) {
+        double_click_label->setToolTip(trans);
+      }
     }
     double_click_label->setClickText(OBJ_nid2sn(nid));
     connect(double_click_label, SIGNAL(doubleClicked(QString)),
@@ -221,9 +227,13 @@ NewX509::NewX509(QWidget* parent) : QDialog(parent ? parent : mainwin) {
     QWidget* w = nidWidget[nid];
     QString tt = w->toolTip();
 
-    if (Settings["translate_dn"]) text.swap(tooltip);
+    if (Settings["translate_dn"]) {
+      text.swap(tooltip);
+    }
 
-    if (!tt.isEmpty()) tooltip = QString("%1 (%2)").arg(tt).arg(tooltip);
+    if (!tt.isEmpty()) {
+      tooltip = QString("%1 (%2)").arg(tt).arg(tooltip);
+    }
 
     w->setToolTip(tooltip);
 
@@ -252,9 +262,11 @@ NewX509::NewX509(QWidget* parent) : QDialog(parent ? parent : mainwin) {
     QList<QCheckBox*> cbList{bcCritical, kuCritical, ekuCritical};
     foreach (QCheckBox* cb, cbList) { cb->setText(tr("Critical")); }
   }
-  if (Settings["disable_netscape"]) tabWidget->removeTab(4);
+  if (Settings["disable_netscape"]) {
+    tabWidget->removeTab(4);
+  }
 
-    // Setup widget <-> Template mapping
+  // Setup widget <-> Template mapping
 #define MAP_LE(name) templateLineEdits[#name] = name
   MAP_LE(subAltName);
   MAP_LE(issAltName);
@@ -307,9 +319,12 @@ void NewX509::setupLineEditByNid(int nid, QLineEdit* l) {
   info << QString("[%1]").arg(OBJ_nid2sn(nid));
 
   if (table) {
-    if (table->minsize > 1) info << tr("minimum size: %1").arg(table->minsize);
-    if (table->maxsize != -1)
+    if (table->minsize > 1) {
+      info << tr("minimum size: %1").arg(table->minsize);
+    }
+    if (table->maxsize != -1) {
       info << tr("maximum size: %1").arg(table->maxsize);
+    }
     if (table->mask == B_ASN1_PRINTABLESTRING) {
       info << tr("only a-z A-Z 0-9 '()+,-./:=?");
       QRegExp rx("[a-zA-Z0-9'()+,-./:=?]+");
@@ -406,7 +421,9 @@ void NewX509::fromX509super(pki_x509super* cert_or_req, bool applyTemp) {
 
 pki_temp* NewX509::caTemplate(pki_x509* ca) const {
   QVariant sqlId = ca->getTemplateSqlId();
-  if (!sqlId.isValid()) return nullptr;
+  if (!sqlId.isValid()) {
+    return nullptr;
+  }
   return Store.lookupPki<pki_temp>(sqlId);
 }
 
@@ -428,13 +445,17 @@ static int lb2int(QListWidget* lb) {
   int i, x = 0, c = lb->count();
 
   for (i = 0; i < c; i++) {
-    if (lb->item(i)->isSelected()) x |= 1 << i;
+    if (lb->item(i)->isSelected()) {
+      x |= 1 << i;
+    }
   }
   return x;
 }
 
 static void int2lb(QListWidget* lb, int x) {
-  for (int i = 0; i < lb->count(); i++) lb->item(i)->setSelected((1 << i) & x);
+  for (int i = 0; i < lb->count(); i++) {
+    lb->item(i)->setSelected((1 << i) & x);
+  }
 }
 
 static void QString2lb(QListWidget* lb, QString x) {
@@ -444,7 +465,9 @@ static void QString2lb(QListWidget* lb, QString x) {
   for (int i = 0; i < li.size(); i++) {
     QString lname = OBJ_sn2ln(CCHAR(li[i].trimmed()));
     items = lb->findItems(lname, Qt::MatchExactly);
-    if (items.size() > 0) items[0]->setSelected(true);
+    if (items.size() > 0) {
+      items[0]->setSelected(true);
+    }
   }
 }
 
@@ -453,17 +476,23 @@ static QString lb2QString(QListWidget* lb) {
 
   for (int i = 0; i < lb->count(); i++) {
     QListWidgetItem* item = lb->item(i);
-    if (item->isSelected()) sl << QString(OBJ_ln2sn(CCHAR(item->text())));
+    if (item->isSelected()) {
+      sl << QString(OBJ_ln2sn(CCHAR(item->text())));
+    }
   }
   return sl.join(", ");
 }
 
 void NewX509::subjectFromTemplate(pki_temp* temp) {
-  if (temp) setX509name(temp->getSubject());
+  if (temp) {
+    setX509name(temp->getSubject());
+  }
 }
 
 void NewX509::extensionsFromTemplate(pki_temp* temp) {
-  if (!temp) return;
+  if (!temp) {
+    return;
+  }
 
   QMapIterator<QString, QLineEdit*> l(templateLineEdits);
   while (l.hasNext()) {
@@ -511,8 +540,9 @@ void NewX509::toTemplate(pki_temp* temp) {
   temp->setSetting("eKeyUse", lb2QString(ekeyUsage));
   temp->setSetting("validN", validN->text().toInt());
   temp->setSetting("validM", validRange->currentIndex());
-  if (!temp->getSetting("basicPath").isEmpty())
+  if (!temp->getSetting("basicPath").isEmpty()) {
     temp->setSetting("basicPath", temp->getSettingInt("basicPath"));
+  }
   if (nconf_data->isReadOnly()) {
     temp->setSetting("adv_ext", v3ext_backup);
   } else {
@@ -527,10 +557,11 @@ void NewX509::on_fromReqCB_clicked() {
   bool subj_tab_present = tabWidget->widget(1) == tab_1;
   bool subChange = reqSubChange->isChecked();
 
-  if (request && subj_tab_present && !subChange)
+  if (request && subj_tab_present && !subChange) {
     tabWidget->removeTab(1);
-  else if ((!request || subChange) && !subj_tab_present)
+  } else if ((!request || subChange) && !subj_tab_present) {
     tabWidget->insertTab(1, tab_1, tr("Subject"));
+  }
 
   reqList->setEnabled(request);
   copyReqExtCB->setEnabled(request);
@@ -563,19 +594,21 @@ void NewX509::switchHashAlgo() {
   pki_key* key;
   pki_x509super* sig;
 
-  if (foreignSignRB->isChecked())
+  if (foreignSignRB->isChecked()) {
     sig = getSelectedSigner();
-  else if (fromReqCB->isChecked())
+  } else if (fromReqCB->isChecked()) {
     sig = getSelectedReq();
-  else
+  } else {
     sig = nullptr;
+  }
 
   key = sig ? sig->getRefKey() : getSelectedKey();
 
-  if (key)
+  if (key) {
     hashAlgo->setupHashes(key->possibleHashNids());
-  else
+  } else {
     hashAlgo->setupAllHashes();
+  }
 }
 
 void NewX509::on_showReqBut_clicked() {
@@ -609,7 +642,9 @@ void NewX509::itemChanged(pki_base* req) {
 
 void NewX509::on_genKeyBut_clicked() {
   QString name = description->text();
-  if (name.isEmpty()) name = getX509name().getMostPopular();
+  if (name.isEmpty()) {
+    name = getX509name().getMostPopular();
+  }
 
   auto* dlg = new NewKey(this, name);
   if (dlg->exec()) {
@@ -625,21 +660,33 @@ void NewX509::on_certList_currentIndexChanged(int) {
 
   switchHashAlgo();
 
-  if (!cert) return;
+  if (!cert) {
+    return;
+  }
 
   pki_temp* templ = caTemplate(cert);
   snb = cert->getNotBefore();
   sna = cert->getNotAfter();
-  if (snb > notBefore->getDate()) notBefore->setDate(snb);
-  if (sna < notAfter->getDate()) notAfter->setDate(sna);
+  if (snb > notBefore->getDate()) {
+    notBefore->setDate(snb);
+  }
+  if (sna < notAfter->getDate()) {
+    notAfter->setDate(sna);
+  }
 
-  if (templ) templateChanged(templ);
+  if (templ) {
+    templateChanged(templ);
+  }
 }
 
 void NewX509::templateChanged(QString tempname) {
   int index;
-  if (!tempList->isEnabled()) return;
-  if ((index = tempList->findText(tempname)) < 0) return;
+  if (!tempList->isEnabled()) {
+    return;
+  }
+  if ((index = tempList->findText(tempname)) < 0) {
+    return;
+  }
 
   tempList->setCurrentIndex(index);
 }
@@ -649,7 +696,9 @@ void NewX509::templateChanged(pki_temp* templ) {
 }
 
 pki_temp* NewX509::currentTemplate() {
-  if (!tempList->isEnabled()) return nullptr;
+  if (!tempList->isEnabled()) {
+    return nullptr;
+  }
   return tempList->currentPkiItem();
 }
 
@@ -659,7 +708,9 @@ void NewX509::selfComment(QString msg) {
 
 void NewX509::on_applyTemplate_clicked() {
   pki_temp* t = currentTemplate();
-  if (!t) return;
+  if (!t) {
+    return;
+  }
   fromTemplate(t);
   selfComment(tr("Template '%1' applied").arg(t->comboText()));
 }
@@ -707,8 +758,9 @@ x509name NewX509::getX509name(int _throw) {
   x509name x;
   int j, row, nid;
 
-  if (fromReqCB->isChecked() && !reqSubChange->isChecked())
+  if (fromReqCB->isChecked() && !reqSubChange->isChecked()) {
     return getSelectedReq()->getSubject();
+  }
 
   try {
     foreach (nameEdit ne, nameEdits) {
@@ -722,10 +774,11 @@ x509name NewX509::getX509name(int _throw) {
     }
   } catch (errorEx& err) {
     if (!err.isEmpty()) {
-      if (_throw)
+      if (_throw) {
         throw err;
-      else
+      } else {
         XCA_WARN(err.getString());
+      }
     }
   }
   return x;
@@ -737,7 +790,9 @@ void NewX509::setX509name(const x509name& n) {
 
   if (Settings["adapt_explicit_subject"]) {
     NIDlist mydn;
-    for (int i = 0; i < n.entryCount(); i++) mydn << n.nid(i);
+    for (int i = 0; i < n.entryCount(); i++) {
+      mydn << n.nid(i);
+    }
     setupExplicitDN(mydn);
   }
   for (int i = 0, j = 0; i < n.entryCount(); i++) {
@@ -776,11 +831,15 @@ void NewX509::setupTmpCtx() {
   ctx_cert->setSubject(getX509name());
   if (fromReqCB->isChecked()) {
     req = getSelectedReq();
-    if (req) key = req->getRefKey();
+    if (req) {
+      key = req->getRefKey();
+    }
   } else {
     key = getSelectedKey();
   }
-  if (key) ctx_cert->setPubKey(key);
+  if (key) {
+    ctx_cert->setPubKey(key);
+  }
   // Step 2 - select Signing
   if (foreignSignRB->isChecked()) {
     signcert = getSelectedSigner();
@@ -887,7 +946,9 @@ int NewX509::validateExtensions(QString nconf, QString& result) {
   (void)nconf;
   try {
     el = getGuiExt();
-    if (!Settings["disable_netscape"]) el += getNetscapeExt();
+    if (!Settings["disable_netscape"]) {
+      el += getNetscapeExt();
+    }
     el.delInvalid();
   } catch (errorEx& err) {
     errors += err.getString();
@@ -907,13 +968,17 @@ int NewX509::validateExtensions(QString nconf, QString& result) {
   }
   ext_count += el.size();
   if (el.size() > 0) {
-    if (!result.isEmpty()) result += "\n<hr>\n";
+    if (!result.isEmpty()) {
+      result += "\n<hr>\n";
+    }
     result += "<h2><center>";
     result += tr("Advanced Tab") + "</center></h2><p>\n";
     result += el.getHtml("<br>");
   }
   if (errors.size()) {
-    if (!result.isEmpty()) result += "\n<hr>\n";
+    if (!result.isEmpty()) {
+      result += "\n<hr>\n";
+    }
     result += "<h2><center>";
     result += tr("Errors") + "</center></h2><p><ul><li>\n";
     result += errors.join("</li><li>\n");
@@ -924,12 +989,16 @@ int NewX509::validateExtensions(QString nconf, QString& result) {
   if (fromReqCB->isChecked() && copyReqExtCB->isChecked()) {
     req_el = getSelectedReq()->getV3ext();
     for (int i = 0; i < req_el.count(); i++) {
-      if (ctx_cert && ctx_cert->addV3ext(req_el[i], true)) el += req_el[i];
+      if (ctx_cert && ctx_cert->addV3ext(req_el[i], true)) {
+        el += req_el[i];
+      }
     }
   }
   ext_count += el.size();
   if (el.size() > 0) {
-    if (!result.isEmpty()) result += "\n<hr>\n";
+    if (!result.isEmpty()) {
+      result += "\n<hr>\n";
+    }
     result += "<h2><center>";
     result += tr("From PKCS#10 request") + "</center></h2><p>\n";
     result += el.getHtml("<br>");
@@ -978,7 +1047,9 @@ void NewX509::on_editAuthInfAcc_clicked() {
 
 void NewX509::on_tabWidget_currentChanged(int tab_index) {
   QString tab_name = tabWidget->widget(tab_index)->objectName();
-  if (tab_name == tabnames[5]) do_validateExtensions();
+  if (tab_name == tabnames[5]) {
+    do_validateExtensions();
+  }
   buttonBox->setProperty("help_ctx", QVariant(tab_name));
 }
 
@@ -987,15 +1058,21 @@ QString NewX509::mandatoryDnRemain() {
   x509name n;
   int i;
 
-  if (QString(Settings["mandatory_dn"]).isEmpty()) return {};
+  if (QString(Settings["mandatory_dn"]).isEmpty()) {
+    return {};
+  }
 
   n = getX509name();
 
   for (i = 0; i < n.entryCount(); i++) {
     int j = dnl.indexOf(QString(OBJ_nid2sn(n.nid(i))));
-    if (j >= 0) dnl.removeAt(j);
+    if (j >= 0) {
+      dnl.removeAt(j);
+    }
   }
-  if (dnl.size() == 0) return {};
+  if (dnl.size() == 0) {
+    return {};
+  }
 
   foreach (QString x, dnl)
     remain << QString(OBJ_sn2ln(x.toLatin1()));
@@ -1087,7 +1164,9 @@ void NewX509::accept() {
     return;
   }
   QString unsetDN;
-  if (pt != tmpl) unsetDN = mandatoryDnRemain();
+  if (pt != tmpl) {
+    unsetDN = mandatoryDnRemain();
+  }
   if (!unsetDN.isEmpty()) {
     gotoTab(1);
     QString text =
@@ -1113,10 +1192,14 @@ void NewX509::accept() {
   pki_x509* signer = nullptr;
   if (foreignSignRB->isChecked()) {
     signer = getSelectedSigner();
-    if (signer) signkey = signer->getRefKey();
+    if (signer) {
+      signkey = signer->getRefKey();
+    }
   } else if (fromReqCB->isChecked()) {
     pki_x509req* req = getSelectedReq();
-    if (req) signkey = req->getRefKey();
+    if (req) {
+      signkey = req->getRefKey();
+    }
   } else {
     signkey = getSelectedKey();
   }
@@ -1140,7 +1223,9 @@ void NewX509::accept() {
                                 .arg(hashAlgo->current().name()));
     msg.addButton(QMessageBox::Ok, tr("Select other algorithm"));
     msg.addButton(QMessageBox::Yes, tr("Use algorithm anyway"));
-    if (msg.exec() == QMessageBox::Ok) return;
+    if (msg.exec() == QMessageBox::Ok) {
+      return;
+    }
   }
   if (signer && notBefore->getDate() < signer->getNotBefore()) {
     gotoTab(2);

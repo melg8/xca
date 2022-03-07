@@ -21,7 +21,9 @@ void XcaProgressCmd::increment() {
 XcaProgress_i* XcaProgress::progress;
 
 XcaProgress::XcaProgress(const QString& what, int max) {
-  if (!progress) progress = new XcaProgressCmd();
+  if (!progress) {
+    progress = new XcaProgressCmd();
+  }
   progress->start(what, max);
 }
 
@@ -31,7 +33,9 @@ void XcaProgress::increment() { progress->increment(); }
 
 void XcaProgress::inc(int, int, void* p) {
   auto* prog = static_cast<XcaProgress*>(p);
-  if (prog) prog->increment();
+  if (prog) {
+    prog->increment();
+  }
 }
 
 void XcaProgress::setGui(XcaProgress_i* p) {

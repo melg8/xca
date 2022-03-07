@@ -20,17 +20,22 @@ void hashBox::setCurrent(const digest& md) {
 void hashBox::setupHashes(QList<int> nids) {
   QString md = currentText();
 
-  if (!wanted_md.isEmpty()) md = wanted_md;
+  if (!wanted_md.isEmpty()) {
+    md = wanted_md;
+  }
   clear();
   foreach (int nid, digest::all_digests) {
-    if (nids.contains(nid)) addItem(digest(nid).name());
+    if (nids.contains(nid)) {
+      addItem(digest(nid).name());
+    }
   }
   setEnabled(count() > 0);
   setDefaultHash();
-  if (!md.isEmpty())
+  if (!md.isEmpty()) {
     setCurrent(digest(md));
-  else
+  } else {
     setDefaultHash();
+  }
 }
 
 void hashBox::setupAllHashes() { setupHashes(digest::all_digests); }

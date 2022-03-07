@@ -82,7 +82,9 @@ NewKey::NewKey(QWidget* parent, const QString& name)
   image->setPixmap(QPixmap(":keyImg"));
   mainwin->helpdlg->register_ctxhelp_button(this, "keygen");
 
-  if (!name.isEmpty()) keyDesc->setText(name);
+  if (!name.isEmpty()) {
+    keyDesc->setText(name);
+  }
 
   keyLength->setEditable(true);
   foreach (int size, sizeList)
@@ -94,18 +96,22 @@ NewKey::NewKey(QWidget* parent, const QString& name)
   updateCurves();
   keyLength->setEditText(QString("%1 bit").arg(keyjob::defaultjob.size));
   keyDesc->setFocus();
-  if (pkcs11::libraries.loaded()) try {
+  if (pkcs11::libraries.loaded()) {
+    try {
       pkcs11 p11;
       p11_slots = p11.getSlotList();
 
       foreach (slotid slot, p11_slots) {
         QList<CK_MECHANISM_TYPE> ml = p11.mechanismList(slot);
         foreach (keytype t, keytype::types())
-          if (ml.contains(t.mech)) keytypes << keyListItem(&p11, slot, t.mech);
+          if (ml.contains(t.mech)) {
+            keytypes << keyListItem(&p11, slot, t.mech);
+          }
       }
     } catch (const errorEx&) {
       p11_slots.clear();
     }
+  }
   for (int i = 0; i < keytypes.count(); i++) {
     QVariant q;
     q.setValue(keytypes[i]);
@@ -123,7 +129,9 @@ void NewKey::addCurveBoxCurves(const QList<builtin_curve>& curves) {
     QString sn(OBJ_nid2sn(curve.nid));
     QString p, comment = curve.comment;
 
-    if (comment.isEmpty()) comment = "---";
+    if (comment.isEmpty()) {
+      comment = "---";
+    }
     p = sn + ": " + comment;
     curveBox->addItem(sn + ": " + comment, curve.nid);
   }
@@ -136,8 +144,12 @@ void NewKey::updateCurves(unsigned min, unsigned max, unsigned long ec_flags) {
   foreach (builtin_curve curve, builtinCurves) {
     const char* sn = OBJ_nid2sn(curve.nid);
 
-    if (!sn || curve.order_size < min || curve.order_size > max) continue;
-    if (ec_flags && (curve.type & ec_flags) == 0) continue;
+    if (!sn || curve.order_size < min || curve.order_size > max) {
+      continue;
+    }
+    if (ec_flags && (curve.type & ec_flags) == 0) {
+      continue;
+    }
     switch (curve.flags) {
       case CURVE_RFC5480:
         curve_rfc5480 << curve;

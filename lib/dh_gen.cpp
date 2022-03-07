@@ -27,5 +27,7 @@ void DHgen::run() {
   file.open_write();
   file.write(b);
 
-  if (dh) DH_free(dh);
+  if (dh) {
+    DH_free(dh);
+  }
 }

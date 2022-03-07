@@ -78,8 +78,12 @@ void MainWindow::about() {
   foreach (QStringList sl, getTranslators()) {
     QString email;
     QStringList tag{"<td>", "</td>"};
-    if (sl.size() < 3) continue;
-    if (sl.size() > 4) email = QString("<%1@%2>").arg(sl[3]).arg(sl[4]);
+    if (sl.size() < 3) {
+      continue;
+    }
+    if (sl.size() > 4) {
+      email = QString("<%1@%2>").arg(sl[3]).arg(sl[4]);
+    }
     QString lang(QLocale::languageToString(QLocale(sl[0]).language()));
     QStringList row{
         QString("<b>%1</b>").arg(lang),

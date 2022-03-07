@@ -34,16 +34,22 @@ void db_crl::revokeCerts(pki_crl* crl) {
   auto* certs = Database.model<db_x509>();
   x509revList revlist;
 
-  if (!certs || !crl) return;
+  if (!certs || !crl) {
+    return;
+  }
 
   pki_x509* signer = crl->getIssuer();
-  if (!signer) return;
+  if (!signer) {
+    return;
+  }
 
   revlist = crl->getRevList();
   signer->mergeRevList(revlist);
   foreach (x509rev revok, revlist) {
     pki_x509* crt = signer->getBySerial(revok.getSerial());
-    if (crt) crt->setRevoked(revok);
+    if (crt) {
+      crt->setRevoked(revok);
+    }
   }
 }
 
@@ -99,13 +105,18 @@ void db_crl::exportItems(const QModelIndexList& indexes,
   QStringList vcal;
   foreach (QModelIndex idx, indexes) {
     auto* crl = fromIndex<pki_crl>(idx);
-    if (!crl) continue;
-    if (xport->match_all(F_CAL))
+    if (!crl) {
+      continue;
+    }
+    if (xport->match_all(F_CAL)) {
       vcal << crl->icsVEVENT();
-    else
+    } else {
       crl->writeCrl(file, xport->match_all(F_PEM));
+    }
   }
-  if (vcal.size() > 0) writeVcalendar(file, vcal);
+  if (vcal.size() > 0) {
+    writeVcalendar(file, vcal);
+  }
 }
 
 pki_crl* db_crl::newCrl(const crljob& task) {
@@ -144,7 +155,9 @@ pki_crl* db_crl::newCrl(const crljob& task) {
     crl->sign(cert->getRefKey(), task.settings.hashAlgo.MD());
 
     Transaction;
-    if (!TransBegin()) throw errorEx(tr("Failed to initiate DB transaction"));
+    if (!TransBegin()) {
+      throw errorEx(tr("Failed to initiate DB transaction"));
+    }
     cert->setCrlExpire(task.settings.nextUpdate);
     SQL_PREPARE(q, "UPDATE authority set crlNo=?, crlExpire=? WHERE item=?");
     q.bindValue(0, (uint)cert->getCrlNumber().getLong());
@@ -153,7 +166,9 @@ pki_crl* db_crl::newCrl(const crljob& task) {
     AffectedItems(cert->getSqlItemId());
     q.exec();
     QSqlError err = q.lastError();
-    if (err.isValid()) throw errorEx(tr("Database error: %1").arg(err.text()));
+    if (err.isValid()) {
+      throw errorEx(tr("Database error: %1").arg(err.text()));
+    }
     SQL_PREPARE(q,
                 "UPDATE revocations set crlNo=? "
                 "WHERE crlNo IS NULL AND caId=?");
@@ -161,10 +176,14 @@ pki_crl* db_crl::newCrl(const crljob& task) {
     q.bindValue(1, cert->getSqlItemId());
     q.exec();
     err = q.lastError();
-    if (err.isValid()) throw errorEx(tr("Database error: %1").arg(err.text()));
+    if (err.isValid()) {
+      throw errorEx(tr("Database error: %1").arg(err.text()));
+    }
     crl = dynamic_cast<pki_crl*>(insertPKI(crl));
     err = db.lastError();
-    if (err.isValid()) throw errorEx(tr("Database error: %1").arg(err.text()));
+    if (err.isValid()) {
+      throw errorEx(tr("Database error: %1").arg(err.text()));
+    }
     TransCommit();
     createSuccess(crl);
   } catch (errorEx& err) {

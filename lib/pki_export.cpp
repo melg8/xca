@@ -20,14 +20,18 @@ QList<const pki_export*> pki_export::select(enum pki_type pki_type,
   QList<const pki_export*> ret;
 
   foreach (const pki_export* exp, elements) {
-    if (exp->pki_type == pki_type && (disable & exp->flags) == 0) ret << exp;
+    if (exp->pki_type == pki_type && (disable & exp->flags) == 0) {
+      ret << exp;
+    }
   }
   return ret;
 }
 
 const pki_export* pki_export::by_id(int id) {
   foreach (const pki_export* exp, elements) {
-    if (exp->id == id) return exp;
+    if (exp->id == id) {
+      return exp;
+    }
   }
   return nullptr;
 }

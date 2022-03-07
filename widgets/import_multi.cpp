@@ -64,9 +64,13 @@ void ImportMulti::tokenInfo(const slotid& s) {
 }
 
 void ImportMulti::addItem(pki_base* pki) {
-  if (!pki) return;
+  if (!pki) {
+    return;
+  }
 
-  if (pki->pkiSource == unknown) pki->pkiSource = imported;
+  if (pki->pkiSource == unknown) {
+    pki->pkiSource = imported;
+  }
   auto* pm = dynamic_cast<pki_multi*>(pki);
   if (pm) {
     QList<pki_base*> items = pm->pull();
@@ -80,9 +84,15 @@ void ImportMulti::addItem(pki_base* pki) {
   auto* crl = dynamic_cast<pki_crl*>(pki);
   auto* cert_or_req = dynamic_cast<pki_x509super*>(pki);
 
-  if (cert) cert->setSigner(cert->findIssuer());
-  if (cert_or_req) cert_or_req->lookupKey();
-  if (crl) crl->lookupIssuer();
+  if (cert) {
+    cert->setSigner(cert->findIssuer());
+  }
+  if (cert_or_req) {
+    cert_or_req->lookupKey();
+  }
+  if (crl) {
+    crl->lookupIssuer();
+  }
 
   if (!dynamic_cast<pki_key*>(pki) && !dynamic_cast<pki_x509name*>(pki)) {
     XCA_WARN(tr("The type of the item '%1' is not recognized")
@@ -96,14 +106,20 @@ void ImportMulti::addItem(pki_base* pki) {
 
 bool ImportMulti::openDB() const {
   if (!Database.isOpen()) {
-    if (mainwin->init_database(QString()) == 2) return false;
-    if (!Database.isOpen()) mainwin->load_database();
+    if (mainwin->init_database(QString()) == 2) {
+      return false;
+    }
+    if (!Database.isOpen()) {
+      mainwin->load_database();
+    }
   }
   return Database.isOpen();
 }
 
 void ImportMulti::dragEnterEvent(QDragEnterEvent* event) {
-  if (event->mimeData()->hasUrls()) event->acceptProposedAction();
+  if (event->mimeData()->hasUrls()) {
+    event->acceptProposedAction();
+  }
 }
 
 void ImportMulti::dropEvent(QDropEvent* event) {
@@ -128,22 +144,31 @@ void ImportMulti::on_butRemove_clicked() {
   QString items;
 
   foreach (index, indexes) {
-    if (index.column() != 0) continue;
+    if (index.column() != 0) {
+      continue;
+    }
     mcont->remFromCont(index);
     pki_base* pki = db_base::fromIndex(index);
     delete pki;
   }
-  if (mcont->rowCount(QModelIndex()) == 0) accept();
+  if (mcont->rowCount(QModelIndex()) == 0) {
+    accept();
+  }
 }
 
 void ImportMulti::on_butOk_clicked() {
-  if (!openDB()) return;
+  if (!openDB()) {
+    return;
+  }
 
   Transaction;
-  if (!TransBegin()) return;
+  if (!TransBegin()) {
+    return;
+  }
 
-  while (mcont->rowCount(QModelIndex()))
+  while (mcont->rowCount(QModelIndex())) {
     import(mcont->index(0, 0, QModelIndex()));
+  }
 
   TransCommit();
   accept();
@@ -153,16 +178,24 @@ void ImportMulti::on_butImport_clicked() {
   QItemSelectionModel* selectionModel = listView->selectionModel();
   QModelIndexList indexes = selectionModel->selectedIndexes();
 
-  if (!openDB()) return;
+  if (!openDB()) {
+    return;
+  }
 
   Transaction;
-  if (!TransBegin()) return;
+  if (!TransBegin()) {
+    return;
+  }
   foreach (QModelIndex index, indexes) {
-    if (index.column() != 0) continue;
+    if (index.column() != 0) {
+      continue;
+    }
     import(index);
   }
   TransCommit();
-  if (mcont->rowCount(QModelIndex()) == 0) accept();
+  if (mcont->rowCount(QModelIndex()) == 0) {
+    accept();
+  }
 }
 
 void ImportMulti::on_deleteToken_clicked() {
@@ -172,7 +205,9 @@ void ImportMulti::on_deleteToken_clicked() {
   QString items;
 
   foreach (index, indexes) {
-    if (index.column() != 0) continue;
+    if (index.column() != 0) {
+      continue;
+    }
     pki_base* pki = db_base::fromIndex(index);
     try {
       pki->deleteFromToken(slot);
@@ -190,7 +225,9 @@ void ImportMulti::on_renameToken_clicked() {
   QString items;
 
   foreach (index, indexes) {
-    if (index.column() != 0) continue;
+    if (index.column() != 0) {
+      continue;
+    }
     listView->edit(index);
     break;
   }
@@ -199,10 +236,13 @@ void ImportMulti::on_renameToken_clicked() {
 pki_base* ImportMulti::import(const QModelIndex& idx) {
   pki_base* pki = mcont->fromIndex(idx);
 
-  for (int i = 0; i < mcont->rowCount(idx); i++)
+  for (int i = 0; i < mcont->rowCount(idx); i++) {
     import(mcont->index(i, 0, idx));
+  }
 
-  if (!pki) return nullptr;
+  if (!pki) {
+    return nullptr;
+  }
 
   mcont->remFromCont(idx);
 
@@ -217,12 +257,16 @@ void ImportMulti::on_butDetails_clicked() {
   QItemSelectionModel* selectionModel = listView->selectionModel();
   QModelIndex index;
 
-  if (!selectionModel->selectedIndexes().count()) return;
+  if (!selectionModel->selectedIndexes().count()) {
+    return;
+  }
 
   index = selectionModel->selectedIndexes().first();
   pki_base* pki = db_base::fromIndex(index);
 
-  if (!pki) return;
+  if (!pki) {
+    return;
+  }
   try {
     auto* pki_super = dynamic_cast<pki_x509super*>(pki);
     if (pki_super) {
@@ -287,8 +331,9 @@ void ImportMulti::execute(int force, QStringList failed) {
   if (entries() == 1 && force == 0 && openDB()) {
     QModelIndex idx = mcont->index(0, 0, QModelIndex());
     pki_base* pki = import(idx);
-    if (pki && !Settings["suppress_messages"])
+    if (pki && !Settings["suppress_messages"]) {
       XCA_INFO(pki->getMsg(pki_base::msg_import).arg(pki->getIntName()));
+    }
     accept();
     return;
   }

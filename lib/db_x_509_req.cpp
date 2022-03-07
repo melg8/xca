@@ -89,12 +89,16 @@ void db_x509req::exportItem(const QModelIndex& index,
                             const pki_export* xport,
                             XFile& file) const {
   auto* req = fromIndex<pki_x509req>(index);
-  if (req) req->writeReq(file, xport->match_all(F_PEM));
+  if (req) {
+    req->writeReq(file, xport->match_all(F_PEM));
+  }
 }
 
 void db_x509req::setSigned(QModelIndex index, bool signe) {
   auto* req = fromIndex<pki_x509req>(index);
-  if (!req) return;
+  if (!req) {
+    return;
+  }
   req->markSigned(signe);
   emit columnsContentChanged();
 }

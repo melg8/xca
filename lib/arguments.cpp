@@ -179,7 +179,9 @@ arg_option::arg_option(
 void arg_option::fillOption(struct option* opt) const {
   opt->name = long_opt;
   opt->has_arg = arg_type;
-  if (arg_type == file_argument) opt->has_arg = required_argument;
+  if (arg_type == file_argument) {
+    opt->has_arg = required_argument;
+  }
   opt->flag = nullptr;
   opt->val = 0;
 }
@@ -206,7 +208,9 @@ QString arguments::man() {
 
   for (const auto& opt : opts) {
     QString longopt = opt.long_opt;
-    if (opt.arg) longopt += QString("=<%1>").arg(opt.arg);
+    if (opt.arg) {
+      longopt += QString("=<%1>").arg(opt.arg);
+    }
     s += QString(".TP\n.B \\-\\-%1%3\n%2\n")
              .arg(longopt)
              .arg(opt.help)
@@ -237,7 +241,9 @@ QString arguments::rst() {
 
   for (const auto& opt : opts) {
     QString longopt = opt.long_opt;
-    if (opt.arg) longopt += QString("=%1").arg(esc(opt.arg));
+    if (opt.arg) {
+      longopt += QString("=%1").arg(esc(opt.arg));
+    }
     s += QString("--%1 %2%3\n")
              .arg(esc(longopt), space)
              .arg(esc(opt.help))
@@ -256,14 +262,22 @@ QString arguments::rst() {
 
 QString arguments::completion() {
   QStringList sl;
-  for (const auto& opt : opts) sl << QString("--%1").arg(opt.long_opt);
+  for (const auto& opt : opts) {
+    sl << QString("--%1").arg(opt.long_opt);
+  }
   return sl.join(" ");
 }
 
 QString arguments::doc(const QString& which) {
-  if (which == "rst") return rst();
-  if (which == "man") return man();
-  if (which == "completion") return completion();
+  if (which == "rst") {
+    return rst();
+  }
+  if (which == "man") {
+    return man();
+  }
+  if (which == "completion") {
+    return completion();
+  }
   return {};
 }
 
@@ -271,8 +285,12 @@ size_t arguments::maxOptWidth() {
   size_t len = 0;
   foreach (const arg_option& a, opts) {
     size_t l = strlen(a.long_opt);
-    if (a.arg) l += strlen(a.arg);
-    if (l > len) len = l;
+    if (a.arg) {
+      l += strlen(a.arg);
+    }
+    if (l > len) {
+      len = l;
+    }
   }
   return len;
 }
@@ -285,7 +303,9 @@ QString arguments::help() {
   struct winsize w;
 
   ioctl(0, TIOCGWINSZ, &w);
-  if (w.ws_col > 20) width = w.ws_col;
+  if (w.ws_col > 20) {
+    width = w.ws_col;
+  }
 #endif
   QMap<QString, QString> passdoc = getPassDoc();
 
@@ -293,7 +313,9 @@ QString arguments::help() {
   offset = len + 7;
   for (const auto& opt : opts) {
     QString longopt = opt.long_opt;
-    if (opt.arg) longopt += QString("=<%1>").arg(opt.arg);
+    if (opt.arg) {
+      longopt += QString("=<%1>").arg(opt.arg);
+    }
     QString help = splitQstring(offset, width, opt.help);
     s += QString(" " COL_CYAN "%3 " COL_RESET COL_BOLD "--%1" COL_RESET " %2\n")
              .arg(longopt, len * -1)
@@ -318,10 +340,14 @@ int arguments::parse(int argc, char* argv[]) {
   int cnt = opts.count();
 
   /* Setup "struct option" */
-  if (!long_opts) long_opts = new struct option[cnt + 1];
+  if (!long_opts) {
+    long_opts = new struct option[cnt + 1];
+  }
 
   Q_CHECK_PTR(long_opts);
-  for (int i = 0; i < cnt; ++i) opts[i].fillOption(long_opts + i);
+  for (int i = 0; i < cnt; ++i) {
+    opts[i].fillOption(long_opts + i);
+  }
   long_opts[cnt].name = nullptr;
   long_opts[cnt].flag = nullptr;
   opterr = 0;
@@ -329,10 +355,14 @@ int arguments::parse(int argc, char* argv[]) {
   while (true) {
     int opt_ind = 0;
     result = getopt_long_only(argc, argv, ":", long_opts, &opt_ind);
-    if (result) break;
+    if (result) {
+      break;
+    }
     const arg_option i = opts[opt_ind];
     found_options[i.long_opt] = QString::fromUtf8(optarg);
-    if (i.need_db) need_db = true;
+    if (i.need_db) {
+      need_db = true;
+    }
   }
   for (int i = optind; i < argc; ++i) {
     QString file = QString::fromUtf8(argv[i]);
@@ -352,7 +382,9 @@ int arguments::parse(int argc, char* argv[]) {
   if (result == '?') {
     result_string = QString("Invalid option: '%1'").arg(argv[optind - 1]);
   }
-  if (result == -1) result = 0;
+  if (result == -1) {
+    result = 0;
+  }
 
   return result;
 }
@@ -392,21 +424,31 @@ bool arguments::needDb() const { return need_db; }
 
 bool arguments::is_console(int argc, char* argv[]) {
   const char* nogui = getenv("XCA_NO_GUI");
-  if (nogui && *nogui) return true;
-  if (argc > 0 && QString(argv[0]).endsWith("xca-console")) return true;
+  if (nogui && *nogui) {
+    return true;
+  }
+  if (argc > 0 && QString(argv[0]).endsWith("xca-console")) {
+    return true;
+  }
 
   /* Setup "no-gui" options */
   QStringList console_opts;
   for (const auto& opt : opts) {
-    if (opt.no_gui) console_opts << QString("-%1").arg(opt.long_opt);
+    if (opt.no_gui) {
+      console_opts << QString("-%1").arg(opt.long_opt);
+    }
   }
 
   qDebug() << "NOGUI_OPTS" << console_opts;
   for (int i = 1; i < argc; i++) {
     QString arg = QString(argv[i]);
-    if (arg.startsWith("--")) arg = arg.mid(1);
+    if (arg.startsWith("--")) {
+      arg = arg.mid(1);
+    }
     foreach (QString opt, console_opts) {
-      if (arg.startsWith(opt)) return true;
+      if (arg.startsWith(opt)) {
+        return true;
+      }
     }
   }
   return false;

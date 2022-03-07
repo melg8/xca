@@ -23,14 +23,18 @@ SearchPkcs11::SearchPkcs11(QWidget* parent, const QString& fname)
 }
 
 SearchPkcs11::~SearchPkcs11() {
-  if (searching) search->click();
+  if (searching) {
+    search->click();
+  }
 }
 
 void SearchPkcs11::on_fileBut_clicked() {
   QString s = QFileDialog::getExistingDirectory(this, QString(XCA_TITLE),
                                                 filename->text());
 
-  if (!s.isEmpty()) filename->setText(nativeSeparator(s));
+  if (!s.isEmpty()) {
+    filename->setText(nativeSeparator(s));
+  }
 }
 
 void SearchPkcs11::on_search_clicked() {
@@ -56,7 +60,9 @@ void SearchPkcs11::on_search_clicked() {
 void SearchPkcs11::finishSearch() {
   search->setText("Start");
   currFile->setText(tr("The following files are possible PKCS#11 libraries"));
-  if (!searching) return;
+  if (!searching) {
+    return;
+  }
   searching->wait(1000);
   delete searching;
   searching = nullptr;
@@ -147,10 +153,14 @@ void searchThread::search(QString mydir) {
 
   while (!files.isEmpty() && keepOnRunning) {
     QString file = files.takeFirst();
-    if (file.isEmpty()) continue;
+    if (file.isEmpty()) {
+      continue;
+    }
     file = mydir + "/" + file;
     emit updateCurrFile(file);
-    if (checkLib(file)) emit updateLibs(file);
+    if (checkLib(file)) {
+      emit updateLibs(file);
+    }
   }
   if (recursive && keepOnRunning) {
     QString d;
@@ -158,7 +168,9 @@ void searchThread::search(QString mydir) {
         dir.entryList(QStringList(), QDir::AllDirs | QDir::NoDotAndDotDot);
 
     foreach (d, dirs) {
-      if (!keepOnRunning) break;
+      if (!keepOnRunning) {
+        break;
+      }
       QString s = mydir + "/" + d;
       emit updateCurrFile(s);
       search(s);

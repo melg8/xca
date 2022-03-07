@@ -24,11 +24,14 @@
 void waitcursor(int start, int line) {
   qDebug() << "Waitcursor" << (start ? "start" : "end") << line;
   ign_openssl_error();
-  if (!IS_GUI_APP) return;
-  if (start)
+  if (!IS_GUI_APP) {
+    return;
+  }
+  if (start) {
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  else
+  } else {
     QApplication::restoreOverrideCursor();
+  }
 }
 
 pkcs11_lib_list pkcs11::libraries;
@@ -53,11 +56,15 @@ void pkcs11::startSession(const slotid& slot, bool rw) {
   if (session != CK_INVALID_HANDLE) {
     CALL_P11_C(slot.lib, C_CloseSession, session);
     session = CK_INVALID_HANDLE;
-    if (rv != CKR_OK) pk11error(slot, "C_CloseSession", rv);
+    if (rv != CKR_OK) {
+      pk11error(slot, "C_CloseSession", rv);
+    }
   }
   CALL_P11_C(slot.lib, C_OpenSession, slot.id, flags, nullptr, nullptr,
              &session);
-  if (rv != CKR_OK) pk11error(slot, "C_OpenSession", rv);
+  if (rv != CKR_OK) {
+    pk11error(slot, "C_OpenSession", rv);
+  }
   p11slot = slot;
 }
 
@@ -70,10 +77,11 @@ void pkcs11::getRandom() {
     CALL_P11_C(p11slot.lib, C_SeedRandom, session, buf, len);
   }
   CALL_P11_C(p11slot.lib, C_GenerateRandom, session, buf, len);
-  if (rv == CKR_OK)
+  if (rv == CKR_OK) {
     Entropy::add_buf(buf, len);
-  else
+  } else {
     qDebug("C_GenerateRandom: %s", pk11errorString(rv));
+  }
 }
 
 QList<CK_MECHANISM_TYPE> pkcs11::mechanismList(const slotid& slot) {
@@ -114,7 +122,9 @@ void pkcs11::logout() {
   CK_RV rv;
   p11slot.isValid();
   CALL_P11_C(p11slot.lib, C_Logout, session);
-  if (rv != CKR_OK && rv != CKR_USER_NOT_LOGGED_IN) pk11error("C_Logout", rv);
+  if (rv != CKR_OK && rv != CKR_USER_NOT_LOGGED_IN) {
+    pk11error("C_Logout", rv);
+  }
 }
 
 bool pkcs11::needsLogin(bool so) {
@@ -123,7 +133,9 @@ bool pkcs11::needsLogin(bool so) {
 
   p11slot.isValid();
   CALL_P11_C(p11slot.lib, C_GetSessionInfo, session, &sinfo);
-  if (rv != CKR_OK) pk11error("C_GetSessionInfo", rv);
+  if (rv != CKR_OK) {
+    pk11error("C_GetSessionInfo", rv);
+  }
 
   switch (sinfo.state) {
     case CKS_RO_PUBLIC_SESSION:
@@ -154,8 +166,9 @@ void pkcs11::login(const unsigned char* pin, unsigned long pinlen, bool so) {
 
   p11slot.isValid();
   CALL_P11_C(p11slot.lib, C_Login, session, user, pin, pinlen);
-  if (rv != CKR_OK && rv != CKR_USER_ALREADY_LOGGED_IN)
+  if (rv != CKR_OK && rv != CKR_USER_ALREADY_LOGGED_IN) {
     pk11error("C_Login", rv);
+  }
 }
 
 class pinPadLoginThread final : public QThread {
@@ -203,7 +216,9 @@ QString pkcs11::tokenLogin(QString name, bool so, bool force) {
   p.setPin();
   need_login = needsLogin(so);
   if (force || need_login) {
-    if (!need_login) logout();
+    if (!need_login) {
+      logout();
+    }
     if (tokenInfo().protAuthPath()) {
       pin.clear();
       QDialog* pinpadbox = newPinPadBox();
@@ -215,9 +230,13 @@ QString pkcs11::tokenLogin(QString name, bool so, bool force) {
         pinpadbox->raise();
       }
       delete pinpadbox;
-      if (!ppt.err.isEmpty()) throw errorEx(ppt.err);
+      if (!ppt.err.isEmpty()) {
+        throw errorEx(ppt.err);
+      }
     } else {
-      if (PwDialogCore::execute(&p, &pin, false) != 1) return {};
+      if (PwDialogCore::execute(&p, &pin, false) != 1) {
+        return {};
+      }
     }
     login(pin.constUchar(), pin.size(), so);
   } else {
@@ -236,7 +255,9 @@ bool pkcs11::selectToken(slotid* slot, QWidget* w) {
     try {
       tkInfo info;
       CK_RV rv = tokenInfo(p11_slots[i], &info);
-      if (rv == CKR_TOKEN_NOT_PRESENT) continue;
+      if (rv == CKR_TOKEN_NOT_PRESENT) {
+        continue;
+      }
       slotsWithToken.append(i);
       slotnames << QString("%1 (#%2)").arg(info.label()).arg(info.serial());
     } catch (errorEx& e) {
@@ -275,7 +296,9 @@ void pkcs11::setPin(const unsigned char* oldPin,
   CK_RV rv;
   p11slot.isValid();
   CALL_P11_C(p11slot.lib, C_SetPIN, session, oldPin, oldPinLen, pin, pinLen);
-  if (rv != CKR_OK) pk11error("C_SetPIN", rv);
+  if (rv != CKR_OK) {
+    pk11error("C_SetPIN", rv);
+  }
 }
 
 static QString newSoPinTxt =
@@ -296,7 +319,9 @@ void pkcs11::changePin(const slotid& slot, bool so) {
   }
 
   pin = tokenLogin(ti.label(), so, true);
-  if (pin.isNull()) return;
+  if (pin.isNull()) {
+    return;
+  }
 
   QString msg = so ? newSoPinTxt : newPinTxt;
   pass_info p(XCA_TITLE, msg.arg(ti.label()) + "\n" + ti.pinInfo());
@@ -318,7 +343,9 @@ void pkcs11::initPin(const slotid& slot) {
   tkInfo ti = tokenInfo();
 
   pin = tokenLogin(ti.label(), true, false);
-  if (pin.isNull()) return;
+  if (pin.isNull()) {
+    return;
+  }
 
   pass_info p(XCA_TITLE, newPinTxt.arg(ti.label()) + "\n" + ti.pinInfo());
   p.setPin();
@@ -331,7 +358,9 @@ void pkcs11::initPin(const slotid& slot) {
   if (ret == 1) {
     CK_RV rv;
     CALL_P11_C(p11slot.lib, C_InitPIN, session, pinp.constUchar(), pinp.size());
-    if (rv != CKR_OK) pk11error("C_InitPIN", rv);
+    if (rv != CKR_OK) {
+      pk11error("C_InitPIN", rv);
+    }
   }
   logout();
 }
@@ -347,7 +376,9 @@ void pkcs11::initToken(const slotid& slot,
   memcpy(clabel, ba.constData(), ba.size());
 
   CALL_P11_C(slot.lib, C_InitToken, slot.id, pin, pinlen, clabel);
-  if (rv != CKR_OK) pk11error(slot, "C_InitToken", rv);
+  if (rv != CKR_OK) {
+    pk11error(slot, "C_InitToken", rv);
+  }
 }
 
 tkInfo pkcs11::tokenInfo(const slotid& slot) {
@@ -365,7 +396,9 @@ CK_RV pkcs11::tokenInfo(const slotid& slot, tkInfo* tkinfo) {
   CK_RV rv;
 
   CALL_P11_C(slot.lib, C_GetTokenInfo, slot.id, &token_info);
-  if (rv == CKR_OK) tkinfo->set(&token_info);
+  if (rv == CKR_OK) {
+    tkinfo->set(&token_info);
+  }
   return rv;
 }
 
@@ -417,7 +450,9 @@ pk11_attr_data pkcs11::findUniqueID(unsigned long oclass) {
     RAND_bytes(buf, ID_LEN);
     id.setValue(buf, ID_LEN);
     atts << id;
-    if (objectList(atts).count() == 0) break;
+    if (objectList(atts).count() == 0) {
+      break;
+    }
   }
   return id;
 }
@@ -467,7 +502,9 @@ pk11_attr_data pkcs11::generateKey(QString name,
       // as on 10/26/2015 - Thales' PKCS11 provider has
       // issue to generate Domain Parameters
       bool token = true;
-      if (mID == "nCipher Corp. Ltd") token = false;
+      if (mID == "nCipher Corp. Ltd") {
+        token = false;
+      }
 
       dsa_param << label << pk11_attr_ulong(CKA_CLASS, CKO_DOMAIN_PARAMETERS)
                 << pk11_attr_ulong(CKA_KEY_TYPE, CKK_DSA)
@@ -477,7 +514,9 @@ pk11_attr_data pkcs11::generateKey(QString name,
       p11slot.isValid();
       CALL_P11_C(p11slot.lib, C_GenerateKey, session, &gen_mechanism,
                  dsa_param.getAttributes(), dsa_param.length(), &dsa_param_obj);
-      if (rv != CKR_OK) pk11error("C_GenerateKey(DSA_PARAMETER)", rv);
+      if (rv != CKR_OK) {
+        pk11error("C_GenerateKey(DSA_PARAMETER)", rv);
+      }
 
       pk11_attr_data p(CKA_PRIME), q(CKA_SUBPRIME), g(CKA_BASE);
       loadAttribute(p, dsa_param_obj);
@@ -534,16 +573,24 @@ QList<CK_OBJECT_HANDLE> pkcs11::objectList(pk11_attlist& atts) {
   p11slot.isValid();
   CALL_P11_C(p11slot.lib, C_FindObjectsInit, session, attribute, att_num);
 
-  if (rv != CKR_OK) pk11error("C_FindObjectsInit", rv);
+  if (rv != CKR_OK) {
+    pk11error("C_FindObjectsInit", rv);
+  }
 
   do {
     CALL_P11_C(p11slot.lib, C_FindObjects, session, objects, 256, &len);
-    if (rv != CKR_OK) pk11error("C_FindObjects", rv);
-    for (i = 0; i < len; i++) list += objects[i];
+    if (rv != CKR_OK) {
+      pk11error("C_FindObjects", rv);
+    }
+    for (i = 0; i < len; i++) {
+      list += objects[i];
+    }
   } while (len);
 
   CALL_P11_C(p11slot.lib, C_FindObjectsFinal, session);
-  if (rv != CKR_OK) pk11error("C_FindObjectsFinal", rv);
+  if (rv != CKR_OK) {
+    pk11error("C_FindObjectsFinal", rv);
+  }
 
   return list;
 }
@@ -561,8 +608,9 @@ int pkcs11::decrypt(int flen,
   mech.mechanism = m;
 
   CALL_P11_C(p11slot.lib, C_DecryptInit, session, &mech, p11obj);
-  if (rv == CKR_OK)
+  if (rv == CKR_OK) {
     CALL_P11_C(p11slot.lib, C_Decrypt, session, from, flen, to, &size);
+  }
 
   if (rv != CKR_OK) {
     qDebug() << "Error: C_Decrypt(init):" << pk11errorString(rv);
@@ -584,8 +632,9 @@ int pkcs11::encrypt(int flen,
   mech.mechanism = m;
 
   CALL_P11_C(p11slot.lib, C_SignInit, session, &mech, p11obj);
-  if (rv == CKR_OK)
+  if (rv == CKR_OK) {
     CALL_P11_C(p11slot.lib, C_Sign, session, from, flen, to, &size);
+  }
 
   if (rv != CKR_OK) {
     qDebug() << "Error: C_Sign(init):" << pk11errorString(rv);
@@ -644,14 +693,17 @@ static DSA_SIG* dsa_sign(const unsigned char* dgst, int dlen, DSA* dsa) {
 
   // siglen is unsigned and can't cope with -1 as return value
   len = p11->encrypt(dlen, dgst, rs_buf, sizeof rs_buf, CKM_DSA);
-  if (len & 0x01)  // Must be even
+  if (len & 0x01) {  // Must be even
     goto out;
+  }
 
   rs_len = len / 2;
   r = BN_bin2bn(rs_buf, rs_len, nullptr);
   s = BN_bin2bn(rs_buf + rs_len, rs_len, nullptr);
   DSA_SIG_set0(dsa_sig, r, s);
-  if (r && s) return dsa_sig;
+  if (r && s) {
+    return dsa_sig;
+  }
 out:
   DSA_SIG_free(dsa_sig);
   ign_openssl_error();
@@ -689,8 +741,9 @@ static ECDSA_SIG* ec_do_sign(const unsigned char* dgst,
 
   // siglen is unsigned and can' cope with -1 as return value
   len = p11->encrypt(dgst_len, dgst, rs_buf, sizeof rs_buf, CKM_ECDSA);
-  if (len & 0x01)  // Must be even
+  if (len & 0x01) {  // Must be even
     goto out;
+  }
   /* The buffer contains r and s concatenated
    * Both of equal size
    * pkcs-11v2-20.pdf chapter 12.13.1, page 232
@@ -699,7 +752,9 @@ static ECDSA_SIG* ec_do_sign(const unsigned char* dgst,
   r = BN_bin2bn(rs_buf, rs_len, nullptr);
   s = BN_bin2bn(rs_buf + rs_len, rs_len, nullptr);
   ECDSA_SIG_set0(ec_sig, r, s);
-  if (r && s) return ec_sig;
+  if (r && s) {
+    return ec_sig;
+  }
 
 out:
   ECDSA_SIG_free(ec_sig);
@@ -721,10 +776,14 @@ static int ec_sign(int type,
 
   (void)type;
   ec_sig = ec_do_sign(dgst, dlen, kinv, r, ec);
-  if (!ec_sig) return 0;
+  if (!ec_sig) {
+    return 0;
+  }
 
   len = i2d_ECDSA_SIG(ec_sig, &sig);
-  if (len <= 0) goto out;
+  if (len <= 0) {
+    goto out;
+  }
   *siglen = len;
   ret = 1;
 out:

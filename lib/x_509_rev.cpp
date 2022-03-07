@@ -37,7 +37,9 @@ static ENUMERATED_NAMES crl_reasons[] = {
 
 QStringList x509rev::crlreasons() {
   QStringList l;
-  for (int i = 0; crl_reasons[i].lname; i++) l << crl_reasons[i].lname;
+  for (int i = 0; crl_reasons[i].lname; i++) {
+    l << crl_reasons[i].lname;
+  }
   return l;
 }
 
@@ -57,7 +59,9 @@ void x509rev::fromREVOKED(const X509_REVOKED* rev) {
   ASN1_TIME* at;
   int j = -1, r;
 
-  if (!rev) return;
+  if (!rev) {
+    return;
+  }
   serial = a1int(X509_REVOKED_get0_serialNumber(rev));
   date = a1time(X509_REVOKED_get0_revocationDate(rev));
 
@@ -106,7 +110,9 @@ X509_REVOKED* x509rev::toREVOKED(bool withReason) const {
 void x509rev::d2i(QByteArray& ba) {
   X509_REVOKED* r;
   r = (X509_REVOKED*)d2i_bytearray(D2I_VOID(d2i_X509_REVOKED), ba);
-  if (!r) return;
+  if (!r) {
+    return;
+  }
   fromREVOKED(r);
   X509_REVOKED_free(r);
 }
@@ -168,12 +174,18 @@ void x509revList::merge(const x509revList& other) {
 }
 
 bool x509revList::identical(const x509revList& other) const {
-  if (size() != other.size()) return false;
+  if (size() != other.size()) {
+    return false;
+  }
   for (int i = 0; i < size(); i++) {
     x509rev r = at(i);
     int c = other.indexOf(r);
-    if (c == -1) return false;
-    if (!r.identical(other.at(c))) return false;
+    if (c == -1) {
+      return false;
+    }
+    if (!r.identical(other.at(c))) {
+      return false;
+    }
   }
   return true;
 }
@@ -187,7 +199,9 @@ x509revList x509revList::fromSql(QVariant caId) {
               "FROM revocations WHERE caId=?");
   q.bindValue(0, caId);
   q.exec();
-  if (q.lastError().isValid()) return list;
+  if (q.lastError().isValid()) {
+    return list;
+  }
   while (q.next()) {
     x509rev r(q.record());
     list.append(r);
@@ -200,14 +214,18 @@ bool x509revList::sqlUpdate(QVariant caId) {
   XSqlQuery q;
   Transaction;
 
-  if (!TransBegin()) return false;
+  if (!TransBegin()) {
+    return false;
+  }
 
   x509revList oldList = fromSql(caId);
 
   SQL_PREPARE(q, "DELETE FROM revocations WHERE caId=?");
   q.bindValue(0, caId);
   q.exec();
-  if (q.lastError().isValid()) return false;
+  if (q.lastError().isValid()) {
+    return false;
+  }
 
   SQL_PREPARE(q,
               "INSERT INTO revocations "
@@ -224,7 +242,9 @@ bool x509revList::sqlUpdate(QVariant caId) {
       }
     }
     r.executeQuery(q);
-    if (q.lastError().isValid()) return false;
+    if (q.lastError().isValid()) {
+      return false;
+    }
   }
 
   merged = false;

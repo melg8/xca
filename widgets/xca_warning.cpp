@@ -20,7 +20,9 @@ xcaWarningBox::xcaWarningBox(QWidget* w,
 void xcaWarningBox::addButton(QMessageBox::StandardButton button,
                               const QString& text) {
   QPushButton* b = QMessageBox::addButton(button);
-  if (b && !text.isEmpty()) b->setText(text);
+  if (b && !text.isEmpty()) {
+    b->setText(text);
+  }
 }
 
 int xcaWarningGui::showBox(const QString& txt,
@@ -60,7 +62,9 @@ void xcaWarningGui::error(const QString& msg) {
   if (box.exec() == QMessageBox::Apply) {
     QClipboard* cb = QApplication::clipboard();
     cb->setText(msg);
-    if (cb->supportsSelection()) cb->setText(msg, QClipboard::Selection);
+    if (cb->supportsSelection()) {
+      cb->setText(msg, QClipboard::Selection);
+    }
   }
 }
 

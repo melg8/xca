@@ -29,17 +29,23 @@ void pki_evp::setOwnPass(enum passType x) {
   EVP_PKEY *pk = nullptr, *pk_back = key;
   enum passType oldOwnPass = ownPass;
 
-  if (ownPass == x || isPubKey()) return;
+  if (ownPass == x || isPubKey()) {
+    return;
+  }
 
   try {
     pk = decryptKey();
-    if (pk == nullptr) return;
+    if (pk == nullptr) {
+      return;
+    }
 
     key = pk;
     ownPass = x;
     encryptKey();
   } catch (errorEx& err) {
-    if (pk) EVP_PKEY_free(pk);
+    if (pk) {
+      EVP_PKEY_free(pk);
+    }
     key = pk_back;
     ownPass = oldOwnPass;
     throw(err);
@@ -48,7 +54,9 @@ void pki_evp::setOwnPass(enum passType x) {
 
 bool pki_evp::sqlUpdatePrivateKey() {
   Transaction;
-  if (!TransBegin()) return false;
+  if (!TransBegin()) {
+    return false;
+  }
   XSqlQuery q;
   SQL_PREPARE(q,
               "UPDATE private_keys SET private=?, ownPass=? "
@@ -81,10 +89,11 @@ void pki_evp::generate(const keyjob& task) {
       RSA* rsakey = RSA_new();
       BIGNUM* e = BN_new();
       BN_set_word(e, 0x10001);
-      if (RSA_generate_key_ex(rsakey, task.size, e, bar))
+      if (RSA_generate_key_ex(rsakey, task.size, e, bar)) {
         EVP_PKEY_assign_RSA(key, rsakey);
-      else
+      } else {
         RSA_free(rsakey);
+      }
       BN_free(e);
       break;
     }
@@ -92,17 +101,20 @@ void pki_evp::generate(const keyjob& task) {
       DSA* dsakey = DSA_new();
       if (DSA_generate_parameters_ex(dsakey, task.size, nullptr, 0, nullptr,
                                      nullptr, bar) &&
-          DSA_generate_key(dsakey))
+          DSA_generate_key(dsakey)) {
         EVP_PKEY_assign_DSA(key, dsakey);
-      else
+      } else {
         DSA_free(dsakey);
+      }
       break;
     }
 #ifndef OPENSSL_NO_EC
     case EVP_PKEY_EC: {
       EC_KEY* eckey;
       EC_GROUP* group = EC_GROUP_new_by_curve_name(task.ec_nid);
-      if (!group) break;
+      if (!group) {
+        break;
+      }
       eckey = EC_KEY_new();
       if (eckey == nullptr) {
         EC_GROUP_free(group);
@@ -208,9 +220,15 @@ void pki_evp::fromPEMbyteArray(const QByteArray& ba, const QString& name) {
   while (!pkey) {
     pkey = PEM_read_bio_PrivateKey(BioByteArray(ba).ro(), nullptr,
                                    PwDialogCore::pwCallback, &p);
-    if (openssl_pw_error()) XCA_PASSWD_ERROR();
-    if (p.getResult() != pw_ok) throw p.getResult();
-    if (pki_ign_openssl_error()) break;
+    if (openssl_pw_error()) {
+      XCA_PASSWD_ERROR();
+    }
+    if (p.getResult() != pw_ok) {
+      throw p.getResult();
+    }
+    if (pki_ign_openssl_error()) {
+      break;
+    }
   }
   if (!pkey) {
     pki_ign_openssl_error();
@@ -229,14 +247,22 @@ static void search_ec_oid(EVP_PKEY* pkey) {
 
   int keytype = EVP_PKEY_id(pkey);
 
-  if (keytype != EVP_PKEY_EC) return;
+  if (keytype != EVP_PKEY_EC) {
+    return;
+  }
 
   ec = EVP_PKEY_get0_EC_KEY(pkey);
-  if (!ec) return;
+  if (!ec) {
+    return;
+  }
 
   ec_group = EC_KEY_get0_group(ec);
-  if (!ec_group) return;
-  if (EC_GROUP_get_curve_name(ec_group)) return;
+  if (!ec_group) {
+    return;
+  }
+  if (EC_GROUP_get_curve_name(ec_group)) {
+    return;
+  }
   /* There is an EC_GROUP with a missing OID
    * because of explicit parameters */
   foreach (builtin_curve curve, builtinCurves) {
@@ -255,17 +281,23 @@ static void search_ec_oid(EVP_PKEY* pkey) {
 }
 
 void pki_evp::set_EVP_PKEY(EVP_PKEY* pkey, QString name) {
-  if (!pkey) return;
+  if (!pkey) {
+    return;
+  }
   if (!verify(pkey)) {
     pki_ign_openssl_error();
     EVP_PKEY_free(pkey);
     throw errorEx(
         tr("The key from file '%1' is incomplete or inconsistent.").arg(name));
   }
-  if (key) EVP_PKEY_free(key);
+  if (key) {
+    EVP_PKEY_free(key);
+  }
   key = pkey;
   isPub = !EVP_PKEY_isPrivKey(key);
-  if (!isPub) bogusEncryptKey();
+  if (!isPub) {
+    bogusEncryptKey();
+  }
   search_ec_oid(pkey);
 
   autoIntName(name);
@@ -291,8 +323,9 @@ EVP_PKEY* pki_evp::load_ssh_ed25519_privatekey(const QByteArray& ba,
 
   if (!content.startsWith("openssh-key-v1") ||
       // also check trailing \0
-      content.constData()[sizeof "openssh-key-v1" - 1])
+      content.constData()[sizeof "openssh-key-v1" - 1]) {
     return nullptr;
+  }
 
   content.remove(0, sizeof "openssh-key-v1");
   // encryption: "none", "aes256-ctr"
@@ -307,13 +340,17 @@ EVP_PKEY* pki_evp::load_ssh_ed25519_privatekey(const QByteArray& ba,
   }
   // check bytes 00 00 00 01
   const char* d = content.constData();
-  if (d[0] || d[1] || d[2] || d[3] != 1) return nullptr;
+  if (d[0] || d[1] || d[2] || d[3] != 1) {
+    return nullptr;
+  }
   content.remove(0, 4);
   // Handle first occurance of the public key
   pub = ssh_key_next_chunk(&content);
   ssh_key_check_chunk(&pub, "ssh-ed25519");
   pub = ssh_key_next_chunk(&pub);
-  if (pub.count() != ED25519_KEYLEN) return nullptr;
+  if (pub.count() != ED25519_KEYLEN) {
+    return nullptr;
+  }
 
   // Followed by the private key
   priv = ssh_key_next_chunk(&content);
@@ -323,13 +360,19 @@ EVP_PKEY* pki_evp::load_ssh_ed25519_privatekey(const QByteArray& ba,
   ssh_key_check_chunk(&priv, "ssh-ed25519");
   // The first pubkey must match the second occurance
   // in front of the private one
-  if (pub != ssh_key_next_chunk(&priv)) return nullptr;
+  if (pub != ssh_key_next_chunk(&priv)) {
+    return nullptr;
+  }
   priv = ssh_key_next_chunk(&priv);
   // The private key is concatenated by the public key in one chunk
-  if (priv.count() != 2 * ED25519_KEYLEN) return nullptr;
+  if (priv.count() != 2 * ED25519_KEYLEN) {
+    return nullptr;
+  }
   // The last ED25519_KEYLEN bytes must match the public key
-  if (pub != priv.mid(ED25519_KEYLEN)) return nullptr;
-    // The first ED25519_KEYLEN octets are the private key
+  if (pub != priv.mid(ED25519_KEYLEN)) {
+    return nullptr;
+  }
+  // The first ED25519_KEYLEN octets are the private key
 #ifndef OPENSSL_NO_EC
 #ifdef EVP_PKEY_ED25519
   pkey = EVP_PKEY_new_raw_private_key(EVP_PKEY_ED25519, nullptr,
@@ -356,9 +399,15 @@ void pki_evp::fload(const QString& fname) {
 
   do {
     pkey = PEM_read_bio_PrivateKey(BioByteArray(ba).ro(), nullptr, cb, &p);
-    if (openssl_pw_error()) XCA_PASSWD_ERROR();
-    if (p.getResult() != pw_ok) throw p.getResult();
-    if (pki_ign_openssl_error()) break;
+    if (openssl_pw_error()) {
+      XCA_PASSWD_ERROR();
+    }
+    if (p.getResult() != pw_ok) {
+      throw p.getResult();
+    }
+    if (pki_ign_openssl_error()) {
+      break;
+    }
   } while (!pkey);
 
   if (!pkey) {
@@ -403,7 +452,9 @@ void pki_evp::fload(const QString& fname) {
     pkey = b2i_PublicKey_bio(BioByteArray(ba).ro());
   }
   if (pki_ign_openssl_error() || !pkey) {
-    if (pkey) EVP_PKEY_free(pkey);
+    if (pkey) {
+      EVP_PKEY_free(pkey);
+    }
     throw errorEx(tr("Unable to load the private key in file %1. Tried PEM and "
                      "DER private, public, PKCS#8 key types and SSH2 format.")
                       .arg(fname));
@@ -426,7 +477,9 @@ EVP_PKEY* pki_evp::decryptKey() const {
         tr("Please enter the password to decrypt the private key: '%1'")
             .arg(getIntName()));
     ret = PwDialogCore::execute(&pi, &ownPassBuf, false);
-    if (ret != 1) throw errorEx(tr("Password input aborted"), getClassName());
+    if (ret != 1) {
+      throw errorEx(tr("Password input aborted"), getClassName());
+    }
   } else if (ownPass == ptBogus) {  // BOGUS pass
     ownPassBuf = "Bogus";
   } else {
@@ -439,12 +492,16 @@ EVP_PKEY* pki_evp::decryptKey() const {
           tr("Please enter the database password for decrypting the key '%1'")
               .arg(getIntName()));
       ret = PwDialogCore::execute(&p, &ownPassBuf, passHash.isEmpty());
-      if (ret != 1) throw errorEx(tr("Password input aborted"), getClassName());
+      if (ret != 1) {
+        throw errorEx(tr("Password input aborted"), getClassName());
+      }
     }
   }
   QByteArray myencKey = getEncKey();
   qDebug() << "myencKey.count()" << myencKey.count();
-  if (myencKey.count() == 0) return nullptr;
+  if (myencKey.count() == 0) {
+    return nullptr;
+  }
   EVP_PKEY* priv = nullptr;
   X509_SIG* p8 = d2i_PKCS8_bio(BioByteArray(myencKey).ro(), nullptr);
   if (p8) {
@@ -490,7 +547,9 @@ void pki_evp::encryptKey(const char* password) {
                 tr("Please enter the password to protect the private key: '%1'")
                     .arg(getIntName()));
     ret = PwDialogCore::execute(&p, &ownPassBuf, true);
-    if (ret != 1) throw errorEx("Password input aborted", getClassName());
+    if (ret != 1) {
+      throw errorEx("Password input aborted", getClassName());
+    }
     pki_openssl_error();
   } else if (ownPass == ptBogus) {  // BOGUS password
     ownPassBuf = "Bogus";
@@ -511,7 +570,9 @@ void pki_evp::encryptKey(const char* password) {
              (sha512passwT(ownPassBuf, passHash) != passHash &&
               sha512passwd(ownPassBuf, passHash) != passHash)) {
         ret = PwDialogCore::execute(&p, &ownPassBuf, passHash.isEmpty());
-        if (ret != 1) throw errorEx("Password input aborted", getClassName());
+        if (ret != 1) {
+          throw errorEx("Password input aborted", getClassName());
+        }
       }
     }
   }
@@ -534,7 +595,9 @@ void pki_evp::encryptKey(const char* password) {
 }
 
 void pki_evp::set_evp_key(EVP_PKEY* pkey) {
-  if (key) free(key);
+  if (key) {
+    free(key);
+  }
   key = pkey;
 }
 
@@ -549,8 +612,12 @@ pki_evp::~pki_evp() { encKey.fill(0); }
 QSqlError pki_evp::insertSqlData() {
   XSqlQuery q;
   QSqlError e = pki_key::insertSqlData();
-  if (e.isValid()) return e;
-  if (isPubKey()) return {};
+  if (e.isValid()) {
+    return e;
+  }
+  if (isPubKey()) {
+    return {};
+  }
 
   SQL_PREPARE(q,
               "INSERT INTO private_keys (item, ownPass, private) "
@@ -582,20 +649,26 @@ QByteArray pki_evp::getEncKey() const {
   QSqlError e;
   QByteArray ba;
 
-  if (encKey.count() > 0 || !sqlItemId.isValid()) return encKey;
+  if (encKey.count() > 0 || !sqlItemId.isValid()) {
+    return encKey;
+  }
 
   SQL_PREPARE(q, "SELECT private FROM private_keys WHERE item=?");
   q.bindValue(0, sqlItemId);
   q.exec();
   e = q.lastError();
-  if (e.isValid() || !q.first()) return {};
+  if (e.isValid() || !q.first()) {
+    return {};
+  }
   return QByteArray::fromBase64(q.value(0).toByteArray().trimmed());
 }
 
 QSqlError pki_evp::deleteSqlData() {
   XSqlQuery q;
   QSqlError e = pki_key::deleteSqlData();
-  if (e.isValid()) return e;
+  if (e.isValid()) {
+    return e;
+  }
   SQL_PREPARE(q, "DELETE FROM private_keys WHERE item=?");
   q.bindValue(0, sqlItemId);
   q.exec();
@@ -626,7 +699,9 @@ bool pki_evp::pem(BioByteArray& b) {
         break;
 #ifdef EVP_PKEY_ED25519
       case EVP_PKEY_ED25519:
-        if (xport->match_all(F_PRIVATE)) return false;
+        if (xport->match_all(F_PRIVATE)) {
+          return false;
+        }
         write_SSH2_ed25519_private(b, pkey, nullptr);
         break;
 #endif
@@ -641,8 +716,9 @@ bool pki_evp::pem(BioByteArray& b) {
                              const_cast<unsigned char*>(passwd.constUchar()),
                              passwd.size(), nullptr, nullptr);
     EVP_PKEY_free(pkey);
-  } else
+  } else {
     return pki_key::pem(b);
+  }
 
   return true;
 }
@@ -758,7 +834,9 @@ bool pki_evp::verify_priv(EVP_PKEY* pkey) const {
   const EVP_MD* md = EVP_sha256();
   EVP_PKEY_CTX* pkctx = nullptr;
 
-  if (!EVP_PKEY_isPrivKey(pkey)) return true;
+  if (!EVP_PKEY_isPrivKey(pkey)) {
+    return true;
+  }
   do {
     ctx = EVP_MD_CTX_new();
     pki_ign_openssl_error();
@@ -768,35 +846,52 @@ bool pki_evp::verify_priv(EVP_PKEY* pkey) const {
 
     /* Sign some random data in "data" */
 #ifdef EVP_PKEY_ED25519
-    if (EVP_PKEY_id(pkey) == EVP_PKEY_ED25519) md = nullptr;
+    if (EVP_PKEY_id(pkey) == EVP_PKEY_ED25519) {
+      md = nullptr;
+    }
 #endif
-    if (!EVP_DigestSignInit(ctx, &pkctx, md, nullptr, pkey)) break;
+    if (!EVP_DigestSignInit(ctx, &pkctx, md, nullptr, pkey)) {
+      break;
+    }
 
-    if (EVP_PKEY_id(pkey) == EVP_PKEY_RSA)
+    if (EVP_PKEY_id(pkey) == EVP_PKEY_RSA) {
       EVP_PKEY_CTX_set_rsa_padding(pkctx, RSA_PKCS1_PADDING);
+    }
 
-    if (!EVP_DigestSign(ctx, sig, &siglen, data, datalen)) break;
+    if (!EVP_DigestSign(ctx, sig, &siglen, data, datalen)) {
+      break;
+    }
 
     /* Verify the signature */
-    if (!EVP_DigestVerifyInit(ctx, nullptr, md, nullptr, pkey)) break;
+    if (!EVP_DigestVerifyInit(ctx, nullptr, md, nullptr, pkey)) {
+      break;
+    }
 
-    if (EVP_DigestVerify(ctx, sig, siglen, data, datalen) != 1) break;
+    if (EVP_DigestVerify(ctx, sig, siglen, data, datalen) != 1) {
+      break;
+    }
 
     verify = true;
   } while (false);
 
-  if (ctx) EVP_MD_CTX_free(ctx);
+  if (ctx) {
+    EVP_MD_CTX_free(ctx);
+  }
 
   if (EVP_PKEY_id(pkey) == EVP_PKEY_RSA && EVP_PKEY_isPrivKey(pkey)) {
     const RSA* rsa = EVP_PKEY_get0_RSA(pkey);
-    if (RSA_check_key(rsa) != 1) verify = false;
+    if (RSA_check_key(rsa) != 1) {
+      verify = false;
+    }
   }
   pki_openssl_error();
   return verify;
 }
 
 QVariant pki_evp::getIcon(const dbheader* hd) const {
-  if (hd->id != HD_internal_name) return {};
+  if (hd->id != HD_internal_name) {
+    return {};
+  }
 
   return QVariant(QPixmap(isPubKey() ? ":pubkeyIco" : ":keyIco"));
 }
@@ -809,12 +904,16 @@ QString pki_evp::_sha512passwd(QByteArray pass,
                                QString salt,
                                int size,
                                int repeat) {
-  if (salt.length() < size) return {};
+  if (salt.length() < size) {
+    return {};
+  }
 
   salt = salt.left(size);
   pass = salt.toLatin1() + pass;
 
-  while (repeat--) pass = Digest(pass, EVP_sha512());
+  while (repeat--) {
+    pass = Digest(pass, EVP_sha512());
+  }
 
   return salt + formatHash(pass, "");
 }

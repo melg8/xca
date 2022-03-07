@@ -33,7 +33,9 @@ void db_x509super::loadContainer() {
   /* Resolve Key references */
   foreach (pki_x509super* pki, Store.getAll<pki_x509super>()) {
     QVariant keySqlId = pki->getKeySqlId();
-    if (!keySqlId.isValid()) continue;
+    if (!keySqlId.isValid()) {
+      continue;
+    }
     pki->setRefKey(Store.lookupPki<pki_key>(keySqlId));
   }
 }
@@ -69,10 +71,16 @@ dbheaderList db_x509super::getHeaders() {
 pki_key* db_x509super::findKey(pki_x509super* ref) {
   auto* keys = Database.model<db_key>();
   pki_key *key, *refkey;
-  if (!ref) return nullptr;
-  if ((key = ref->getRefKey()) != nullptr) return key;
+  if (!ref) {
+    return nullptr;
+  }
+  if ((key = ref->getRefKey()) != nullptr) {
+    return key;
+  }
   refkey = ref->getPubKey();
-  if (!refkey) return nullptr;
+  if (!refkey) {
+    return nullptr;
+  }
   key = dynamic_cast<pki_key*>(keys->getByReference(refkey));
   ref->setRefKey(key);
   delete refkey;
@@ -83,8 +91,12 @@ QList<pki_x509super*> db_x509super::findByPubKey(pki_key* refkey) {
   QList<pki_x509super*> list;
   foreach (pki_x509super* pki, Store.getAll<pki_x509super>()) {
     pki_key* key = pki->getPubKey();
-    if (!key) continue;
-    if (refkey->compare(key)) list << pki;
+    if (!key) {
+      continue;
+    }
+    if (refkey->compare(key)) {
+      list << pki;
+    }
     delete key;
   }
   return list;
@@ -94,9 +106,13 @@ void db_x509super::extractPubkey(QModelIndex index) {
   auto* keys = Database.model<db_key>();
   pki_key* key;
   auto* pki = fromIndex<pki_x509super>(index);
-  if (!pki) return;
+  if (!pki) {
+    return;
+  }
   key = pki->getPubKey();
-  if (!key) return;
+  if (!key) {
+    return;
+  }
   key->setIntName(pki->getIntName());
   key->pkiSource = transformed;
   key->selfComment(tr("Extracted from %1 '%2'")
@@ -104,15 +120,21 @@ void db_x509super::extractPubkey(QModelIndex index) {
                                                    : tr("Certificate request"))
                        .arg(pki->getIntName()));
   key = dynamic_cast<pki_key*>(keys->insert(key));
-  if (!key) return;
-  if (Settings["suppress_messages"]) return;
+  if (!key) {
+    return;
+  }
+  if (Settings["suppress_messages"]) {
+    return;
+  }
   XCA_INFO(key->getMsg(pki_base::msg_import).arg(pki->getIntName()));
 }
 
 void db_x509super::toTemplate(QModelIndex index) {
   auto* temps = Database.model<db_temp>();
   auto* pki = fromIndex<pki_x509super>(index);
-  if (!pki || !temps) return;
+  if (!pki || !temps) {
+    return;
+  }
 
   try {
     auto* temp = new pki_temp();

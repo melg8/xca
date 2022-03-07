@@ -42,7 +42,9 @@ static LONG CALLBACK w32_segfault(LPEXCEPTION_POINTERS e) {
 }
 #else
 [[noreturn]] static void segv_handler_gui(int) {
-  if (segv_data[0]) XCA_WARN(QString(segv_data));
+  if (segv_data[0]) {
+    XCA_WARN(QString(segv_data));
+  }
   abort();
 }
 #endif
@@ -59,7 +61,9 @@ static void myMessageOutput(QtMsgType type,
     char* d = getenv("XCA_DEBUG");
     t = new QElapsedTimer();
     t->start();
-    if (d && *d) debug = 1;
+    if (d && *d) {
+      debug = 1;
+    }
   }
   if (abort_on_warning == -1) {
     char* a = getenv("XCA_ABORT_ON_WARNING");
@@ -68,7 +72,9 @@ static void myMessageOutput(QtMsgType type,
   el = t->elapsed();
   switch (type) {
     case QtDebugMsg:
-      if (!debug) return;
+      if (!debug) {
+        return;
+      }
       severity = COL_CYAN "Debug";
       break;
     case QtWarningMsg:
@@ -114,7 +120,9 @@ static const char* xca_name = "xca";
   s = QString("\nUsage %1 <options> <file-to-import> ...\n\n%2\n")
           .arg(xca_name)
           .arg(arguments::help());
-  if (msg) s += QString("\nError: %1\n").arg(msg);
+  if (msg) {
+    s += QString("\nError: %1\n").arg(msg);
+  }
 
   console_write(fp, s.toUtf8());
   exit(exitcode);
@@ -124,7 +132,9 @@ static Passwd acquire_password(QString source) {
   Passwd pass;
   pass.append(source.toUtf8());
 
-  if (source == "stdin") source = "fd:0";
+  if (source == "stdin") {
+    source = "fd:0";
+  }
   if (source.startsWith("pass:")) {
     pass = source.mid(5).toLatin1();
   } else if (source.startsWith("file:")) {
@@ -152,14 +162,21 @@ static void read_cmdline(int argc, char* argv[]) {
   pki_evp::passwd = acquire_password(cmd_opts["password"]);
   Passwd sqlpw = acquire_password(cmd_opts["sqlpass"]);
 
-  if (cmd_opts.has("verbose")) debug = 1;
+  if (cmd_opts.has("verbose")) {
+    debug = 1;
+  }
 
-  if (cmd_opts.getResult() != 0)
+  if (cmd_opts.getResult() != 0) {
     cmd_help(EXIT_FAILURE, cmd_opts.resultString().toUtf8());
+  }
 
-  if (!cmd_opts.has("password")) database_model::open_without_password = true;
+  if (!cmd_opts.has("password")) {
+    database_model::open_without_password = true;
+  }
 
-  if (cmd_opts.has("database")) Database.open(cmd_opts["database"], sqlpw);
+  if (cmd_opts.has("database")) {
+    Database.open(cmd_opts["database"], sqlpw);
+  }
 
   cmdline_items = new pki_multi();
 
@@ -224,9 +241,13 @@ static void read_cmdline(int argc, char* argv[]) {
     XCA_INFO(QObject::tr("Index hierarchy written to '%1'")
                  .arg(cmd_opts["hierarchy"]));
   }
-  if (cmd_opts.has("help")) cmd_help();
+  if (cmd_opts.has("help")) {
+    cmd_help();
+  }
 
-  if (cmd_opts.has("version")) cmd_version(stdout);
+  if (cmd_opts.has("version")) {
+    cmd_version(stdout);
+  }
 
   if (cmd_opts.has("keygen")) {
     keyjob task(cmd_opts["keygen"]);
@@ -236,7 +257,9 @@ static void read_cmdline(int argc, char* argv[]) {
     }
     auto* keys = Database.model<db_key>();
     pki_key* pki = keys->newKey(task, cmd_opts["name"]);
-    if (pki) cmdline_items->append_item(pki);
+    if (pki) {
+      cmdline_items->append_item(pki);
+    }
   }
   if (cmd_opts.has("issuers")) {
     QStringList out;
@@ -270,7 +293,9 @@ static void read_cmdline(int argc, char* argv[]) {
     } else {
       crljob task(issuer);
       pki_crl* crl = crls->newCrl(task);
-      if (crl) cmdline_items->append_item(crl);
+      if (crl) {
+        cmdline_items->append_item(crl);
+      }
     }
   }
   if (!cmd_opts["select"].isEmpty()) {
@@ -279,7 +304,9 @@ static void read_cmdline(int argc, char* argv[]) {
       qDebug() << "Select" << item;
       qulonglong id = item.toULongLong(&ok);
       auto* pki = Store.lookupPki<pki_base>(QVariant(id));
-      if (pki) cmdline_items->append_item(pki);
+      if (pki) {
+        cmdline_items->append_item(pki);
+      }
     }
   }
 
@@ -292,11 +319,19 @@ static void read_cmdline(int argc, char* argv[]) {
                  .arg(filename)
                  .toUtf8();
     }
-    if (cmd_opts.has("print")) pki->print(bba, pki_base::print_coloured);
-    if (cmd_opts.has("text")) pki->print(bba, pki_base::print_openssl_txt);
-    if (cmd_opts.has("pem")) pki->print(bba, pki_base::print_pem);
+    if (cmd_opts.has("print")) {
+      pki->print(bba, pki_base::print_coloured);
+    }
+    if (cmd_opts.has("text")) {
+      pki->print(bba, pki_base::print_openssl_txt);
+    }
+    if (cmd_opts.has("pem")) {
+      pki->print(bba, pki_base::print_pem);
+    }
   }
-  if (bba.size() > 0) console_write(stdout, bba);
+  if (bba.size() > 0) {
+    console_write(stdout, bba);
+  }
   if (cmd_opts.has("import")) {
     Database.insert(cmdline_items);
     cmdline_items = nullptr;
@@ -333,7 +368,9 @@ int main(int argc, char* argv[]) {
 #else
   signal(SIGSEGV, segv_handler_gui);
 #endif
-  if (argc > 0) xca_name = argv[0];
+  if (argc > 0) {
+    xca_name = argv[0];
+  }
 
   bool console_only = arguments::is_console(argc, argv);
   XcaApplication* gui = nullptr;
@@ -365,7 +402,9 @@ int main(int argc, char* argv[]) {
     XCA_ERROR(e);
   }
 
-  for (int i = 0; i < argc; i++) qDebug() << "wargv" << argc << i << argv[i];
+  for (int i = 0; i < argc; i++) {
+    qDebug() << "wargv" << argc << i << argv[i];
+  }
   try {
     if (gui && !console_only) {
       mainwin = new MainWindow();
@@ -373,10 +412,11 @@ int main(int argc, char* argv[]) {
       read_cmdline(argc, argv);
       mainwin->importMulti(cmdline_items, 1);
       cmdline_items = nullptr;
-      if (!Database.isOpen())
+      if (!Database.isOpen()) {
         mainwin->init_database(QString());
-      else
+      } else {
         mainwin->setup_open_database();
+      }
       mainwin->show();
       gui->exec();
     } else {

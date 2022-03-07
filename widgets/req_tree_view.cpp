@@ -16,13 +16,16 @@ void ReqTreeView::fillContextMenu(QMenu* menu,
 
   auto* req = db_base::fromIndex<pki_x509req>(index);
 
-  if (indexes.size() != 1 || !req) return;
+  if (indexes.size() != 1 || !req) {
+    return;
+  }
 
   menu->addAction(tr("Sign"), this, SLOT(signReq()));
-  if (req->getDone())
+  if (req->getDone()) {
     menu->addAction(tr("Unmark signed"), this, SLOT(unmarkSigned()));
-  else
+  } else {
     menu->addAction(tr("Mark signed"), this, SLOT(markSigned()));
+  }
   if (transform) {
     transform->addAction(tr("Similar Request"), this, SLOT(toRequest()));
   }
@@ -36,15 +39,21 @@ void ReqTreeView::signReq() {
 
 void ReqTreeView::toRequest() {
   auto* req = db_base::fromIndex<pki_x509req>(currentIndex());
-  if (basemodel) reqs()->newItem(nullptr, req);
+  if (basemodel) {
+    reqs()->newItem(nullptr, req);
+  }
 }
 
 void ReqTreeView::markSigned() {
-  if (basemodel) reqs()->setSigned(currentIndex(), true);
+  if (basemodel) {
+    reqs()->setSigned(currentIndex(), true);
+  }
 }
 
 void ReqTreeView::unmarkSigned() {
-  if (basemodel) reqs()->setSigned(currentIndex(), false);
+  if (basemodel) {
+    reqs()->setSigned(currentIndex(), false);
+  }
 }
 
 void ReqTreeView::load() {

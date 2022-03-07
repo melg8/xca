@@ -25,7 +25,9 @@ void KeyTreeView::fillContextMenu(QMenu* menu,
 
   clipboard = menu->addMenu(tr("Clipboard format"));
   foreach (x, pki_export::select(asym_key, 0)) {
-    if (!(x->flags & F_CLIPBOARD)) continue;
+    if (!(x->flags & F_CLIPBOARD)) {
+      continue;
+    }
     a = clipboard->addAction(x->desc);
     a->setData(x->id);
     a->setCheckable(true);
@@ -36,7 +38,9 @@ void KeyTreeView::fillContextMenu(QMenu* menu,
   connect(group, SIGNAL(triggered(QAction*)), this,
           SLOT(clipboardFormat(QAction*)));
 
-  if (indexes.size() == 0 || !key) return;
+  if (indexes.size() == 0 || !key) {
+    return;
+  }
 
   if (!multi && key && key->isPrivKey() && !key->isToken()) {
     switch (key->getOwnPass()) {
@@ -51,7 +55,9 @@ void KeyTreeView::fillContextMenu(QMenu* menu,
     }
   }
 
-  if (!pkcs11::libraries.loaded() || multi) return;
+  if (!pkcs11::libraries.loaded() || multi) {
+    return;
+  }
 
   if (key->isToken()) {
     menu->addAction(tr("Change PIN"), this, SLOT(changePin()));
@@ -63,7 +69,9 @@ void KeyTreeView::fillContextMenu(QMenu* menu,
 }
 
 void KeyTreeView::setOwnPass() {
-  if (!basemodel) return;
+  if (!basemodel) {
+    return;
+  }
   try {
     keys()->setOwnPass(currentIndex(), pki_key::ptPrivate);
   } catch (errorEx& err) {
@@ -72,7 +80,9 @@ void KeyTreeView::setOwnPass() {
 }
 
 void KeyTreeView::resetOwnPass() {
-  if (!basemodel) return;
+  if (!basemodel) {
+    return;
+  }
   try {
     keys()->setOwnPass(currentIndex(), pki_key::ptCommon);
   } catch (errorEx& err) {
@@ -84,7 +94,9 @@ void KeyTreeView::changePin() {
   pki_scard* scard;
   QModelIndex currentIdx = currentIndex();
 
-  if (!currentIdx.isValid()) return;
+  if (!currentIdx.isValid()) {
+    return;
+  }
   scard = db_base::fromIndex<pki_scard>(currentIdx);
   try {
     if (!scard->isToken()) {
@@ -100,7 +112,9 @@ void KeyTreeView::initPin() {
   pki_scard* scard;
   QModelIndex currentIdx = currentIndex();
 
-  if (!currentIdx.isValid()) return;
+  if (!currentIdx.isValid()) {
+    return;
+  }
   scard = db_base::fromIndex<pki_scard>(currentIdx);
   try {
     if (!scard->isToken()) {
@@ -116,7 +130,9 @@ void KeyTreeView::changeSoPin() {
   pki_scard* scard;
   QModelIndex currentIdx = currentIndex();
 
-  if (!currentIdx.isValid()) return;
+  if (!currentIdx.isValid()) {
+    return;
+  }
   scard = db_base::fromIndex<pki_scard>(currentIdx);
   try {
     if (!scard->isToken()) {
@@ -131,17 +147,23 @@ void KeyTreeView::changeSoPin() {
 void KeyTreeView::toToken() {
   QModelIndex currentIdx = currentIndex();
 
-  if (!currentIdx.isValid() || !basemodel) return;
+  if (!currentIdx.isValid() || !basemodel) {
+    return;
+  }
 
   auto* key = db_base::fromIndex<pki_key>(currentIdx);
-  if (!key || !pkcs11::libraries.loaded() || key->isToken()) return;
+  if (!key || !pkcs11::libraries.loaded() || key->isToken()) {
+    return;
+  }
 
   pki_scard* card = nullptr;
   try {
     pkcs11 p11;
     slotid slot;
 
-    if (!p11.selectToken(&slot, mainwin)) return;
+    if (!p11.selectToken(&slot, mainwin)) {
+      return;
+    }
     card = new pki_scard(key->getIntName());
     card->store_token(slot, key->decryptKey());
     card->pkiSource = key->pkiSource;
@@ -168,11 +190,15 @@ void KeyTreeView::showPki(pki_base* pki) {
 void KeyTreeView::newItem() { newItem(""); }
 
 void KeyTreeView::newItem(const QString& name) {
-  if (!basemodel) return;
+  if (!basemodel) {
+    return;
+  }
 
   auto* dlg = new NewKey(this, name);
 
-  if (dlg->exec()) keys()->newKey(dlg->getKeyJob(), dlg->keyDesc->text());
+  if (dlg->exec()) {
+    keys()->newKey(dlg->getKeyJob(), dlg->keyDesc->text());
+  }
   delete dlg;
 }
 
@@ -186,7 +212,9 @@ void KeyTreeView::load() {
 }
 
 ExportDialog* KeyTreeView::exportDialog(const QModelIndexList& indexes) {
-  if (indexes.size() == 0) return nullptr;
+  if (indexes.size() == 0) {
+    return nullptr;
+  }
   auto* key = db_base::fromIndex<pki_key>(indexes[0]);
   return new ExportDialog(
       this, tr("Export public key [%1]").arg(key->getTypeString()),

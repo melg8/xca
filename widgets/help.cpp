@@ -14,8 +14,9 @@ Help::Help() : QWidget(nullptr), helpengine(nullptr) {
   textbox->setSearchPaths(QStringList(getDocDir()));
   textbox->setOpenExternalLinks(true);
   textbox->clearHistory();
-  if (!getDocDir().isEmpty())
+  if (!getDocDir().isEmpty()) {
     helpengine = new QHelpEngineCore(getDocDir() + "/xca.qhc");
+  }
 }
 
 Help::~Help() { delete helpengine; }
@@ -32,21 +33,29 @@ void Help::content() {
 }
 
 QList<QHelpLink> Help::url_by_ctx(const QString& ctx) const {
-  if (!helpengine) return {};
+  if (!helpengine) {
+    return {};
+  }
   return helpengine->documentsForIdentifier(QString("%1.%1").arg(ctx));
 }
 
 void Help::contexthelp(const QString& context) {
   QList<QHelpLink> helpctx = url_by_ctx(context);
 
-  if (!helpctx.empty()) display(helpctx.constBegin()->url);
+  if (!helpctx.empty()) {
+    display(helpctx.constBegin()->url);
+  }
 }
 
 void Help::contexthelp() {
   QObject* o = sender();
-  if (!o) return;
+  if (!o) {
+    return;
+  }
   QString ctx = o->property("help_ctx").toString();
-  if (ctx.isEmpty()) return;
+  if (ctx.isEmpty()) {
+    return;
+  }
   contexthelp(ctx);
 }
 
@@ -54,7 +63,9 @@ void Help::register_ctxhelp_button(QDialog* dlg,
                                    const QString& help_ctx) const {
   auto* buttonBox = dlg->findChild<QDialogButtonBox*>("buttonBox");
 
-  if (!buttonBox || help_ctx.isEmpty()) return;
+  if (!buttonBox || help_ctx.isEmpty()) {
+    return;
+  }
 
   dlg->setWindowModality(Qt::WindowModal);
   buttonBox->addButton(QDialogButtonBox::Help);

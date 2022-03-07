@@ -26,30 +26,41 @@ void DbTransaction::debug(const char* func, const char* file, int line) {
 DbTransaction::DbTransaction() { has_begun = false; }
 
 DbTransaction::~DbTransaction() {
-  if (has_begun) rollback("Destructor", 0);
+  if (has_begun) {
+    rollback("Destructor", 0);
+  }
 }
 
 bool DbTransaction::begin(const char* file, int line) {
   mutex++;
   has_begun = true;
   debug("Begin", file, line);
-  if (mutex > 1 || !hasTransaction) return true;
+  if (mutex > 1 || !hasTransaction) {
+    return true;
+  }
 
   QSqlDatabase db = QSqlDatabase::database();
   bool ret = db.transaction();
-  if (!ret) XCA_SQLERROR(db.lastError());
+  if (!ret) {
+    XCA_SQLERROR(db.lastError());
+  }
   return ret;
 }
 
 bool DbTransaction::finish(const char* oper, const char* file, int line) {
-  if (!has_begun) return true;
-  if (mutex > 0)
+  if (!has_begun) {
+    return true;
+  }
+  if (mutex > 0) {
     mutex--;
-  else
+  } else {
     qCritical() << "Unbalanced DB Transaction in " << oper;
+  }
   debug(oper, file, line);
   has_begun = false;
-  if (mutex > 0) return true;
+  if (mutex > 0) {
+    return true;
+  }
 
   QSqlDatabase db = QSqlDatabase::database();
   if (error) {
@@ -61,7 +72,9 @@ bool DbTransaction::finish(const char* oper, const char* file, int line) {
   XSqlQuery q;
   SQL_PREPARE(q, "SELECT MAX(stamp) +1 from items");
   q.exec();
-  if (q.first()) DatabaseStamp = q.value(0).toULongLong();
+  if (q.first()) {
+    DatabaseStamp = q.value(0).toULongLong();
+  }
 
   SQL_PREPARE(q, "UPDATE items SET stamp=? WHERE stamp=0");
   q.bindValue(0, DatabaseStamp);
@@ -77,7 +90,9 @@ bool DbTransaction::finish(const char* oper, const char* file, int line) {
   items.clear();
 
   bool ret = hasTransaction ? db.commit() : true;
-  if (!ret) XCA_SQLERROR(db.lastError());
+  if (!ret) {
+    XCA_SQLERROR(db.lastError());
+  }
   return ret;
 }
 
@@ -128,7 +143,9 @@ QString XSqlQuery::rewriteQuery(QString _q) {
   };
 
   lastq = query = _q;
-  if (table_prefix.isEmpty()) return query;
+  if (table_prefix.isEmpty()) {
+    return query;
+  }
 
   QString m = tables.join("|") + "|i_" + tables.join("|i_");
   m = QString("\\b(%1)").arg(m);
@@ -145,14 +162,20 @@ QString XSqlQuery::query_details() {
   if (query != lastq) {
     lq = QString("%1 (PREFIX[%2]: %3)").arg(lastq).arg(table_prefix).arg(query);
   }
-  for (const auto& i : list) sl << i.toString();
-  if (sl.size()) lq += QString("[%1]").arg(sl.join(", "));
+  for (const auto& i : list) {
+    sl << i.toString();
+  }
+  if (sl.size()) {
+    lq += QString("[%1]").arg(sl.join(", "));
+  }
   return QString("%1:%2 (%3)").arg(file).arg(line).arg(lq);
 }
 
 QSqlError XSqlQuery::lastError() {
   QSqlError e = QSqlQuery::lastError();
-  if (!e.isValid()) return e;
+  if (!e.isValid()) {
+    return e;
+  }
   return {QString("%1 - %2").arg(e.driverText()).arg(query_details()),
           e.databaseText(), e.type(), e.nativeErrorCode()};
 }

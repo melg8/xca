@@ -85,7 +85,9 @@ class db_base : public QAbstractItemModel {
                int role) override;
   void deleteSelectedItems(QModelIndexList indexes);
   static pki_base* fromIndex(const QModelIndex& index) {
-    if (!index.isValid()) return nullptr;
+    if (!index.isValid()) {
+      return nullptr;
+    }
     return static_cast<pki_base*>(index.internalPointer());
   }
   template <class T>

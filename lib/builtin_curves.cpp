@@ -112,14 +112,15 @@ builtin_curves::builtin_curves() {
     int flag = 0, nid = curves[i].nid;
     unsigned long type = 0;
 
-    if (rfc5480_curve_nids().contains(nid))
+    if (rfc5480_curve_nids().contains(nid)) {
       flag = CURVE_RFC5480;
-    else if (x962_curve_nids().contains(nid))
+    } else if (x962_curve_nids().contains(nid)) {
       flag = CURVE_X962;
-    else if (other_curve_nids().contains(nid))
+    } else if (other_curve_nids().contains(nid)) {
       flag = CURVE_OTHER;
-    else
+    } else {
       continue;
+    }
 
     EC_GROUP* group = EC_GROUP_new_by_curve_name(nid);
     EC_GROUP_get_order(group, order, nullptr);

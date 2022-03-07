@@ -30,7 +30,9 @@ KeyDetail::KeyDetail(QWidget* w) : QDialog(w ? w : mainwin), keySqlId() {
 #ifndef OPENSSL_NO_EC
 static QString CurveComment(int nid) {
   foreach (builtin_curve curve, builtinCurves) {
-    if (curve.nid == nid) return curve.comment;
+    if (curve.nid == nid) {
+      return curve.comment;
+    }
   }
   return {};
 }
@@ -73,7 +75,9 @@ void KeyDetail::setKey(pki_key* pKey) {
   keyLength->setText(pKey->length());
 
   keyPrivEx->disableToolTip();
-  if (!pKey->isToken()) tabWidget->removeTab(1);
+  if (!pKey->isToken()) {
+    tabWidget->removeTab(1);
+  }
   tlHeader->setText(tr("Details of the %1 key").arg(pKey->getTypeString()));
   comment->setPlainText(pKey->getComment());
 
@@ -137,13 +141,19 @@ void KeyDetail::setKey(pki_key* pKey) {
 }
 
 void KeyDetail::itemChanged(pki_base* pki) {
-  if (pki->getSqlItemId() == keySqlId) keyDesc->setText(pki->getIntName());
+  if (pki->getSqlItemId() == keySqlId) {
+    keyDesc->setText(pki->getIntName());
+  }
 }
 
 void KeyDetail::showKey(QWidget* parent, pki_key* pKey, bool ro) {
-  if (!pKey) return;
+  if (!pKey) {
+    return;
+  }
   auto* dlg = new KeyDetail(parent);
-  if (!dlg) return;
+  if (!dlg) {
+    return;
+  }
   dlg->setKey(pKey);
   dlg->keyDesc->setReadOnly(ro);
   dlg->comment->setReadOnly(ro);

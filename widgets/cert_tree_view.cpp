@@ -31,7 +31,9 @@ void CertTreeView::fillContextMenu(QMenu* menu,
   auto* cert = db_base::fromIndex<pki_x509>(index);
   pki_x509* parent;
 
-  if (indexes.size() == 0 || !cert) return;
+  if (indexes.size() == 0 || !cert) {
+    return;
+  }
 
   privkey = cert->getRefKey();
   parent = cert->getSigner();
@@ -43,12 +45,17 @@ void CertTreeView::fillContextMenu(QMenu* menu,
   allUnrevoked = allRevoked = sameParent = true;
   foreach (QModelIndex i, indexes) {
     auto* c = db_base::fromIndex<pki_x509>(i);
-    if (!c) continue;
-    if (c->getSigner() != parent) sameParent = false;
-    if (c->isRevoked())
+    if (!c) {
+      continue;
+    }
+    if (c->getSigner() != parent) {
+      sameParent = false;
+    }
+    if (c->isRevoked()) {
       allUnrevoked = false;
-    else
+    } else {
       allRevoked = false;
+    }
   }
 
   if (!multi) {
@@ -72,26 +79,37 @@ void CertTreeView::fillContextMenu(QMenu* menu,
     subCa->addAction(tr("Manage revocations"), this, SLOT(manageRevocations()));
     subCa->setEnabled(cert->canSign());
   }
-  if (parent == cert && parent->canSign())
+  if (parent == cert && parent->canSign()) {
     menu->addAction(tr("Renewal"), this, SLOT(certRenewal()));
+  }
   if (sameParent && parentCanSign) {
     QString n = multi ? QString(" [%1]").arg(indexes.size()) : "";
     menu->addAction(tr("Renewal") + n, this, SLOT(certRenewal()));
-    if (allUnrevoked) menu->addAction(tr("Revoke") + n, this, SLOT(revoke()));
-    if (allRevoked) menu->addAction(tr("Unrevoke") + n, this, SLOT(unRevoke()));
+    if (allUnrevoked) {
+      menu->addAction(tr("Revoke") + n, this, SLOT(revoke()));
+    }
+    if (allRevoked) {
+      menu->addAction(tr("Unrevoke") + n, this, SLOT(unRevoke()));
+    }
   }
 }
 
 void CertTreeView::toRequest() {
-  if (basemodel) certs()->toRequest(currentIndex());
+  if (basemodel) {
+    certs()->toRequest(currentIndex());
+  }
 }
 
 void CertTreeView::toToken() {
-  if (basemodel) certs()->toToken(currentIndex(), false);
+  if (basemodel) {
+    certs()->toToken(currentIndex(), false);
+  }
 }
 
 void CertTreeView::toOtherToken() {
-  if (basemodel) certs()->toToken(currentIndex(), true);
+  if (basemodel) {
+    certs()->toToken(currentIndex(), true);
+  }
 }
 
 void CertTreeView::loadPKCS12() {
@@ -111,7 +129,9 @@ void CertTreeView::genCrl() {
 }
 
 void CertTreeView::toCertificate() {
-  if (basemodel) certs()->toCertificate(currentIndex());
+  if (basemodel) {
+    certs()->toCertificate(currentIndex());
+  }
 }
 
 void CertTreeView::deleteFromToken() {
@@ -124,7 +144,9 @@ void CertTreeView::deleteFromToken() {
 }
 
 void CertTreeView::changeView() {
-  if (!basemodel) return;
+  if (!basemodel) {
+    return;
+  }
   XcaTreeView::changeView();
   mainwin->BNviewState->setText(basemodel->treeViewMode() ? tr("Plain View")
                                                           : tr("Tree View"));
@@ -132,7 +154,9 @@ void CertTreeView::changeView() {
 
 void CertTreeView::manageRevocations() {
   auto* cert = db_base::fromIndex<pki_x509>(currentIndex());
-  if (!cert) return;
+  if (!cert) {
+    return;
+  }
 
   auto* dlg = new RevocationList();
   dlg->setRevList(cert->getRevList(), cert);
@@ -148,7 +172,9 @@ void CertTreeView::caProperties() {
   QWidget* w;
 
   auto* cert = db_base::fromIndex<pki_x509>(currentIndex());
-  if (!cert || !basemodel) return;
+  if (!cert || !basemodel) {
+    return;
+  }
 
   w = new QWidget();
   ui.setupUi(w);
@@ -162,7 +188,9 @@ void CertTreeView::caProperties() {
   ui.temp->insertPkiItems(Store.getAll<pki_temp>());
   ui.temp->setNullItem(tr("No template"));
   ui.temp->setCurrentIndex(0);
-  if (templ) ui.temp->setCurrentPkiItem(templ);
+  if (templ) {
+    ui.temp->setCurrentPkiItem(templ);
+  }
 
   dlg = new XcaDialog(this, x509, w, tr("CA Properties"), cert->getIntName(),
                       "ca_properties");
@@ -180,15 +208,21 @@ void CertTreeView::caProperties() {
 }
 
 void CertTreeView::certRenewal() {
-  if (basemodel) certs()->certRenewal(getSelectedIndexes());
+  if (basemodel) {
+    certs()->certRenewal(getSelectedIndexes());
+  }
 }
 
 void CertTreeView::revoke() {
-  if (basemodel) certs()->revoke(getSelectedIndexes());
+  if (basemodel) {
+    certs()->revoke(getSelectedIndexes());
+  }
 }
 
 void CertTreeView::unRevoke() {
-  if (basemodel) certs()->unRevoke(getSelectedIndexes());
+  if (basemodel) {
+    certs()->unRevoke(getSelectedIndexes());
+  }
 }
 
 void CertTreeView::load() {

@@ -13,8 +13,9 @@ int digest::default_md(NID_sha256);
 digest::digest(int nid) : md_nid(nid) {}
 
 digest::digest(const EVP_MD* md) : md_nid(default_md) {
-  if (!OBJ_find_sigid_algs(EVP_MD_type(md), &md_nid, nullptr))
+  if (!OBJ_find_sigid_algs(EVP_MD_type(md), &md_nid, nullptr)) {
     md_nid = EVP_MD_type(md);
+  }
 }
 
 digest::digest(const QString& name) : md_nid(default_md) {

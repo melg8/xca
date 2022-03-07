@@ -32,7 +32,9 @@ db_temp::db_temp() : db_x509name("templates") {
         QDir::Files | QDir::NoSymLinks | QDir::NoDot | QDir::Readable);
 
     foreach (QFileInfo fileInfo, list) {
-      if (template_files.contains(fileInfo.fileName())) continue;
+      if (template_files.contains(fileInfo.fileName())) {
+        continue;
+      }
 
       qDebug() << "Loading template" << fileInfo.fileName()
                << fileInfo.absoluteFilePath();
@@ -65,7 +67,9 @@ bool db_temp::alterTemp(pki_temp* temp) {
   QSqlError e;
 
   Transaction;
-  if (!TransBegin()) return false;
+  if (!TransBegin()) {
+    return false;
+  }
   SQL_PREPARE(q, "UPDATE templates SET version=?, template=? WHERE item=?");
   q.bindValue(0, TMPL_VERSION);
   q.bindValue(1, temp->toB64Data());
@@ -86,5 +90,7 @@ void db_temp::exportItem(const QModelIndex& index,
                          const pki_export*,
                          XFile& file) const {
   auto* temp = fromIndex<pki_temp>(index);
-  if (temp) temp->writeTemp(file);
+  if (temp) {
+    temp->writeTemp(file);
+  }
 }

@@ -26,7 +26,9 @@ class pass_info : public QObject {
   [[nodiscard]] QString getTitle() const { return title; }
   [[nodiscard]] QString getDescription() const { return description; }
   QWidget* getWidget() {
-    if (!widget) widget = qApp->activeWindow();
+    if (!widget) {
+      widget = qApp->activeWindow();
+    }
     return widget;
   }
   [[nodiscard]] QString getType() const { return type; }

@@ -10,9 +10,13 @@ db_token::db_token() : db_base("manageTokens") { updateHeaders(); }
 void db_token::saveHeaderState() {}
 
 void db_token::rename_token_in_database(pki_scard* token) {
-  if (!token) return;
+  if (!token) {
+    return;
+  }
   Transaction;
-  if (!TransBegin()) return;
+  if (!TransBegin()) {
+    return;
+  }
   QList<pki_scard*> list = Store.sqlSELECTpki<pki_scard>(
       QString("SELECT item FROM tokens "
               "WHERE card_serial=? AND card_model=? and object_id=?"),
@@ -21,7 +25,9 @@ void db_token::rename_token_in_database(pki_scard* token) {
                         << QVariant(token->getId()));
 
   foreach (pki_scard* item, list) {
-    if (token->compare(item)) item->updateLabel(token->getIntName());
+    if (token->compare(item)) {
+      item->updateLabel(token->getIntName());
+    }
   }
   TransCommit();
 }
@@ -35,7 +41,9 @@ bool db_token::setData(const QModelIndex& index,
     nn = value.toString();
     item = fromIndex(index);
     on = item->getIntName();
-    if (on == nn) return true;
+    if (on == nn) {
+      return true;
+    }
     try {
       if (item->renameOnToken(slot, nn)) {
         item->setIntName(nn);

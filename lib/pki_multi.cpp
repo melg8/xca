@@ -22,16 +22,19 @@ pki_multi::pki_multi(const QString& name) : pki_base(name) {
 
 pki_multi::~pki_multi() {
   foreach (pki_base* pki, multi) {
-    if (pki->getSqlItemId().toInt() == 0) delete pki;
+    if (pki->getSqlItemId().toInt() == 0) {
+      delete pki;
+    }
   }
 }
 
 void pki_multi::append_item(pki_base* pki) {
   auto* m = dynamic_cast<pki_multi*>(pki);
-  if (m)
+  if (m) {
     multi += m;
-  else
+  } else {
     multi << pki;
+  }
 }
 
 #define D5 "-----"
@@ -40,25 +43,37 @@ void pki_multi::append_item(pki_base* pki) {
 static pki_base* pkiByPEM(QString text, int* skip) {
   int pos = text.indexOf(BEGIN);
 
-  if (skip) *skip = pos;
+  if (skip) {
+    *skip = pos;
+  }
 
-  if (pos < 0) return nullptr;
+  if (pos < 0) {
+    return nullptr;
+  }
 
   text = text.remove(0, pos + sizeof(BEGIN) - 1);
   if (text.startsWith(PEM_STRING_X509_OLD D5) ||
       text.startsWith(PEM_STRING_X509 D5) ||
-      text.startsWith(PEM_STRING_X509_TRUSTED D5))
+      text.startsWith(PEM_STRING_X509_TRUSTED D5)) {
     return new pki_x509();
+  }
 
-  if (text.startsWith(PEM_STRING_PKCS7 D5)) return new pki_pkcs7();
+  if (text.startsWith(PEM_STRING_PKCS7 D5)) {
+    return new pki_pkcs7();
+  }
 
   if (text.startsWith(PEM_STRING_X509_REQ_OLD D5) ||
-      text.startsWith(PEM_STRING_X509_REQ D5))
+      text.startsWith(PEM_STRING_X509_REQ D5)) {
     return new pki_x509req();
+  }
 
-  if (text.startsWith(PEM_STRING_X509_CRL D5)) return new pki_crl();
+  if (text.startsWith(PEM_STRING_X509_CRL D5)) {
+    return new pki_crl();
+  }
 
-  if (text.startsWith(PEM_STRING_XCA_TEMPLATE D5)) return new pki_temp();
+  if (text.startsWith(PEM_STRING_XCA_TEMPLATE D5)) {
+    return new pki_temp();
+  }
 
   if (text.startsWith(PEM_STRING_EVP_PKEY D5) ||
       text.startsWith(PEM_STRING_PUBLIC D5) ||
@@ -70,9 +85,9 @@ static pki_base* pkiByPEM(QString text, int* skip) {
       text.startsWith(PEM_STRING_ECPRIVATEKEY D5) ||
       text.startsWith(PEM_STRING_PKCS8 D5) ||
       text.startsWith(PEM_STRING_PKCS8INF D5) ||
-      text.startsWith(PEM_STRING_OPENSSH_KEY D5))
-
+      text.startsWith(PEM_STRING_OPENSSH_KEY D5)) {
     return new pki_evp();
+  }
 
   return nullptr;
 }
@@ -93,7 +108,9 @@ void pki_multi::fromPEMbyteArray(const QByteArray& _ba, const QString& name) {
   for (;;) {
     try {
       item = pkiByPEM(QString::fromLatin1(ba), &startpos);
-      if (!item) break;
+      if (!item) {
+        break;
+      }
       ba.remove(0, startpos);
       item->fromPEMbyteArray(ba, name);
       item->pkiSource = imported;
@@ -106,8 +123,9 @@ void pki_multi::fromPEMbyteArray(const QByteArray& _ba, const QString& name) {
     }
     ba.remove(0, sizeof BEGIN - 1);
   }
-  if (multi.size() == old_count)
+  if (multi.size() == old_count) {
     throw errorEx(tr("No known PEM encoded items found"));
+  }
 }
 
 void pki_multi::probeAnything(const QString& fname) {
@@ -136,10 +154,14 @@ void pki_multi::probeAnything(const QString& fname) {
     } catch (errorEx&) {
       continue;
     } catch (enum open_result r) {
-      if (r == pw_cancel) break;
+      if (r == pw_cancel) {
+        break;
+      }
     }
   }
-  if (multi.count() == old_count && !fname.isEmpty()) failed_files << fname;
+  if (multi.count() == old_count && !fname.isEmpty()) {
+    failed_files << fname;
+  }
 
   qDeleteAll(lbs);
 }

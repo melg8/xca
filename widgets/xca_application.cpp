@@ -42,7 +42,9 @@ XcaApplication::XcaApplication(int& argc, char* argv[])
     XcaTranslator t;
     qmIt.next();
     QString language = qmIt.fileInfo().baseName().mid(4, -1);
-    if (t.load(language, "xca", getI18nDir())) langAvail << QLocale(language);
+    if (t.load(language, "xca", getI18nDir())) {
+      langAvail << QLocale(language);
+    }
   }
   setupLanguage(lang);
 #ifdef Q_OS_MAC
@@ -97,11 +99,15 @@ void XcaApplication::setupLanguage(const QLocale& lang) {
   QLocale::setDefault(lang);
   installTranslator(qtTr);
   installTranslator(xcaTr);
-  if (mainw) mainw->initResolver();
+  if (mainw) {
+    mainw->initResolver();
+  }
 }
 
 void XcaApplication::quit() {
-  if (mainw) mainw->close();
+  if (mainw) {
+    mainw->close();
+  }
 }
 
 void XcaApplication::switchLanguage(QAction* a) {

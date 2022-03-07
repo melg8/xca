@@ -19,7 +19,9 @@ DbMap OpenDb::getDatabases() {
   databases["QODBC3"] = "Open Database Connectivity (ODBC)";
 
   foreach (QString driver, databases.keys()) {
-    if (!list.contains(driver)) databases.take(driver);
+    if (!list.contains(driver)) {
+      databases.take(driver);
+    }
   }
   qDebug() << "Available Remote DB Drivers: " << databases.size();
   foreach (QString driver, databases.keys())
@@ -31,10 +33,11 @@ DbMap OpenDb::getDatabases() {
 bool OpenDb::hasSqLite() { return QSqlDatabase::isDriverAvailable("QSQLITE"); }
 
 void OpenDb::driver_selected() {
-  if (getDbType() == "QODBC3")
+  if (getDbType() == "QODBC3") {
     dbName_label->setText("DSN");
-  else
+  } else {
     dbName_label->setText(tr("Database name"));
+  }
 }
 
 bool OpenDb::hasRemoteDrivers() { return getDatabases().size() > 0; }
@@ -44,7 +47,9 @@ void OpenDb::fillDbDropDown(const QString& current) {
   dbType->clear();
   foreach (QString driver, databases.keys()) {
     dbType->insertItem(0, databases[driver], driver);
-    if (driver == current) dbType->setCurrentIndex(0);
+    if (driver == current) {
+      dbType->setCurrentIndex(0);
+    }
   }
   if (dbType->count() == 1) {
     dbType->setCurrentIndex(0);
@@ -53,7 +58,9 @@ void OpenDb::fillDbDropDown(const QString& current) {
 }
 
 void OpenDb::setupDatabaseName(const QString& db) {
-  if (!database_model::isRemoteDB(db)) return;
+  if (!database_model::isRemoteDB(db)) {
+    return;
+  }
 
   DbMap remote_param = database_model::splitRemoteDbName(db);
 
@@ -92,7 +99,9 @@ QString OpenDb::getDbType() const {
 }
 
 void OpenDb::checkSqLite() {
-  if (hasSqLite()) return;
+  if (hasSqLite()) {
+    return;
+  }
   XCA_WARN(
       tr("No SqLite3 driver available. Please install the qt-sqlite package of "
          "your distribution"));
@@ -100,7 +109,9 @@ void OpenDb::checkSqLite() {
 
 QString OpenDb::getDescriptor() const {
   QString pref = prefix->text();
-  if (!pref.isEmpty()) pref = QString("#%1").arg(pref.toLower());
+  if (!pref.isEmpty()) {
+    pref = QString("#%1").arg(pref.toLower());
+  }
   return sqlite ? dbName->text()
                 : QString("%1@%2/%3:%4%5")
                       .arg(userName->text())
@@ -111,14 +122,20 @@ QString OpenDb::getDescriptor() const {
 }
 
 int OpenDb::exec() {
-  if (!hasSqLite() && !hasRemoteDrivers()) return 0;
+  if (!hasSqLite() && !hasRemoteDrivers()) {
+    return 0;
+  }
 
-  if (!show_connection_settings) return 1;
+  if (!show_connection_settings) {
+    return 1;
+  }
 
   setupDatabaseName(dbhistory::getLastRemote());
 
   bool ret = QDialog::exec();
 
-  if (ret && !sqlite) dbhistory::setLastRemote(getDescriptor());
+  if (ret && !sqlite) {
+    dbhistory::setLastRemote(getDescriptor());
+  }
   return ret;
 }

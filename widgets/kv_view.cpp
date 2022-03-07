@@ -46,7 +46,9 @@ void lineDelegate::setEditorData(QWidget* editor,
     k = key.model()->data(key, Qt::DisplayRole).toString();
     emit setupLineEdit(k, l);
   }
-  if (infoLabel) infoLabel->setText(k + ": " + l->toolTip());
+  if (infoLabel) {
+    infoLabel->setText(k + ": " + l->toolTip());
+  }
 }
 
 void lineDelegate::setModelData(QWidget* editor,
@@ -71,10 +73,11 @@ void kvmodel::addRow(const QStringList& newrow) {
   int row = rowCount(QModelIndex());
   beginInsertRows(QModelIndex(), row, row);
   for (int i = 0; i < myCols; i++) {
-    if (i >= newrow.size())
+    if (i >= newrow.size()) {
       items << QString();
-    else
+    } else {
       items << newrow[i].trimmed();
+    }
   }
   endInsertRows();
 }
@@ -95,8 +98,12 @@ QVariant kvmodel::headerData(int section,
                              Qt::Orientation orientation,
                              int role) const {
   if (role == Qt::DisplayRole) {
-    if (orientation == Qt::Horizontal) return {header[section]};
-    if (orientation == Qt::Vertical) return {section};
+    if (orientation == Qt::Horizontal) {
+      return {header[section]};
+    }
+    if (orientation == Qt::Vertical) {
+      return {section};
+    }
   }
   return {};
 }
@@ -134,7 +141,9 @@ void kvmodel::moveRow(int oldi, int newi) {
   QStringList line = items.mid(oldi * myCols, myCols);
   removeRows(oldi, 1);
   insertRows(newi, 1);
-  for (int i = 0; i < myCols; i++) items[newi * myCols + i] = line[i];
+  for (int i = 0; i < myCols; i++) {
+    items[newi * myCols + i] = line[i];
+  }
 }
 
 kvView::kvView(QWidget* parent) : QTableView(parent) {
@@ -173,7 +182,9 @@ void kvView::initLineDelegate(int col) {
 }
 
 void kvView::setKeys(const QStringList& k, int col) {
-  if (!col) keys0 = k;
+  if (!col) {
+    keys0 = k;
+  }
   auto* d = new comboDelegate(k, this);
   setItemDelegateForColumn(col, d);
 }
@@ -181,7 +192,9 @@ void kvView::setKeys(const QStringList& k, int col) {
 void kvView::moveRow(int, int oldi, int newi) {
   static int moving = 0;
 
-  if (moving) return;
+  if (moving) {
+    return;
+  }
   moving = 1;
   verticalHeader()->moveSection(newi, oldi);
   static_cast<kvmodel*>(model())->moveRow(oldi, newi);
@@ -200,7 +213,9 @@ void kvView::addRow(const QStringList& newrow) {
 
 void kvView::addKvRow() {
   QString k;
-  if (keys0.count() > 0) k = keys0[rowCount() % keys0.count()];
+  if (keys0.count() > 0) {
+    k = keys0[rowCount() % keys0.count()];
+  }
   addRow(QStringList(k));
 }
 
@@ -209,5 +224,7 @@ void kvView::deleteCurrentRow() {
 }
 
 void kvView::editorExited() {
-  if (infoLabel) infoLabel->clear();
+  if (infoLabel) {
+    infoLabel->clear();
+  }
 }

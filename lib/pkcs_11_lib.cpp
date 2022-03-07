@@ -19,39 +19,50 @@ pkcs11_lib::pkcs11_lib(const QString& f) {
   file = name2File(f, &is_enabled);
   p11 = nullptr;
 
-  if (!is_enabled) return;
+  if (!is_enabled) {
+    return;
+  }
 
   try {
     /* PKCS11 libs without path should be looked up locally */
     QString realfile = file;
-    if (!realfile.contains("/") && !realfile.isEmpty()) realfile.prepend("./");
+    if (!realfile.contains("/") && !realfile.isEmpty()) {
+      realfile.prepend("./");
+    }
     setFileName(realfile);
-    if (!load())
+    if (!load()) {
       throw errorEx(tr("Failed to open PKCS11 library: %1: %2")
                         .arg(file)
                         .arg(errorString()));
+    }
 
     /* Get the list of function pointers */
     c_get_function_list =
         (CK_RV(*)(CK_FUNCTION_LIST_PTR_PTR))resolve("C_GetFunctionList");
-    if (!c_get_function_list)
+    if (!c_get_function_list) {
       throw errorEx(
           tr("This does not look like a PKCS#11 library. Symbol "
              "'C_GetFunctionList' not found."));
+    }
 
     qDebug() << "Trying to load PKCS#11 provider" << file;
     rv = c_get_function_list(&p11);
-    if (rv != CKR_OK) pk11error("C_GetFunctionList", rv);
+    if (rv != CKR_OK) {
+      pk11error("C_GetFunctionList", rv);
+    }
 
     CALL_P11_C(this, C_Initialize, nullptr);
-    if (rv != CKR_OK && rv != CKR_CRYPTOKI_ALREADY_INITIALIZED)
+    if (rv != CKR_OK && rv != CKR_CRYPTOKI_ALREADY_INITIALIZED) {
       pk11error("C_Initialize", rv);
+    }
 
     qDebug() << "Successfully loaded PKCS#11 provider" << file;
   } catch (errorEx& err) {
     load_error = err.getString();
     WAITCURSOR_END;
-    if (p11) p11 = nullptr;
+    if (p11) {
+      p11 = nullptr;
+    }
     unload();
     qDebug() << "Failed to load PKCS#11 provider" << file;
   }
@@ -60,7 +71,9 @@ pkcs11_lib::pkcs11_lib(const QString& f) {
 pkcs11_lib::~pkcs11_lib() {
   CK_RV rv;
   (void)rv;
-  if (!isLoaded()) return;
+  if (!isLoaded()) {
+    return;
+  }
   qDebug() << "Unloading PKCS#11 provider" << file;
   CALL_P11_C(this, C_Finalize, nullptr);
   unload();
@@ -73,18 +86,25 @@ QList<unsigned long> pkcs11_lib::getSlotList() {
   QList<unsigned long> sl;
   unsigned long i, num_slots = 0;
 
-  if (!isLoaded()) return sl;
+  if (!isLoaded()) {
+    return sl;
+  }
 
   /* This one helps to avoid errors.
    * Fist time it fails, 2nd time it works */
   CALL_P11_C(this, C_GetSlotList, CK_TRUE, p11_slots, &num_slots);
   while (true) {
     CALL_P11_C(this, C_GetSlotList, CK_TRUE, p11_slots, &num_slots);
-    if (rv != CKR_OK && rv != CKR_BUFFER_TOO_SMALL)
+    if (rv != CKR_OK && rv != CKR_BUFFER_TOO_SMALL) {
       pk11error("C_GetSlotList", rv);
+    }
 
-    if (num_slots == 0) break;
-    if ((rv == CKR_OK) && p11_slots) break;
+    if (num_slots == 0) {
+      break;
+    }
+    if ((rv == CKR_OK) && p11_slots) {
+      break;
+    }
 
     p11_slots = (CK_SLOT_ID*)realloc(p11_slots, num_slots * sizeof(CK_SLOT_ID));
     Q_CHECK_PTR(p11_slots);
@@ -93,7 +113,9 @@ QList<unsigned long> pkcs11_lib::getSlotList() {
   for (i = 0; i < num_slots; i++) {
     sl << p11_slots[i];
   }
-  if (p11_slots) free(p11_slots);
+  if (p11_slots) {
+    free(p11_slots);
+  }
   return sl;
 }
 
@@ -101,10 +123,14 @@ QString pkcs11_lib::driverInfo() const {
   CK_INFO info;
   CK_RV rv;
 
-  if (!is_enabled) return QObject::tr("Disabled");
+  if (!is_enabled) {
+    return QObject::tr("Disabled");
+  }
 
   if (!isLoaded()) {
-    if (load_error.isEmpty()) return QObject::tr("Library loading failed");
+    if (load_error.isEmpty()) {
+      return QObject::tr("Library loading failed");
+    }
     return load_error;
   }
 
@@ -128,10 +154,14 @@ QString pkcs11_lib::driverInfo() const {
 QString pkcs11_lib::name2File(const QString& name, bool* enabled) {
   QString libname = name;
   QString ena = name.mid(0, 2);
-  if (enabled) *enabled = true;
+  if (enabled) {
+    *enabled = true;
+  }
   if (ena == "0:" || ena == "1:") {
     libname = name.mid(2);
-    if (enabled) *enabled = ena[0] != '0';
+    if (enabled) {
+      *enabled = ena[0] != '0';
+    }
   }
   return relativePath(libname);
 }
@@ -140,12 +170,18 @@ pkcs11_lib* pkcs11_lib_list::add_lib(const QString& fname) {
   int idx = -1;
   pkcs11_lib* l = nullptr;
 
-  if (fname.isEmpty()) return nullptr;
+  if (fname.isEmpty()) {
+    return nullptr;
+  }
 
   for (int i = 0; i < libs.size(); i++) {
     l = libs[i];
-    if (!l->isLib(fname)) continue;
-    if (model_data.contains(i)) return l;
+    if (!l->isLib(fname)) {
+      continue;
+    }
+    if (model_data.contains(i)) {
+      return l;
+    }
     idx = i;
     break;
   }
@@ -167,7 +203,9 @@ void pkcs11_lib_list::load(const QString& list) {
   foreach (QString name, list.split('\n')) {
     pkcs11_lib* newitem = nullptr;
     name = name.trimmed();
-    if (name.isEmpty()) continue;
+    if (name.isEmpty()) {
+      continue;
+    }
     for (int i = 0; i < libs.size(); i++) {
       if (name == libs[i]->toData()) {
         newitem = libs.takeAt(i);
@@ -182,7 +220,9 @@ void pkcs11_lib_list::load(const QString& list) {
   qDeleteAll(libs);
   libs = newlist;
   model_data.clear();
-  for (int i = 0; i < libs.size(); i++) model_data << i;
+  for (int i = 0; i < libs.size(); i++) {
+    model_data << i;
+  }
 
   endResetModel();
   qDebug() << "Libs reloaded from" << orig << "to" << getPkcs11Provider();
@@ -194,7 +234,9 @@ slotidList pkcs11_lib_list::getSlotList() const {
   bool success = false;
 
   foreach (pkcs11_lib* l, libs) {
-    if (!l->isLoaded()) continue;
+    if (!l->isLoaded()) {
+      continue;
+    }
     try {
       QList<unsigned long> realids;
       realids = l->getSlotList();
@@ -205,7 +247,9 @@ slotidList pkcs11_lib_list::getSlotList() const {
       ex = e.getString();
     }
   }
-  if (success || ex.isEmpty()) return list;
+  if (success || ex.isEmpty()) {
+    return list;
+  }
   throw errorEx(ex);
 }
 
@@ -217,7 +261,9 @@ QString pkcs11_lib_list::getPkcs11Provider() const {
 }
 
 void pkcs11_lib_list::remove_libs() {
-  if (libs.isEmpty() == 0) return;
+  if (libs.isEmpty() == 0) {
+    return;
+  }
   beginRemoveRows(QModelIndex(), 0, libs.size() - 1);
   qDeleteAll(libs);
   libs.clear();
@@ -227,7 +273,9 @@ void pkcs11_lib_list::remove_libs() {
 
 bool pkcs11_lib_list::loaded() const {
   foreach (pkcs11_lib* l, libs)
-    if (l->isLoaded()) return true;
+    if (l->isLoaded()) {
+      return true;
+    }
   return false;
 }
 
@@ -236,14 +284,18 @@ int pkcs11_lib_list::rowCount(const QModelIndex&) const {
 }
 
 pkcs11_lib* pkcs11_lib_list::libByModelIndex(const QModelIndex& index) const {
-  if (!index.isValid()) return nullptr;
+  if (!index.isValid()) {
+    return nullptr;
+  }
   int idx = model_data[index.row()];
   return (idx >= 0 && idx < libs.size()) ? libs[idx] : nullptr;
 }
 
 QVariant pkcs11_lib_list::data(const QModelIndex& index, int role) const {
   pkcs11_lib* l = libByModelIndex(index);
-  if (!l) return {};
+  if (!l) {
+    return {};
+  }
 
   QString pixmap;
 
@@ -268,7 +320,9 @@ QVariant pkcs11_lib_list::data(const QModelIndex& index, int role) const {
 
 QMap<int, QVariant> pkcs11_lib_list::itemData(const QModelIndex& index) const {
   QMap<int, QVariant> map;
-  if (index.isValid()) map[Qt::UserRole] = QVariant(model_data[index.row()]);
+  if (index.isValid()) {
+    map[Qt::UserRole] = QVariant(model_data[index.row()]);
+  }
   return map;
 }
 
@@ -285,7 +339,9 @@ bool pkcs11_lib_list::setData(const QModelIndex& index,
                               const QVariant& value,
                               int role) {
   pkcs11_lib* l = libByModelIndex(index);
-  if (!l || role != Qt::CheckStateRole) return false;
+  if (!l || role != Qt::CheckStateRole) {
+    return false;
+  }
 
   if (value == l->checked()) {
     /* No changes */
@@ -302,9 +358,10 @@ bool pkcs11_lib_list::setData(const QModelIndex& index,
 }
 
 Qt::ItemFlags pkcs11_lib_list::flags(const QModelIndex& index) const {
-  if (index.isValid())
+  if (index.isValid()) {
     return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled |
            Qt::ItemIsUserCheckable;
+  }
   return QAbstractListModel::flags(index) | Qt::ItemIsDropEnabled;
 }
 
@@ -316,11 +373,14 @@ bool pkcs11_lib_list::removeRows(int row,
                                  int count,
                                  const QModelIndex& parent) {
   if (parent.isValid() || row < 0 || count == 0 ||
-      row + count > model_data.size())
+      row + count > model_data.size()) {
     return false;
+  }
 
   beginRemoveRows(parent, row, row + count - 1);
-  while (count-- > 0 && row < model_data.size()) model_data.removeAt(row);
+  while (count-- > 0 && row < model_data.size()) {
+    model_data.removeAt(row);
+  }
   endRemoveRows();
   return true;
 }
@@ -328,10 +388,14 @@ bool pkcs11_lib_list::removeRows(int row,
 bool pkcs11_lib_list::insertRows(int row,
                                  int count,
                                  const QModelIndex& parent) {
-  if (parent.isValid() || row < 0 || count == 0) return false;
+  if (parent.isValid() || row < 0 || count == 0) {
+    return false;
+  }
 
   beginInsertRows(parent, row, row + count - 1);
-  for (int i = 0; i < count; i++) model_data.insert(row + i, 0);
+  for (int i = 0; i < count; i++) {
+    model_data.insert(row + i, 0);
+  }
   endInsertRows();
   return true;
 }

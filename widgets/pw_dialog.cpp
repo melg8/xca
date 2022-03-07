@@ -12,14 +12,18 @@ static int hex2bin(QString& x, Passwd* final) {
   bool ok = false;
   int len = x.length();
 
-  if (len % 2) return -1;
+  if (len % 2) {
+    return -1;
+  }
   len /= 2;
 
   final->clear();
 
   for (int i = 0; i < len; i++) {
     final->append((x.mid(i * 2, 2).toInt(&ok, 16)) & 0xff);
-    if (!ok) return -1;
+    if (!ok) {
+      return -1;
+    }
   }
   return len;
 }
@@ -29,11 +33,15 @@ enum open_result PwDialogUI::execute(pass_info* p,
                                      bool write,
                                      bool abort) {
   auto* dlg = new PwDialog(p, write);
-  if (abort) dlg->addAbortButton();
+  if (abort) {
+    dlg->addAbortButton();
+  }
   auto result = (enum open_result)dlg->exec();
   *passwd = dlg->getPass();
   delete dlg;
-  if (result == pw_exit) throw pw_exit;
+  if (result == pw_exit) {
+    throw pw_exit;
+  }
   return result;
 }
 
@@ -43,11 +51,14 @@ PwDialog::PwDialog(pass_info* p, bool write) : QDialog(p->getWidget()) {
   image->setPixmap(QPixmap(pi->getImage()));
   description->setText(pi->getDescription());
   title->setText(pi->getType());
-  if (!pi->getTitle().isEmpty())
+  if (!pi->getTitle().isEmpty()) {
     setWindowTitle(pi->getTitle());
-  else
+  } else {
     setWindowTitle(XCA_TITLE);
-  if (pi->getType() != "PIN") takeHex->hide();
+  }
+  if (pi->getType() != "PIN") {
+    takeHex->hide();
+  }
   setRW(write);
 }
 

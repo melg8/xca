@@ -42,7 +42,9 @@ static QAction* languageMenuEntry(const QStringList& sl) {
   }
   tooltip = locale.nativeLanguageName();
 
-  if (sl.length() > 2) tooltip += " - " + sl[2];
+  if (sl.length() > 2) {
+    tooltip += " - " + sl[2];
+  }
 
   auto* a = new QAction(lang, nullptr);
   a->setToolTip(tooltip);
@@ -50,7 +52,9 @@ static QAction* languageMenuEntry(const QStringList& sl) {
   a->setDisabled(!XcaApplication::languageAvailable(locale));
 
   a->setCheckable(true);
-  if (locale == QLocale()) a->setChecked(true);
+  if (locale == QLocale()) {
+    a->setChecked(true);
+  }
   return a;
 }
 
@@ -169,14 +173,20 @@ void MainWindow::init_menu() {
 
 void MainWindow::update_history_menu() {
   QStringList hist = history.get();
-  if (!historyMenu) return;
+  if (!historyMenu) {
+    return;
+  }
   historyMenu->clear();
   for (int i = 0, j = 0; i < hist.size(); i++) {
     QAction* a;
     QString txt = hist[i];
-    if (!QFile::exists(txt) && !database_model::isRemoteDB(txt)) continue;
+    if (!QFile::exists(txt) && !database_model::isRemoteDB(txt)) {
+      continue;
+    }
     txt = QFileInfo(txt).fileName();
-    if (txt.size() > 20) txt = QString("...") + txt.mid(txt.size() - 20);
+    if (txt.size() > 20) {
+      txt = QString("...") + txt.mid(txt.size() - 20);
+    }
     a = historyMenu->addAction(QString("%1 %2").arg(j++).arg(txt));
     a->setData(QVariant(hist[i]));
     a->setToolTip(hist[i]);
@@ -208,7 +218,9 @@ void MainWindow::load_database() {
 }
 
 void MainWindow::setOptions() {
-  if (!QSqlDatabase::database().isOpen()) return;
+  if (!QSqlDatabase::database().isOpen()) {
+    return;
+  }
 
   auto* opt = new Options(this);
   if (opt->exec()) {

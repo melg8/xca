@@ -11,7 +11,9 @@ void pk11_attribute::load(const slotid& slot,
                           CK_OBJECT_HANDLE obj) {
   CK_RV rv;
   rv = slot.p11()->C_GetAttributeValue(sess, obj, &attr, 1);
-  if (rv != CKR_OK) pk11error("C_GetAttribute()", rv);
+  if (rv != CKR_OK) {
+    pk11error("C_GetAttribute()", rv);
+  }
 }
 
 void pk11_attr_data::load(const slotid& slot,
@@ -28,13 +30,17 @@ void pk11_attr_data::load(const slotid& slot,
     attr.pValue = malloc(attr.ulValueLen + 1);
     Q_CHECK_PTR(attr.pValue);
     rv = slot.p11()->C_GetAttributeValue(sess, obj, &attr, 1);
-    if (rv == CKR_OK) return;
+    if (rv == CKR_OK) {
+      return;
+    }
   }
   pk11error("C_GetAttributeValue(data)", rv);
 }
 
 void pk11_attr_data::setValue(const unsigned char* ptr, unsigned long len) {
-  if (attr.pValue) free(attr.pValue);
+  if (attr.pValue) {
+    free(attr.pValue);
+  }
   if (!ptr || len == 0) {
     attr.ulValueLen = 0;
     attr.pValue = nullptr;
@@ -49,7 +55,9 @@ void pk11_attr_data::setValue(const unsigned char* ptr, unsigned long len) {
 
 void pk11_attr_data::setConstBignum(const BIGNUM* bn) {
   attr.ulValueLen = BN_num_bytes(bn);
-  if (attr.pValue) free(attr.pValue);
+  if (attr.pValue) {
+    free(attr.pValue);
+  }
   attr.pValue = malloc(attr.ulValueLen);
   Q_CHECK_PTR(attr.pValue);
   attr.ulValueLen = BN_bn2bin(bn, (unsigned char*)attr.pValue);
@@ -57,7 +65,9 @@ void pk11_attr_data::setConstBignum(const BIGNUM* bn) {
 
 void pk11_attr_data::setBignum(BIGNUM* bn, bool consume) {
   setConstBignum(bn);
-  if (consume) BN_free(bn);
+  if (consume) {
+    BN_free(bn);
+  }
 }
 
 void pk11_attribute::store(const slotid& slot,
@@ -65,7 +75,9 @@ void pk11_attribute::store(const slotid& slot,
                            CK_OBJECT_HANDLE obj) {
   CK_RV rv;
   rv = slot.p11()->C_SetAttributeValue(sess, obj, &attr, 1);
-  if (rv != CKR_OK) pk11error("C_SetAttributeValue", rv);
+  if (rv != CKR_OK) {
+    pk11error("C_SetAttributeValue", rv);
+  }
 }
 
 void pk11_attlist::copy(const pk11_attlist& a) {
@@ -93,7 +105,9 @@ pk11_attlist::~pk11_attlist() {
     memset(attributes[i].pValue, 0, attributes[i].ulValueLen);
     free(attributes[i].pValue);
   }
-  if (attributes) free(attributes);
+  if (attributes) {
+    free(attributes);
+  }
 }
 
 void pk11_attlist::addAttribute(const pk11_attribute& a) {
@@ -114,7 +128,9 @@ void pk11_attlist::addAttribute(const pk11_attribute& a) {
 }
 
 void pk11_attlist::reset() {
-  for (unsigned long i = 0; i < attlen; i++) free(attributes[i].pValue);
+  for (unsigned long i = 0; i < attlen; i++) {
+    free(attributes[i].pValue);
+  }
 
   attlen = 0;
 }

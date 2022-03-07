@@ -54,7 +54,9 @@ dbheaderList db_key::getHeaders() {
 }
 
 pki_base* db_key::newPKI(enum pki_type type) {
-  if (type == asym_key) return new pki_evp("");
+  if (type == asym_key) {
+    return new pki_evp("");
+  }
   return new pki_scard("");
 }
 
@@ -91,7 +93,9 @@ void db_key::inToCont(pki_base* pki) {
   SQL_PREPARE(q, "UPDATE x509super SET pkey=? WHERE item=?");
   q.bindValue(0, key->getSqlItemId());
   foreach (pki_x509super* x509s, items) {
-    if (!x509s->compareRefKey(key)) continue;
+    if (!x509s->compareRefKey(key)) {
+      continue;
+    }
     /* Found item matching this key */
     x509s->setRefKey(key);
     q.bindValue(1, x509s->getSqlItemId());
@@ -106,7 +110,9 @@ pki_base* db_key::insert(pki_base* item) {
   pki_key* oldkey;
   auto* evp = dynamic_cast<pki_evp*>(lkey);
 
-  if (evp) evp->setOwnPass(pki_evp::ptCommon);
+  if (evp) {
+    evp->setOwnPass(pki_evp::ptCommon);
+  }
 
   oldkey = static_cast<pki_key*>(getByReference(lkey));
   if (oldkey != nullptr) {
@@ -140,11 +146,12 @@ pki_key* db_key::newKey(const keyjob& task, const QString& name) {
       XCA_WARN(tr("Key size too small !"));
       return nullptr;
     }
-    if (task.size < 1024 || task.size > 8192)
+    if (task.size < 1024 || task.size > 8192) {
       if (!XCA_YESNO(tr("You are sure to create a key of the size: %1 ?")
                          .arg(task.size))) {
         return nullptr;
       }
+    }
   }
   try {
     if (task.isToken()) {
@@ -154,7 +161,9 @@ pki_key* db_key::newKey(const keyjob& task, const QString& name) {
     }
     key->generate(task);
     key->pkiSource = generated;
-    if (key->getIntName().isEmpty()) key->autoIntName(name);
+    if (key->getIntName().isEmpty()) {
+      key->autoIntName(name);
+    }
     key = dynamic_cast<pki_key*>(insert(key));
     emit keyDone(key);
     createSuccess(key);
@@ -172,17 +181,26 @@ int db_key::exportFlags(const QModelIndex& index) const {
 
   auto* key = fromIndex<pki_key>(index);
 
-  if (!index.isValid() || !key) return 0;
+  if (!index.isValid() || !key) {
+    return 0;
+  }
 
   int keytype = key->getKeyType();
-  if (keytype != EVP_PKEY_RSA && keytype != EVP_PKEY_DSA)
+  if (keytype != EVP_PKEY_RSA && keytype != EVP_PKEY_DSA) {
     disable_flags |= F_PVK;
+  }
 #ifdef EVP_PKEY_ED25519
-  if (keytype == EVP_PKEY_ED25519) disable_flags |= F_CRYPT;
+  if (keytype == EVP_PKEY_ED25519) {
+    disable_flags |= F_CRYPT;
+  }
 #endif
-  if (!key->SSH2_compatible()) disable_flags |= F_SSH2;
+  if (!key->SSH2_compatible()) {
+    disable_flags |= F_SSH2;
+  }
 
-  if (key->isPubKey() || key->isToken()) disable_flags |= F_PRIVATE;
+  if (key->isPubKey() || key->isToken()) {
+    disable_flags |= F_PRIVATE;
+  }
 
   return disable_flags;
 }
@@ -201,35 +219,40 @@ void db_key::exportItem(const QModelIndex& index,
     pwCallback = PwDialogCore::pwCallback;
   }
 
-  if (privkey && xport->match_all(F_DER | F_PRIVATE))
+  if (privkey && xport->match_all(F_DER | F_PRIVATE)) {
     privkey->writeKey(file, nullptr, nullptr, false);
-  else if (privkey && xport->match_all(F_PEM | F_PRIVATE))
+  } else if (privkey && xport->match_all(F_PEM | F_PRIVATE)) {
     privkey->writeKey(file, algo, pwCallback, true);
-  else if (xport->match_all(F_DER))
+  } else if (xport->match_all(F_DER)) {
     key->writePublic(file, false);
-  else if (xport->match_all(F_PEM))
+  } else if (xport->match_all(F_PEM)) {
     key->writePublic(file, true);
-  else if (privkey && xport->match_all(F_PKCS8))
+  } else if (privkey && xport->match_all(F_PKCS8)) {
     privkey->writePKCS8(file, algo, pwCallback, true);
-  else if (xport->match_all(F_SSH2 | F_PRIVATE))
+  } else if (xport->match_all(F_SSH2 | F_PRIVATE)) {
     key->writeSSH2private(file, pwCallback);
-  else if (xport->match_all(F_SSH2))
+  } else if (xport->match_all(F_SSH2)) {
     key->writeSSH2public(file);
-  else if (privkey && xport->match_all(F_PVK))
+  } else if (privkey && xport->match_all(F_PVK)) {
     privkey->writePVKprivate(file, pwCallback);
-  else
+  } else {
     throw errorEx(tr("Internal error"));
+  }
 }
 
 void db_key::setOwnPass(QModelIndex idx, enum pki_key::passType x) {
   auto* targetKey = fromIndex<pki_evp>(idx);
   enum pki_key::passType old_type;
 
-  if (!idx.isValid() || !targetKey) return;
+  if (!idx.isValid() || !targetKey) {
+    return;
+  }
   if (targetKey->isToken()) {
     throw errorEx(tr("Tried to change password of a token"));
   }
   old_type = targetKey->getOwnPass();
   targetKey->setOwnPass(x);
-  if (!targetKey->sqlUpdatePrivateKey()) targetKey->setOwnPass(old_type);
+  if (!targetKey->sqlUpdatePrivateKey()) {
+    targetKey->setOwnPass(old_type);
+  }
 }

@@ -6,8 +6,8 @@ void BioByteArray::set(const QByteArray& qba) {
   if (read_write) {
     char buf[1024];
     qWarning() << "BioByteArray already in use";
-    while (BIO_read(read_write, buf, sizeof buf) > 0)
-      ;
+    while (BIO_read(read_write, buf, sizeof buf) > 0) {
+    }
     memset(buf, 0, sizeof buf);
   }
   add(qba);
@@ -18,10 +18,11 @@ void BioByteArray::add(const QByteArray& qba) {
     qWarning() << "BioByteArray is read-only";
     return;
   }
-  if (read_write)
+  if (read_write) {
     biowrite(qba);
-  else
+  } else {
     store += qba;
+  }
 }
 
 void BioByteArray::biowrite(const QByteArray& qba) {
@@ -29,7 +30,9 @@ void BioByteArray::biowrite(const QByteArray& qba) {
 }
 
 void BioByteArray::cleanse_and_free(BIO* bio) {
-  if (!bio) return;
+  if (!bio) {
+    return;
+  }
   char* p;
   long l = BIO_get_mem_data(bio, &p);
   OPENSSL_cleanse(p, l);
@@ -40,7 +43,9 @@ BioByteArray::~BioByteArray() {
   store.fill(0);
   store.clear();
   cleanse_and_free(read_write);
-  if (read_only) BIO_free(read_only);
+  if (read_only) {
+    BIO_free(read_only);
+  }
 }
 
 BIO* BioByteArray::bio() {
@@ -54,14 +59,17 @@ BIO* BioByteArray::bio() {
 }
 
 BIO* BioByteArray::ro() {
-  if (!read_only)
+  if (!read_only) {
     read_only = BIO_new_mem_buf(static_cast<const void*>(store.constData()),
                                 store.length());
+  }
   return read_only;
 }
 
 QByteArray BioByteArray::byteArray() const {
-  if (read_only || !read_write) return store;
+  if (read_only || !read_write) {
+    return store;
+  }
   /* "read_write" Bio may differ from "store" */
   const char* p;
   int l = BIO_get_mem_data(read_write, &p);
@@ -69,7 +77,9 @@ QByteArray BioByteArray::byteArray() const {
 }
 
 int BioByteArray::size() const {
-  if (read_only || !read_write) return store.size();
+  if (read_only || !read_write) {
+    return store.size();
+  }
   /* "read_write" Bio may differ from "store" */
   const char* p;
   return BIO_get_mem_data(read_write, &p);

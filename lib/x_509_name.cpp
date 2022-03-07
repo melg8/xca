@@ -27,13 +27,17 @@ x509name::x509name(const x509name& n) {
 x509name::~x509name() { X509_NAME_free(xn); }
 
 x509name& x509name::set(const X509_NAME* n) {
-  if (xn != nullptr) X509_NAME_free(xn);
+  if (xn != nullptr) {
+    X509_NAME_free(xn);
+  }
   xn = X509_NAME_dup(const_cast<X509_NAME*>(n));
   return *this;
 }
 
 x509name& x509name::set(const STACK_OF(X509_NAME_ENTRY) * entries) {
-  if (xn != nullptr) X509_NAME_free(xn);
+  if (xn != nullptr) {
+    X509_NAME_free(xn);
+  }
   xn = X509_NAME_new();
   if (xn && entries) {
     int count = sk_X509_NAME_ENTRY_num(entries);
@@ -53,7 +57,9 @@ QString x509name::oneLine(unsigned long flags) const {
 
 QString x509name::getEntryByNid(int nid) const {
   int i = X509_NAME_get_index_by_NID(xn, nid, -1);
-  if (i < 0) return {};
+  if (i < 0) {
+    return {};
+  }
   return getEntry(i);
 }
 
@@ -65,7 +71,9 @@ QString x509name::getMostPopular() const {
   for (unsigned i = 0; i < ARRAY_SIZE(nids) && pos < 0; i++) {
     pos = X509_NAME_get_index_by_NID(xn, nids[i], -1);
   }
-  if (pos < 0) pos = 0;
+  if (pos < 0) {
+    pos = 0;
+  }
   return getEntry(pos);
 }
 
@@ -73,7 +81,9 @@ QString x509name::getEntry(int i) const {
   QString ret;
   ASN1_STRING* d;
 
-  if (i < 0 || i > entryCount()) return ret;
+  if (i < 0 || i > entryCount()) {
+    return ret;
+  }
 
   d = X509_NAME_ENTRY_get_data(X509_NAME_get_entry(xn, i));
 
@@ -84,10 +94,14 @@ QString x509name::getEntryTag(int i) const {
   QString s = QObject::tr("Invalid");
   ASN1_STRING* d;
 
-  if (i < 0 || i >= entryCount()) i = entryCount() - 1;
+  if (i < 0 || i >= entryCount()) {
+    i = entryCount() - 1;
+  }
   d = X509_NAME_ENTRY_get_data(X509_NAME_get_entry(xn, i));
 
-  if (!d) return s;
+  if (!d) {
+    return s;
+  }
 
   s = ASN1_tag2str(d->type);
   return s;
@@ -95,7 +109,9 @@ QString x509name::getEntryTag(int i) const {
 
 QString x509name::popEntryByNid(int nid) {
   int i = X509_NAME_get_index_by_NID(xn, nid, -1);
-  if (i < 0) return {};
+  if (i < 0) {
+    return {};
+  }
   QString n = getEntry(i);
   X509_NAME_delete_entry(xn, i);
   return n;
@@ -125,7 +141,9 @@ int x509name::nid(int i) const {
   X509_NAME_ENTRY* ne;
 
   ne = X509_NAME_get_entry(xn, i);
-  if (ne == nullptr) return NID_undef;
+  if (ne == nullptr) {
+    return NID_undef;
+  }
   return OBJ_obj2nid(X509_NAME_ENTRY_get_object(ne));
 }
 
@@ -133,7 +151,9 @@ QString x509name::getOid(int i) const {
   X509_NAME_ENTRY* ne;
 
   ne = X509_NAME_get_entry(xn, i);
-  if (ne == nullptr) return {};
+  if (ne == nullptr) {
+    return {};
+  }
   return OBJ_obj2QString(X509_NAME_ENTRY_get_object(ne), 1);
 }
 
@@ -178,7 +198,9 @@ QString x509name::checkLength() const {
     QString entry;
 
     tab = ASN1_STRING_TABLE_get(n);
-    if (!tab) continue;
+    if (!tab) {
+      continue;
+    }
     entry = getEntry(i);
     if (tab->minsize > entry.size()) {
       warn += QObject::tr("%1 is shorter than %2 bytes: '%3'")
@@ -201,7 +223,9 @@ QString x509name::checkLength() const {
 bool x509name::search(const QRegExp& pattern) const {
   int i, max = entryCount();
   for (i = 0; i < max; i++) {
-    if (getEntry(i).contains(pattern)) return true;
+    if (getEntry(i).contains(pattern)) {
+      return true;
+    }
   }
   return false;
 }
@@ -218,7 +242,9 @@ QString x509name::taggedValues() const {
 }
 
 void x509name::addEntryByNid(int nid, const QString entry) {
-  if (entry.isEmpty()) return;
+  if (entry.isEmpty()) {
+    return;
+  }
   ASN1_STRING* a = QStringToAsn1(entry.simplified(), nid);
   X509_NAME_add_entry_by_NID(xn, nid, a->type, a->data, a->length, -1, 0);
   ASN1_STRING_free(a);

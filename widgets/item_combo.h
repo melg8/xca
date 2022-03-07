@@ -19,7 +19,9 @@ class itemCombo : public QComboBox {
   }
   T* currentPkiItem() { return itemData(currentIndex()).template value<T*>(); }
   void setNullItem(QString text) {
-    if (itemData(0).template value<T*>() == nullptr) removeItem(0);
+    if (itemData(0).template value<T*>() == nullptr) {
+      removeItem(0);
+    }
     insertItem(0, text, QVariant());
   }
   int setCurrentPkiItem(T* p) {

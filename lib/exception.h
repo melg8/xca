@@ -16,7 +16,9 @@ class errorEx {
  public:
   errorEx(QString txt = "", QString className = "") {
     msg = txt;
-    if (!className.isEmpty()) msg += " (" + className + ")";
+    if (!className.isEmpty()) {
+      msg += " (" + className + ")";
+    }
   }
   errorEx(const QSqlError& e) { msg = e.text(); }
   void appendString(QString s) { msg = msg + " " + s; }

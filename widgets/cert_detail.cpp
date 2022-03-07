@@ -93,7 +93,9 @@ void CertDetail::setX509super(pki_x509super* x) {
 }
 
 void CertDetail::setCert(pki_x509* cert) {
-  if (!cert) return;
+  if (!cert) {
+    return;
+  }
   image->setPixmap(QPixmap(":certImg"));
   headerLabel->setText(tr("Details of the Certificate"));
   mainwin->helpdlg->register_ctxhelp_button(this, "certdetail");
@@ -162,7 +164,9 @@ void CertDetail::setCert(pki_x509* cert) {
 }
 
 void CertDetail::setReq(pki_x509req* req) {
-  if (!req) return;
+  if (!req) {
+    return;
+  }
   image->setPixmap(QPixmap(":csrImg"));
   headerLabel->setText(tr("Details of the certificate signing request"));
   mainwin->helpdlg->register_ctxhelp_button(this, "csrdetail");
@@ -246,9 +250,15 @@ QLabel* CertDetail::labelFromAsn1String(ASN1_STRING* s) {
 void CertDetail::itemChanged(pki_base* pki) {
   QVariant pkiSqlId = pki->getSqlItemId();
 
-  if (pkiSqlId == keySqlId) privKey->setText(pki->getIntName());
-  if (pkiSqlId == issuerSqlId) signature->setText(pki->getIntName());
-  if (pkiSqlId == thisSqlId) descr->setText(pki->getIntName());
+  if (pkiSqlId == keySqlId) {
+    privKey->setText(pki->getIntName());
+  }
+  if (pkiSqlId == issuerSqlId) {
+    signature->setText(pki->getIntName());
+  }
+  if (pkiSqlId == thisSqlId) {
+    descr->setText(pki->getIntName());
+  }
 }
 
 void CertDetail::showPubKey() {
@@ -260,9 +270,13 @@ void CertDetail::showIssuer() {
 }
 
 void CertDetail::showCert(QWidget* parent, pki_x509super* x) {
-  if (!x) return;
+  if (!x) {
+    return;
+  }
   auto* dlg = new CertDetail(parent);
-  if (!dlg) return;
+  if (!dlg) {
+    return;
+  }
   dlg->setX509super(x);
   if (dlg->exec()) {
     db_base* db = Database.modelForPki(x);
