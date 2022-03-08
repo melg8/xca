@@ -26,7 +26,8 @@ void pki_evp::init() {
 }
 
 void pki_evp::setOwnPass(enum passType x) {
-  EVP_PKEY *pk = nullptr, *pk_back = key;
+  EVP_PKEY* pk = nullptr;
+  EVP_PKEY* pk_back = key;
   enum passType oldOwnPass = ownPass;
 
   if (ownPass == x || isPubKey()) {
@@ -310,7 +311,12 @@ EVP_PKEY* pki_evp::load_ssh_ed25519_privatekey(const QByteArray& ba,
   EVP_PKEY* pkey = nullptr;
   unsigned char* pdata;
   long plen;
-  QByteArray chunk, enc_algo, kdfname, kdf, pub, priv;
+  QByteArray chunk;
+  QByteArray enc_algo;
+  QByteArray kdfname;
+  QByteArray kdf;
+  QByteArray pub;
+  QByteArray priv;
 
   (void)p;  // Will be used later for decryption
   if (!PEM_bytes_read_bio(&pdata, &plen, nullptr, PEM_STRING_OPENSSH_KEY,
@@ -519,7 +525,8 @@ EVP_PKEY* pki_evp::decryptKey() const {
 
 EVP_PKEY* pki_evp::priv2pub(EVP_PKEY* privateKey) {
   int keylen;
-  unsigned char *p, *p1;
+  unsigned char* p;
+  unsigned char* p1;
   EVP_PKEY* pubkey;
 
   keylen = i2d_PUBKEY(privateKey, nullptr);
@@ -828,8 +835,10 @@ void pki_evp::writeKey(XFile& file,
 
 bool pki_evp::verify_priv(EVP_PKEY* pkey) const {
   bool verify = true;
-  unsigned char data[32], sig[1024];
-  size_t datalen = sizeof data, siglen = sizeof sig;
+  unsigned char data[32];
+  unsigned char sig[1024];
+  size_t datalen = sizeof data;
+  size_t siglen = sizeof sig;
   EVP_MD_CTX* ctx = nullptr;
   const EVP_MD* md = EVP_sha256();
   EVP_PKEY_CTX* pkctx = nullptr;

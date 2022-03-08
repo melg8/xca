@@ -336,7 +336,8 @@ DbMap database_model::splitRemoteDbName(const QString& db) {
                                                "type", "dbname", "prefix"};
   DbMap map;
   QRegExp rx("(.*)@(.*)/(.*):([^#]*)#?([^#]*)");
-  int i, pos = rx.indexIn(db);
+  int i;
+  int pos = rx.indexIn(db);
   QStringList list = rx.capturedTexts();
 
   if (pos != -1 && list.size() >= NUM_PARAM_LEAST) {
@@ -429,7 +430,8 @@ void database_model::openDatabase(const QString& descriptor,
                                   const Passwd& pass) {
   DbMap params = splitRemoteDbName(descriptor);
   bool isRemote = params.size() == NUM_PARAM;
-  QString connName, type = isRemote ? params["type"] : QString("QSQLITE");
+  QString connName;
+  QString type = isRemote ? params["type"] : QString("QSQLITE");
 
   qDebug() << "IS REMOTE?" << params.size() << NUM_PARAM << type << params;
   try {
@@ -475,7 +477,8 @@ static void pwhash_upgrade() {
 
 enum open_result database_model::initPass(const QString& db_name,
                                           const QString& passhash) const {
-  QString salt, pass;
+  QString salt;
+  QString pass;
   enum open_result result = pw_cancel;
 
   pass_info p(tr("New Password"),

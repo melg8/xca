@@ -165,7 +165,8 @@ QString pki_temp::getMsg(msg_type msg) const {
 x509name pki_temp::getSubject() const { return xname; }
 
 static int bitsToInt(extList& el, int nid, bool* crit) {
-  int ret = 0, i = el.idxByNid(nid);
+  int ret = 0;
+  int i = el.idxByNid(nid);
 
   if (i != -1) {
     if (crit) {
@@ -402,7 +403,8 @@ void pki_temp::fromData(const unsigned char* p, int size, int version) {
 }
 
 QByteArray pki_temp::toExportData() const {
-  QByteArray data, header;
+  QByteArray data;
+  QByteArray header;
   data = toData();
   header = db::intToData(data.count());
   header += db::intToData(TMPL_VERSION);
@@ -469,7 +471,8 @@ void pki_temp::fload(const QString& fname) {
 void pki_temp::fromPEM_BIO(BIO* bio, const QString& name) {
   QByteArray ba;
   QString msg;
-  char *nm = nullptr, *header = nullptr;
+  char* nm = nullptr;
+  char* header = nullptr;
   unsigned char* data = nullptr;
   long len;
 

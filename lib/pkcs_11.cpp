@@ -307,7 +307,8 @@ static QString newPinTxt =
     QObject::tr("Please enter the new PIN for the token: '%1'");
 
 void pkcs11::changePin(const slotid& slot, bool so) {
-  Passwd newPin, pinp;
+  Passwd newPin;
+  Passwd pinp;
   QString pin;
 
   startSession(slot, true);
@@ -335,7 +336,8 @@ void pkcs11::changePin(const slotid& slot, bool so) {
 }
 
 void pkcs11::initPin(const slotid& slot) {
-  Passwd newPin, pinp;
+  Passwd newPin;
+  Passwd pinp;
   int ret = 1;
   QString pin;
 
@@ -465,8 +467,12 @@ pk11_attr_data pkcs11::generateKey(QString name,
   (void)nid;
 #endif
   CK_RV rv;
-  CK_OBJECT_HANDLE pubkey, privkey, dsa_param_obj;
-  pk11_attlist priv_atts, pub_atts, dsa_param;
+  CK_OBJECT_HANDLE pubkey;
+  CK_OBJECT_HANDLE privkey;
+  CK_OBJECT_HANDLE dsa_param_obj;
+  pk11_attlist priv_atts;
+  pk11_attlist pub_atts;
+  pk11_attlist dsa_param;
   CK_MECHANISM mechanism = {mech, nullptr, 0};
   pk11_attr_data label(CKA_LABEL, name.toUtf8());
 
@@ -518,7 +524,9 @@ pk11_attr_data pkcs11::generateKey(QString name,
         pk11error("C_GenerateKey(DSA_PARAMETER)", rv);
       }
 
-      pk11_attr_data p(CKA_PRIME), q(CKA_SUBPRIME), g(CKA_BASE);
+      pk11_attr_data p(CKA_PRIME);
+      pk11_attr_data q(CKA_SUBPRIME);
+      pk11_attr_data g(CKA_BASE);
       loadAttribute(p, dsa_param_obj);
       loadAttribute(q, dsa_param_obj);
       loadAttribute(g, dsa_param_obj);
@@ -565,7 +573,9 @@ QList<CK_OBJECT_HANDLE> pkcs11::objectList(pk11_attlist& atts) {
   CK_RV rv;
   CK_OBJECT_HANDLE objects[256];
   QList<CK_OBJECT_HANDLE> list;
-  unsigned long len, i, att_num;
+  unsigned long len;
+  unsigned long i;
+  unsigned long att_num;
   CK_ATTRIBUTE* attribute;
 
   att_num = atts.get(&attribute);
@@ -685,11 +695,13 @@ static int dsa_privdata_free(DSA* dsa) {
 }
 
 static DSA_SIG* dsa_sign(const unsigned char* dgst, int dlen, DSA* dsa) {
-  int len, rs_len;
+  int len;
+  int rs_len;
   unsigned char rs_buf[128];
   auto* p11 = (pkcs11*)DSA_get_ex_data(dsa, 0);
   DSA_SIG* dsa_sig = DSA_SIG_new();
-  BIGNUM *r, *s;
+  BIGNUM* r;
+  BIGNUM* s;
 
   // siglen is unsigned and can't cope with -1 as return value
   len = p11->encrypt(dlen, dgst, rs_buf, sizeof rs_buf, CKM_DSA);
@@ -730,11 +742,13 @@ static ECDSA_SIG* ec_do_sign(const unsigned char* dgst,
                              const BIGNUM* in_kinv,
                              const BIGNUM* in_r,
                              EC_KEY* ec) {
-  int len, rs_len;
+  int len;
+  int rs_len;
   unsigned char rs_buf[512];
   ECDSA_SIG* ec_sig = ECDSA_SIG_new();
   auto* p11 = (pkcs11*)EC_KEY_get_ex_data(ec, 0);
-  BIGNUM *r, *s;
+  BIGNUM* r;
+  BIGNUM* s;
 
   (void)in_kinv;
   (void)in_r;

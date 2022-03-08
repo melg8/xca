@@ -63,7 +63,8 @@ int console_write(FILE* fp, const QByteArray& ba) {
 Passwd readPass() {
   Passwd pw;
 #if !defined(Q_OS_WIN32)
-  struct termios t, back;
+  struct termios t;
+  struct termios back;
   if (tcgetattr(0, &t)) {
     throw errorEx(strerror(errno));
   }
@@ -127,7 +128,8 @@ static QString registryInstallDir() {
 
 int portable_app() {
   static int portable = -1;
-  QString f1, f2;
+  QString f1;
+  QString f2;
   if (portable == -1) {
 #if defined(Q_OS_WIN32)
     f1 = registryInstallDir();
@@ -295,7 +297,8 @@ void migrateOldPaths() {
 // This function makes sure that a filename has the user-selected extension.
 QString getFullFilename(const QString& filename,
                         const QString& selectedFilter) {
-  QString rv = filename.trimmed(), ext;
+  QString rv = filename.trimmed();
+  QString ext;
   QRegExp rx(R"(.* \( ?\*(.[a-z]{1,3}) ?\))");
   rx.indexIn(selectedFilter);
   ext = rx.cap(1);
@@ -307,7 +310,8 @@ QString getFullFilename(const QString& filename,
 
 QString hostId() {
   static QString id;
-  unsigned char guid[100] = "", md[SHA_DIGEST_LENGTH];
+  unsigned char guid[100] = "";
+  unsigned char md[SHA_DIGEST_LENGTH];
 
   if (!id.isEmpty()) {
     return id;
@@ -378,7 +382,8 @@ QString compressFilename(const QString& filename, int maxlen) {
   QString fn = filename;
   if (fn.length() >= maxlen) {
     fn.replace("\\", "/");
-    int len, lastslash = fn.lastIndexOf('/');
+    int len;
+    int lastslash = fn.lastIndexOf('/');
     QString base = filename.mid(lastslash);
     len = maxlen - base.length() - 3;
     if (len < 0) {
@@ -461,7 +466,8 @@ QByteArray i2d_bytearray(int (*i2d)(const void*, unsigned char**),
 
 void* d2i_bytearray(void* (*d2i)(void*, unsigned char**, long),
                     QByteArray& ba) {
-  unsigned char *p, *p1;
+  unsigned char* p;
+  unsigned char* p1;
   void* ret;
   p = p1 = reinterpret_cast<unsigned char*>(ba.data());
   ret = d2i(nullptr, &p1, ba.count());

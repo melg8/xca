@@ -34,7 +34,8 @@ QWidget* lineDelegate::createEditor(QWidget* parent,
 
 void lineDelegate::setEditorData(QWidget* editor,
                                  const QModelIndex& index) const {
-  QString v, k;
+  QString v;
+  QString k;
 
   v = index.model()->data(index, Qt::EditRole).toString();
   QModelIndex key = index.sibling(index.row(), 0);

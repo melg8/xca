@@ -229,7 +229,10 @@ static bool asn1TypePrintable(int type) {
 
 static QString ipv6_from_binary(const unsigned char* p) {
   QString ip;
-  int i, skip = 0, skiplen = 0, skippos = 0;
+  int i;
+  int skip = 0;
+  int skiplen = 0;
+  int skippos = 0;
 
   /* find largest gap */
   for (i = 0; i < 17; i += 2) {
@@ -401,7 +404,8 @@ bool x509v3ext::parse_ia5(QString* single, QString* adv) const {
 
 bool x509v3ext::parse_generalName(QString* single, QString* adv) const {
   bool retval = true;
-  QString sect, ret;
+  QString sect;
+  QString ret;
   auto* gens = (STACK_OF(GENERAL_NAME)*)d2i();
 
   if (!gens) {
@@ -447,7 +451,8 @@ bool x509v3ext::parse_eku(QString* single, QString* adv) const {
 
 bool x509v3ext::parse_ainfo(QString* single, QString* adv) const {
   bool retval = true;
-  QString sect, ret;
+  QString sect;
+  QString ret;
   QString tag = OBJ_nid2sn(nid());
   QStringList sl;
   int i;
@@ -515,7 +520,8 @@ bool x509v3ext::parse_Crldp(QString* single, QString* adv) const {
     DIST_POINT* point = sk_DIST_POINT_value(crld, 0);
     if (point->distpoint && !point->reasons && !point->CRLissuer &&
         !point->distpoint->type) {
-      QString sect, ret;
+      QString sect;
+      QString ret;
       if (!genNameStack2conf(point->distpoint->name.fullname, "", &ret,
                              &sect)) {
         goto could_not_parse;
@@ -606,7 +612,8 @@ static void gen_cpol_notice(QString tag, USERNOTICE* notice, QString* adv) {
 
 static bool gen_cpol_qual_sect(QString tag, POLICYINFO* pinfo, QString* adv) {
   QString polsect = QString("\n[%1]\n").arg(tag);
-  QString noticetag, _adv;
+  QString noticetag;
+  QString _adv;
   STACK_OF(POLICYQUALINFO)* quals = pinfo->qualifiers;
   int i;
 
@@ -776,7 +783,8 @@ bool x509v3ext::parse_aKeyId(QString*, QString* adv) const {
 
 bool x509v3ext::parse_generic(QString*, QString* adv) const {
   const ASN1_OBJECT* o = object();
-  QString der, obj = o ? obj2SnOid(o) : QString("<ERROR>");
+  QString der;
+  QString obj = o ? obj2SnOid(o) : QString("<ERROR>");
   ASN1_OCTET_STRING* v = getData();
 
   for (int i = 0; i < v->length; i++) {
@@ -811,7 +819,8 @@ bool x509v3ext::parse_inhibitAnyPolicy(QString*, QString* adv) const {
 
 bool x509v3ext::parse_policyConstraints(QString*, QString* adv) const {
   QStringList v;
-  a1int a1null(0L), a;
+  a1int a1null(0L);
+  a1int a;
   auto* pol = (POLICY_CONSTRAINTS*)d2i();
 
   if (!pol) {
@@ -887,7 +896,8 @@ static bool nameConstraint(STACK_OF(GENERAL_SUBTREE) * trees,
 
 bool x509v3ext::parse_nameConstraints(QString*, QString* adv) const {
   bool retval = true;
-  QString sect, ret;
+  QString sect;
+  QString ret;
   QStringList permEx;
   QString tag = OBJ_nid2sn(nid());
   auto* cons = (NAME_CONSTRAINTS*)d2i();
@@ -979,7 +989,8 @@ QString x509v3ext::getHtml() const {
 }
 
 QString x509v3ext::getConsole(const QString& indent) const {
-  QString text, twoind = indent + indent;
+  QString text;
+  QString twoind = indent + indent;
   text = indent + COL_BOLD COL_UNDER + getObject();
   if (getCritical() != 0) {
     text += " " COL_RED COL_UNDER "[critical]";

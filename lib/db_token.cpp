@@ -35,7 +35,8 @@ void db_token::rename_token_in_database(pki_scard* token) {
 bool db_token::setData(const QModelIndex& index,
                        const QVariant& value,
                        int role) {
-  QString on, nn;
+  QString on;
+  QString nn;
   pki_base* item;
   if (index.isValid() && role == Qt::EditRole) {
     nn = value.toString();

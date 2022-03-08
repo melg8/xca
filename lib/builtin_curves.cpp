@@ -98,7 +98,8 @@ static const QList<int> other_curve_nids() {
 }
 
 builtin_curves::builtin_curves() {
-  int i, num_curves = EC_get_builtin_curves(nullptr, 0);
+  int i;
+  int num_curves = EC_get_builtin_curves(nullptr, 0);
   auto* curves = new EC_builtin_curve[num_curves];
 
   Q_CHECK_PTR(curves);
@@ -109,7 +110,8 @@ builtin_curves::builtin_curves() {
   EC_get_builtin_curves(curves, num_curves);
 
   for (i = 0; i < num_curves; i++) {
-    int flag = 0, nid = curves[i].nid;
+    int flag = 0;
+    int nid = curves[i].nid;
     unsigned long type = 0;
 
     if (rfc5480_curve_nids().contains(nid)) {

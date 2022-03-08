@@ -190,7 +190,8 @@ int x509name::getNidByName(const QString& nid_name) {
 
 QString x509name::checkLength() const {
   ASN1_STRING_TABLE* tab;
-  int i, max = entryCount();
+  int i;
+  int max = entryCount();
   QString warn;
 
   for (i = 0; i < max; i++) {
@@ -221,7 +222,8 @@ QString x509name::checkLength() const {
 }
 
 bool x509name::search(const QRegExp& pattern) const {
-  int i, max = entryCount();
+  int i;
+  int max = entryCount();
   for (i = 0; i < max; i++) {
     if (getEntry(i).contains(pattern)) {
       return true;
@@ -231,7 +233,8 @@ bool x509name::search(const QRegExp& pattern) const {
 }
 
 QString x509name::taggedValues() const {
-  int i, max = entryCount();
+  int i;
+  int max = entryCount();
   QString ret;
 
   for (i = 0; i < max; i++) {

@@ -67,7 +67,8 @@ void XcaTreeView::showHideSections() {
   if (!basemodel) {
     return;
   }
-  int i, max = basemodel->columnCount(QModelIndex());
+  int i;
+  int max = basemodel->columnCount(QModelIndex());
   basemodel->colResizeStart();
   for (i = 0; i < max; i++) {
     if (basemodel->columnHidden(i)) {
@@ -143,7 +144,8 @@ QModelIndexList XcaTreeView::getSelectedIndexes() {
 void XcaTreeView::columnsChanged() { throttle.start(200); }
 
 void XcaTreeView::columnsResize() {
-  int cnt, i;
+  int cnt;
+  int i;
   if (!basemodel) {
     return;
   }
@@ -189,7 +191,8 @@ void XcaTreeView::setFilter(const QString& pattern) {
 void XcaTreeView::deleteItems() {
   QModelIndex index;
   QModelIndexList indexes = getSelectedIndexes();
-  QString items, msg;
+  QString items;
+  QString msg;
   int count = 0;
   pki_base* pki = nullptr;
 
@@ -338,7 +341,12 @@ static void addSubmenu(tipMenu* menu, tipMenu* sub) {
 
 void XcaTreeView::contextMenu(QContextMenuEvent* e, QMenu* parent, int col) {
   int shown = 0;
-  tipMenu *menu, *dn, *v3ext, *current, *v3ns, *keyprop;
+  tipMenu* menu;
+  tipMenu* dn;
+  tipMenu* v3ext;
+  tipMenu* current;
+  tipMenu *v3ns;
+  tipMenu *keyprop;
   QAction* a;
   dbheader* hd;
   dbheaderList allHeaders = basemodel->getAllHeaders();

@@ -20,7 +20,8 @@ ExportDialog::ExportDialog(QWidget* w,
                            QList<const pki_export*> types,
                            const QString& help_ctx)
     : QDialog(w ? w : mainwin) {
-  QList<const pki_export*> usual, normal;
+  QList<const pki_export*> usual;
+  QList<const pki_export*> normal;
   QString fname = "selected_items";
   setupUi(this);
   setWindowTitle(XCA_TITLE);

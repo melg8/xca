@@ -701,7 +701,8 @@ QString pki_scard::getTypeString() const {
 
 EVP_PKEY* pki_scard::decryptKey() const {
   slotid slot_id;
-  QString pin, key_id;
+  QString pin;
+  QString key_id;
 
   if (!prepare_card(&slot_id)) {
     throw errorEx(tr("Failed to find the key on the token"));

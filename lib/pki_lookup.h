@@ -45,7 +45,8 @@ class pki_lookup {
   XSqlQuery sqlSELECTpki(QString query,
                          QList<QVariant> values = QList<QVariant>()) {
     XSqlQuery q;
-    int i, num_values = values.size();
+    int i;
+    int num_values = values.size();
 
     SQL_PREPARE(q, query);
     for (i = 0; i < num_values; i++) {

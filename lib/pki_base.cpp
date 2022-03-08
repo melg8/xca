@@ -318,7 +318,8 @@ unsigned pki_base::hash() const { return hash(i2d()); }
 
 QString pki_base::get_dump_filename(const QString& dir,
                                     const QString& ext) const {
-  QString ctr = "", fn;
+  QString ctr = "";
+  QString fn;
   int index = 0;
   while (index++ < 1000) {
     fn = dir + "/" + getUnderlinedName() + ctr + ext;

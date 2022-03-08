@@ -36,7 +36,8 @@ pki_base* db_x509req::newPKI(enum pki_type type) {
 }
 
 pki_base* db_x509req::insert(pki_base* item) {
-  pki_x509req *oldreq, *req;
+  pki_x509req* oldreq;
+  pki_x509req* req;
   req = (pki_x509req*)item;
   oldreq = (pki_x509req*)getByReference(req);
   if (oldreq) {

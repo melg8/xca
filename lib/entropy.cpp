@@ -104,7 +104,8 @@ void Entropy::seed_rng() {
 
 int Entropy::random_from_file(QString fname, unsigned amount, int weakness) {
   char buf[256];
-  int fd, sum;
+  int fd;
+  int sum;
 
   /* OpenSSL: RAND_load_file() is blocking
    * and does not support wchar_t */

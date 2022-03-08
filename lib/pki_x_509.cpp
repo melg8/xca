@@ -698,8 +698,10 @@ pki_key* pki_x509::getPubKey() const {
 
 bool pki_x509::compareNameAndKey(pki_x509* other) {
   int r;
-  X509_NAME *s1, *s2;
-  EVP_PKEY *pub1, *pub2;
+  X509_NAME* s1;
+  X509_NAME* s2;
+  EVP_PKEY* pub1;
+  EVP_PKEY* pub2;
 
   if (!cert || !other->cert) {
     return false;
@@ -738,7 +740,9 @@ QString pki_x509::fingerprint(const EVP_MD* digest) const {
 }
 
 bool pki_x509::checkDate() {
-  a1time n, b, a;
+  a1time n;
+  a1time b;
+  a1time a;
 
   n = a1time::now();
   b = getNotBefore();
@@ -821,7 +825,8 @@ QVariant pki_x509::column_data(const dbheader* hd) const {
       return {fingerprint(EVP_sha256())};
     case HD_cert_ca: {
       a1int len;
-      bool ca, haslen;
+      bool ca;
+      bool haslen;
       if (caAndPathLen(&ca, &len, &haslen)) {
         if (ca && haslen) {
           return {len.toDec()};
@@ -981,12 +986,16 @@ QVariant pki_x509::bg_color(const dbheader* hd) const {
     return {};
   }
 
-  QString unit, cert_expiry_num = Settings["cert_expiry"];
+  QString unit;
+  QString cert_expiry_num = Settings["cert_expiry"];
   unit = cert_expiry_num.right(1);
   cert_expiry_num.chop(1);
   int n = cert_expiry_num.toInt();
 
-  a1time nb, na, now, certwarn;
+  a1time nb;
+  a1time na;
+  a1time now;
+  a1time certwarn;
 
   nb = getNotBefore();
   na = getNotAfter();
@@ -1020,7 +1029,8 @@ QVariant pki_x509::bg_color(const dbheader* hd) const {
     }
     case HD_cert_crl_expire:
       if (canSign()) {
-        QDateTime crlwarn, crlex;
+        QDateTime crlwarn;
+        QDateTime crlex;
         crlex = crlExpire;
         if (!crlExpire.isUndefined()) {
           crlwarn = crlex.addSecs(-2 * 60 * 60 * 24);

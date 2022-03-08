@@ -37,7 +37,10 @@ static void addToLowerMap(int nid) {
 /* reads additional OIDs from a file: oid, sn, ln */
 static void insert_new_oid(const QStringList& sl, QString fname, int line) {
   bool differs = false;
-  QByteArray in_use, oid, sn, ln;
+  QByteArray in_use;
+  QByteArray oid;
+  QByteArray sn;
+  QByteArray ln;
 
   if (sl.count() != 3) {
     XCA_WARN(QObject::tr("Error reading config file %1 at line %2")
@@ -141,7 +144,8 @@ static void readOIDs(const QString& fname) {
  * the list of ExtendedKeyUsage and Distinguished Name
  */
 static NIDlist readNIDlist(const QString& fname) {
-  int line = 0, nid;
+  int line = 0;
+  int nid;
   NIDlist nl;
   QFile file(fname);
   if (!file.open(QIODevice::ReadOnly)) {

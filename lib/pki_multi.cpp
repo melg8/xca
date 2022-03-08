@@ -103,7 +103,8 @@ void pki_multi::fload(const QString& fname) {
 
 void pki_multi::fromPEMbyteArray(const QByteArray& _ba, const QString& name) {
   pki_base* item = nullptr;
-  int startpos, old_count = multi.size();
+  int startpos;
+  int old_count = multi.size();
   QByteArray ba = _ba;
   for (;;) {
     try {

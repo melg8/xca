@@ -141,7 +141,8 @@ QVariant pki_x509super::column_data(const dbheader* hd) const {
 
   if (hd->type == dbheader::hd_key) {
     QVariant v;
-    pki_key *key = getRefKey(), *tmpkey = nullptr;
+    pki_key* key = getRefKey();
+    pki_key* tmpkey = nullptr;
     if (!key) {
       tmpkey = key = getPubKey();
     }
@@ -164,7 +165,8 @@ QVariant pki_x509super::column_data(const dbheader* hd) const {
 
 static QString oid_sect() {
   QString ret;
-  int i, max = OBJ_new_nid(0);
+  int i;
+  int max = OBJ_new_nid(0);
 
   for (i = first_additional_oid; i < max; i++) {
     const char* sn = OBJ_nid2sn(i);

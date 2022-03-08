@@ -493,7 +493,8 @@ Qt::ItemFlags db_base::flags(const QModelIndex& index) const {
 bool db_base::setData(const QModelIndex& index,
                       const QVariant& value,
                       int role) {
-  QString on, nn;
+  QString on;
+  QString nn;
   pki_base* item;
   if (index.isValid() && role == Qt::EditRole) {
     nn = value.toString();
@@ -534,7 +535,8 @@ void db_base::updateItem(pki_base* pki,
   pki->setIntName(name);
   pki->setComment(comment);
 
-  QModelIndex i, j;
+  QModelIndex i;
+  QModelIndex j;
   i = index(pki);
   j = index(i.row(), allHeaders.size(), i.parent());
   emit dataChanged(i, j);

@@ -104,7 +104,8 @@ x509v3ext NewX509::getSubAltName() {
   x509v3ext ext;
   QString s = subAltName->text();
   if (pt == x509_req) {
-    QStringList sn, sl = s.split(',');
+    QStringList sn;
+    QStringList sl = s.split(',');
     foreach (QString str, sl) {
       if (str != "email:copy") {
         sn += str;
@@ -120,7 +121,8 @@ x509v3ext NewX509::getIssAltName() {
   x509v3ext ext;
   QString s = issAltName->text();
   if (pt == x509_req) {
-    QStringList sn, sl = s.split(',');
+    QStringList sn;
+    QStringList sl = s.split(',');
     foreach (QString str, sl) {
       if (str != "issuer:copy") {
         sn += str;
@@ -153,10 +155,12 @@ extList NewX509::getAdvanced() {
   CONF* conf;
   extList elist;
   long err_line = 0;
-  STACK_OF(X509_EXTENSION)** sk = nullptr, *sk_tmp = nullptr;
+  STACK_OF(X509_EXTENSION)** sk = nullptr;
+  STACK_OF(X509_EXTENSION)* sk_tmp = nullptr;
   const STACK_OF(X509_EXTENSION) * csk;
   const char* ext_name = "default";
-  int ret, start;
+  int ret;
+  int start;
 
   if (nconf_data->isReadOnly()) {
     conf_str = v3ext_backup;
@@ -266,7 +270,8 @@ extList NewX509::getNetscapeExt() {
 }
 
 void NewX509::initCtx(pki_x509* subj, pki_x509* iss, pki_x509req* req) {
-  X509 *s = nullptr, *s1 = nullptr;
+  X509* s = nullptr;
+  X509* s1 = nullptr;
   X509_REQ* r = nullptr;
 
   if (subj) {
@@ -283,10 +288,15 @@ void NewX509::initCtx(pki_x509* subj, pki_x509* iss, pki_x509req* req) {
 }
 
 extList NewX509::getExtDuplicates() {
-  int i, start, cnt, n1, n;
+  int i;
+  int start;
+  int cnt;
+  int n1;
+  int n;
   x509v3ext e;
   const STACK_OF(X509_EXTENSION) * sk;
-  extList el_dup, el;
+  extList el_dup;
+  extList el;
   QString olist;
 
   if (ext_ctx.subject_cert) {

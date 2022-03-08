@@ -41,7 +41,8 @@ void db_x509super::loadContainer() {
 }
 dbheaderList db_x509super::getHeaders() {
   dbheaderList h = db_x509name::getHeaders();
-  NIDlist v3nid, v3ns_nid;
+  NIDlist v3nid;
+  NIDlist v3ns_nid;
   v3nid << NID_subject_alt_name << NID_issuer_alt_name
         << NID_subject_key_identifier << NID_authority_key_identifier
         << NID_key_usage << NID_ext_key_usage << NID_crl_distribution_points
@@ -70,7 +71,8 @@ dbheaderList db_x509super::getHeaders() {
 
 pki_key* db_x509super::findKey(pki_x509super* ref) {
   auto* keys = Database.model<db_key>();
-  pki_key *key, *refkey;
+  pki_key* key;
+  pki_key* refkey;
   if (!ref) {
     return nullptr;
   }

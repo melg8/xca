@@ -29,7 +29,8 @@
 #include "xca_application.h"
 
 static QAction* languageMenuEntry(const QStringList& sl) {
-  QString lang, tooltip;
+  QString lang;
+  QString tooltip;
   QLocale locale;
 
   if (sl[0].isEmpty()) {
@@ -59,8 +60,12 @@ static QAction* languageMenuEntry(const QStringList& sl) {
 }
 
 void MainWindow::init_menu() {
-  static QMenu *file = nullptr, *help = nullptr, *import = nullptr,
-               *token = nullptr, *languageMenu = nullptr, *extra = nullptr;
+  static QMenu* file = nullptr;
+  static QMenu* help = nullptr;
+  static QMenu* import = nullptr;
+  static QMenu* token = nullptr;
+  static QMenu* languageMenu = nullptr;
+  static QMenu *extra = nullptr;
   static QActionGroup* langGroup = nullptr;
   QAction* a;
 

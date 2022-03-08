@@ -61,13 +61,15 @@ QList<nameEdit> NewX509::setupExplicitInputs(NIDlist nid_list,
     layout->setSpacing(6);
     layout->setMargin(0);
   }
-  int n = 0, col = 0;
+  int n = 0;
+  int col = 0;
 
   foreach (int nid, nid_list) {
     DoubleClickLabel* double_click_label;
     QLineEdit* edit;
     QString trans = dn_translations[nid];
-    QString ln = OBJ_nid2ln(nid), sn = OBJ_nid2sn(nid);
+    QString ln = OBJ_nid2ln(nid);
+    QString sn = OBJ_nid2sn(nid);
     double_click_label = new DoubleClickLabel(parent);
     if (Settings["translate_dn"] && !trans.isEmpty()) {
       double_click_label->setText(trans);
@@ -442,7 +444,9 @@ void NewX509::defineSigner(pki_x509* defcert, bool applyTemp) {
 }
 
 static int lb2int(QListWidget* lb) {
-  int i, x = 0, c = lb->count();
+  int i;
+  int x = 0;
+  int c = lb->count();
 
   for (i = 0; i < c; i++) {
     if (lb->item(i)->isSelected()) {
@@ -655,7 +659,8 @@ void NewX509::on_genKeyBut_clicked() {
 }
 
 void NewX509::on_certList_currentIndexChanged(int) {
-  a1time snb, sna;
+  a1time snb;
+  a1time sna;
   pki_x509* cert = getSelectedSigner();
 
   switchHashAlgo();
@@ -756,7 +761,9 @@ pki_x509req* NewX509::getSelectedReq() { return reqList->currentPkiItem(); }
 
 x509name NewX509::getX509name(int _throw) {
   x509name x;
-  int j, row, nid;
+  int j;
+  int row;
+  int nid;
 
   if (fromReqCB->isChecked() && !reqSubChange->isChecked()) {
     return getSelectedReq()->getSubject();
@@ -937,9 +944,11 @@ void NewX509::undo_validateExtensions() {
 }
 
 int NewX509::validateExtensions(QString nconf, QString& result) {
-  int ret = 0, ext_count = 0;
+  int ret = 0;
+  int ext_count = 0;
   QStringList errors;
-  extList el, req_el;
+  extList el;
+  extList req_el;
   ign_openssl_error();
   setupTmpCtx();
   (void)nconf;
@@ -1034,8 +1043,9 @@ void NewX509::on_editCrlDist_clicked() {
 }
 
 void NewX509::on_editAuthInfAcc_clicked() {
-  QStringList permut, groups{"OCSP", "caIssuers"},
-      types{"URI", "email", "RID", "DNS", "IP"};
+  QStringList permut;
+  QStringList groups{"OCSP", "caIssuers"};
+  QStringList types{"URI", "email", "RID", "DNS", "IP"};
   foreach (QString group, groups) {
     foreach (QString type, types) {
       permut << QString("%1;%2").arg(group).arg(type);
@@ -1053,7 +1063,8 @@ void NewX509::on_tabWidget_currentChanged(int tab_index) {
 }
 
 QString NewX509::mandatoryDnRemain() {
-  QStringList remain, dnl = QString(Settings["mandatory_dn"]).split(",");
+  QStringList remain;
+  QStringList dnl = QString(Settings["mandatory_dn"]).split(",");
   x509name n;
   int i;
 

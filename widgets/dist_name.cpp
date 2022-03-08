@@ -51,7 +51,9 @@ void DistName::setX509name(const x509name& n) {
   QLabel* l2;
   QStringList sl;
   for (int i = 0; i < n.entryCount(); i++) {
-    QString toolt, label, trans;
+    QString toolt;
+    QString label;
+    QString trans;
     int nid = n.nid(i);
     trans = dn_translations[nid];
     sl = n.entryList(i);

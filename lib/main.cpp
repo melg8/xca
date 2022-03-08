@@ -54,7 +54,8 @@ static void myMessageOutput(QtMsgType type,
                             const QString& msg) {
   static QElapsedTimer* t;
   static int abort_on_warning = -1;
-  const char *severity = "Unknown", *warn_msg = nullptr;
+  const char* severity = "Unknown";
+  const char* warn_msg = nullptr;
   int el;
 
   if (!t) {

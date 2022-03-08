@@ -84,7 +84,8 @@ QList<unsigned long> pkcs11_lib::getSlotList() {
   CK_RV rv;
   CK_SLOT_ID* p11_slots = nullptr;
   QList<unsigned long> sl;
-  unsigned long i, num_slots = 0;
+  unsigned long i;
+  unsigned long num_slots = 0;
 
   if (!isLoaded()) {
     return sl;

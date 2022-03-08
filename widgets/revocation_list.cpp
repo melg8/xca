@@ -61,7 +61,8 @@ void RevocationList::setupRevocationView(QTreeWidget* certsWidget,
                                          const x509revList& revList,
                                          const pki_x509* iss) {
   QStringList sl;
-  int cols, i;
+  int cols;
+  int i;
 
   certsWidget->clear();
 

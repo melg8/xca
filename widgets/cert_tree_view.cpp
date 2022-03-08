@@ -20,7 +20,12 @@ void CertTreeView::fillContextMenu(QMenu* menu,
                                    const QModelIndex& index,
                                    QModelIndexList indexes) {
   QMenu* subCa;
-  bool parentCanSign, multi, hasScard, sameParent, allRevoked, allUnrevoked;
+  bool parentCanSign;
+  bool multi;
+  bool hasScard;
+  bool sameParent;
+  bool allRevoked;
+  bool allUnrevoked;
   pki_key* privkey;
 
   X509SuperTreeView::fillContextMenu(menu, subExport, index, indexes);

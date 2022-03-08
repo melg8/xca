@@ -284,7 +284,8 @@ static a1int randomSerial() {
 
 a1int db_x509::getUniqueSerial(pki_x509* signer) {
   // returns an unused unique serial
-  a1int serial, signer_serial;
+  a1int serial;
+  a1int signer_serial;
   x509rev rev;
   x509revList revList;
   if (signer) {
@@ -417,7 +418,9 @@ pki_x509* db_x509::newCert(NewX509* dlg) {
   pki_x509* cert = nullptr;
   pki_x509* signcert = nullptr;
   pki_x509req* req = nullptr;
-  pki_key *signkey = nullptr, *clientkey = nullptr, *tempkey = nullptr;
+  pki_key* signkey = nullptr;
+  pki_key* clientkey = nullptr;
+  pki_key* tempkey = nullptr;
   a1int serial;
   QString intname;
 
@@ -577,7 +580,8 @@ void db_x509::exportItems(const QModelIndexList& list,
     return;
   }
 
-  pki_x509 *oldcrt = nullptr, *crt = fromIndex<pki_x509>(list[0]);
+  pki_x509* oldcrt = nullptr;
+  pki_x509* crt = fromIndex<pki_x509>(list[0]);
 
   QList<pki_x509*> certs;
   foreach (QModelIndex idx, list) {
@@ -719,7 +723,9 @@ void db_x509::writePKCS7(pki_x509* cert,
 }
 
 void db_x509::certRenewal(QModelIndexList indexes) {
-  pki_x509 *oldcert = nullptr, *signer = nullptr, *newcert = nullptr;
+  pki_x509* oldcert = nullptr;
+  pki_x509* signer = nullptr;
+  pki_x509* newcert = nullptr;
   pki_key* signkey = nullptr;
   a1time time;
   a1int serial;
@@ -810,7 +816,9 @@ void db_x509::revoke(QModelIndexList indexes) {
 }
 
 void db_x509::do_revoke(QModelIndexList indexes, const x509rev& r) {
-  pki_x509 *parent = nullptr, *cert, *iss;
+  pki_x509* parent = nullptr;
+  pki_x509* cert;
+  pki_x509 *iss;
   x509revList revlist;
 
   foreach (QModelIndex idx, indexes) {

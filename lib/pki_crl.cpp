@@ -266,7 +266,8 @@ int pki_crl::numRev() const {
 
 x509revList pki_crl::getRevList() {
   x509revList ret;
-  int i, num = numRev();
+  int i;
+  int num = numRev();
   STACK_OF(X509_REVOKED)* st = X509_CRL_get_REVOKED(crl);
 
   for (i = 0; i < num; i++) {

@@ -24,7 +24,8 @@ CrlDetail::CrlDetail(QWidget* w) : QDialog(w ? w : mainwin) {
 
 void CrlDetail::setCrl(pki_crl* crl) {
   pki_x509* iss;
-  x509v3ext e1, e2;
+  x509v3ext e1;
+  x509v3ext e2;
 
   iss = crl->getIssuer();
   crlSqlId = crl->getSqlItemId();

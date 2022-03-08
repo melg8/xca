@@ -298,7 +298,8 @@ size_t arguments::maxOptWidth() {
 QString arguments::help() {
   QString s;
   size_t len;
-  int width = 80, offset;
+  int width = 80;
+  int offset;
 #if !defined(Q_OS_WIN32)
   struct winsize w;
 

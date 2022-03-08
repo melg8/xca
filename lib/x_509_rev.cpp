@@ -57,7 +57,8 @@ static int reasonBit2Idx(int bit) {
 void x509rev::fromREVOKED(const X509_REVOKED* rev) {
   ASN1_ENUMERATED* reason;
   ASN1_TIME* at;
-  int j = -1, r;
+  int j = -1;
+  int r;
 
   if (!rev) {
     return;

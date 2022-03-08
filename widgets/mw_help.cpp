@@ -50,7 +50,11 @@ void MainWindow::about() {
   auto* textbox = new QTextEdit(nullptr);
   auto* about = new XcaDialog(this, x509, textbox, QString(), QString());
   about->aboutDialog(QPixmap(":scardImg"));
-  QString openssl, qt, cont, version, brainpool;
+  QString openssl;
+  QString qt;
+  QString cont;
+  QString version;
+  QString brainpool;
 #ifdef OPENSSL_NO_EC
   brainpool = "(Elliptic Curve Cryptography support disabled)";
 #endif

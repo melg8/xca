@@ -60,7 +60,8 @@ void pki_key::d2i(QByteArray& ba) {
 }
 
 void pki_key::d2i_old(QByteArray& ba, int type) {
-  const unsigned char *p, *p1;
+  const unsigned char* p;
+  const unsigned char* p1;
   p = p1 = (const unsigned char*)ba.constData();
   EVP_PKEY* k = d2i_PublicKey(type, nullptr, &p1, ba.count());
 
@@ -86,7 +87,9 @@ void pki_key::write_SSH2_ed25519_private(BIO* b,
 #ifndef OPENSSL_NO_EC
   static const char data0001[] = {0, 0, 0, 1};
   char buf_nonce[8];
-  QByteArray data, priv, pubfull;
+  QByteArray data;
+  QByteArray priv;
+  QByteArray pubfull;
 
   pubfull = SSH2publicQByteArray(true);
   RAND_bytes((unsigned char*)buf_nonce, sizeof buf_nonce);
@@ -409,7 +412,8 @@ QString pki_key::BN2QString(const BIGNUM* bn) const {
   }
   QString x = "";
   char zs[10];
-  int j, size = BN_num_bytes(bn);
+  int j;
+  int size = BN_num_bytes(bn);
   auto* buf = (unsigned char*)OPENSSL_malloc(size);
   Q_CHECK_PTR(buf);
   BN_bn2bin(bn, buf);
@@ -690,14 +694,16 @@ bool pki_key::SSH2_compatible() const {
 }
 
 QByteArray pki_key::SSH2publicQByteArray(bool raw) const {
-  QByteArray txt, data;
+  QByteArray txt;
+  QByteArray data;
   switch (getKeyType()) {
     case EVP_PKEY_RSA:
       txt = "ssh-rsa";
       ssh_key_QBA2data(txt, &data);
       {
         const RSA* rsa = EVP_PKEY_get0_RSA(key);
-        const BIGNUM *n, *e;
+        const BIGNUM* n;
+        const BIGNUM* e;
         RSA_get0_key(rsa, &n, &e, nullptr);
         ssh_key_bn2data(e, &data);
         ssh_key_bn2data(n, &data);
@@ -708,7 +714,10 @@ QByteArray pki_key::SSH2publicQByteArray(bool raw) const {
       ssh_key_QBA2data(txt, &data);
       {
         const DSA* dsa = EVP_PKEY_get0_DSA(key);
-        const BIGNUM *p, *q, *g, *pubkey;
+        const BIGNUM* p;
+        const BIGNUM* q;
+        const BIGNUM *g;
+        const BIGNUM *pubkey;
         DSA_get0_pqg(dsa, &p, &q, &g);
         DSA_get0_key(dsa, &pubkey, nullptr);
         ssh_key_bn2data(p, &data);

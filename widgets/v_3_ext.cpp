@@ -104,7 +104,8 @@ void v3ext::setupLineEdit(const QString& s, QLineEdit* l) {
 /* for one TYPE:Content String */
 void v3ext::addEntry(QString line) {
   int idx;
-  QString type, value;
+  QString type;
+  QString value;
 
   line = line.trimmed();
   idx = line.indexOf(':');
@@ -124,7 +125,8 @@ void v3ext::addEntry(QString line) {
 
 QString v3ext::toString() {
   QStringList str;
-  int i, row = tab->rowCount();
+  int i;
+  int row = tab->rowCount();
 
   if (critical->isChecked()) {
     str << "critical";
@@ -150,7 +152,8 @@ void v3ext::on_apply_clicked() {
 
 bool v3ext::__validate(bool showSuccess) {
   x509v3ext ext;
-  QString str, error;
+  QString str;
+  QString error;
   validate->setFocus(Qt::OtherFocusReason);
   str = prefix + toString();
   ext.create(nid, str, ext_ctx);
