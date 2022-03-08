@@ -47,12 +47,12 @@ class pki_scard final : public pki_key {
   void changePin();
   void initPin();
   void changeSoPin();
-  int verify();
+  static int verify();
   bool isToken() final;
   QVariant getIcon(const dbheader* hd) const final;
   QList<CK_MECHANISM_TYPE> getMech_list() { return mech_list; }
   pk11_attlist objectAttributes(bool priv) const;
-  pk11_attlist objectAttributesNoId(EVP_PKEY* pk, bool priv) const;
+  static pk11_attlist objectAttributesNoId(EVP_PKEY* pk, bool priv);
   void setMech_list(QList<CK_MECHANISM_TYPE> ml) { mech_list = ml; }
   QList<int> possibleHashNids() final;
   EVP_PKEY* load_pubkey(pkcs11& p11, CK_OBJECT_HANDLE object) const;

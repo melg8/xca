@@ -29,7 +29,7 @@ class XcaProgress {
  public:
   XcaProgress(const QString& what = QString(), int max = 100);
   ~XcaProgress();
-  void increment();
+  static void increment();
 
   static void inc(int, int, void* p);
   static void setGui(XcaProgress_i* p);

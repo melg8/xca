@@ -74,7 +74,7 @@ QSqlError database_model::initSqlDB() {
   return {};
 }
 
-bool database_model::checkForOldDbFormat(const QString& dbfile) const {
+bool database_model::checkForOldDbFormat(const QString& dbfile) {
   // 0x ca db 19 69
   static const unsigned char magic[] = {0xca, 0xdb, 0x19, 0x69};
   char head[4];
@@ -252,7 +252,7 @@ void database_model::dump_database(const QString& dirname) const {
 
 static QString defaultdb() { return getUserSettingsDir() + "/defaultdb"; }
 
-QString database_model::get_default_db() const {
+QString database_model::get_default_db() {
   if (QSqlDatabase::database().isOpen()) {
     return {};
   }
@@ -476,7 +476,7 @@ static void pwhash_upgrade() {
 }
 
 enum open_result database_model::initPass(const QString& db_name,
-                                          const QString& passhash) const {
+                                          const QString& passhash) {
   QString salt;
   QString pass;
   enum open_result result = pw_cancel;

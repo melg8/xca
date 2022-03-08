@@ -336,7 +336,7 @@ QByteArray pki_key::ed25519PubKey() const {
   return ed25519Key(EVP_PKEY_get_raw_public_key, key);
 }
 
-QByteArray pki_key::ed25519PrivKey(const EVP_PKEY* pkey) const {
+QByteArray pki_key::ed25519PrivKey(const EVP_PKEY* pkey) {
   return ed25519Key(EVP_PKEY_get_raw_private_key, pkey);
 }
 #else
@@ -535,7 +535,7 @@ QSqlError pki_key::deleteSqlData() {
   return q.lastError();
 }
 
-void pki_key::ssh_key_check_chunk(QByteArray* ba, const char* expect) const {
+void pki_key::ssh_key_check_chunk(QByteArray* ba, const char* expect) {
   QByteArray chunk = ssh_key_next_chunk(ba);
 
   if (chunk != expect) {
@@ -543,7 +543,7 @@ void pki_key::ssh_key_check_chunk(QByteArray* ba, const char* expect) const {
   }
 }
 
-BIGNUM* pki_key::ssh_key_data2bn(QByteArray* ba) const {
+BIGNUM* pki_key::ssh_key_data2bn(QByteArray* ba) {
   QByteArray chunk = ssh_key_next_chunk(ba);
   BIGNUM* bn =
       BN_bin2bn((const unsigned char*)chunk.constData(), chunk.size(), nullptr);
@@ -551,7 +551,7 @@ BIGNUM* pki_key::ssh_key_data2bn(QByteArray* ba) const {
   return bn;
 }
 
-QByteArray pki_key::ssh_key_next_chunk(QByteArray* ba) const {
+QByteArray pki_key::ssh_key_next_chunk(QByteArray* ba) {
   QByteArray chunk;
   const char* d;
   int len;
@@ -654,7 +654,7 @@ EVP_PKEY* pki_key::load_ssh2_key(const QByteArray& b) {
   return pk;
 }
 
-void pki_key::ssh_key_QBA2data(const QByteArray& ba, QByteArray* data) const {
+void pki_key::ssh_key_QBA2data(const QByteArray& ba, QByteArray* data) {
   int size = ba.size();
   unsigned char p[4];
 

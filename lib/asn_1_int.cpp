@@ -6,7 +6,7 @@
 #include <openssl/bn.h>
 #include <openssl/err.h>
 
-ASN1_INTEGER* a1int::dup(const ASN1_INTEGER* a) const {
+ASN1_INTEGER* a1int::dup(const ASN1_INTEGER* a) {
   // this wrapper casts the const to work around the nonconst
   // declared ASN1_STRING_dup (actually it is const
   ASN1_INTEGER* r = ASN1_INTEGER_dup(const_cast<ASN1_INTEGER*>(a));

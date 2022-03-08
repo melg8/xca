@@ -17,7 +17,7 @@ class DbTransaction {
   static QList<quint64> items;
   static bool hasTransaction;
   bool has_begun;
-  void debug(const char* func, const char* file, int line);
+  static void debug(const char* func, const char* file, int line);
   bool finish(const char* oper, const char* file, int line);
 
  public:

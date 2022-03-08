@@ -18,13 +18,13 @@ class db_key final : public db_base {
 
  public:
   db_key();
-  QList<pki_key*> getUnusedKeys();
-  QList<pki_key*> getAllKeys();
+  static QList<pki_key*> getUnusedKeys();
+  static QList<pki_key*> getAllKeys();
   pki_base* newPKI(enum pki_type type = none) final;
   void inToCont(pki_base* pki) final;
   void remFromCont(const QModelIndex& idx) final;
   pki_base* insert(pki_base* item) final;
-  void setOwnPass(QModelIndex idx, enum pki_key::passType);
+  static void setOwnPass(QModelIndex idx, enum pki_key::passType);
   void loadContainer() final;
   pki_key* newKey(const keyjob& task, const QString& name);
   [[nodiscard]] int exportFlags(const QModelIndex& index) const final;

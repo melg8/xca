@@ -16,7 +16,7 @@ class BioByteArray {
   void set(const QByteArray& qba);
   void add(const QByteArray& qba);
   void biowrite(const QByteArray& qba);
-  void cleanse_and_free(BIO* bio);
+  static void cleanse_and_free(BIO* bio);
 
  public:
   BioByteArray(QByteArray qba) : store(std::move(qba)) {}

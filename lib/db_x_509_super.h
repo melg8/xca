@@ -26,10 +26,10 @@ class db_x509super : public db_x509name {
 
  public:
   db_x509super(const char* classname);
-  pki_key* findKey(pki_x509super* ref);
-  QList<pki_x509super*> findByPubKey(pki_key* refkey);
-  void extractPubkey(QModelIndex index);
-  void toTemplate(QModelIndex index);
+  static pki_key* findKey(pki_x509super* ref);
+  static QList<pki_x509super*> findByPubKey(pki_key* refkey);
+  static void extractPubkey(QModelIndex index);
+  static void toTemplate(QModelIndex index);
 };
 
 #endif  // DB_X_509_SUPER_H

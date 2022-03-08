@@ -8,7 +8,7 @@
 class a1int {
  private:
   ASN1_INTEGER* in;
-  ASN1_INTEGER* dup(const ASN1_INTEGER* a) const;
+  static ASN1_INTEGER* dup(const ASN1_INTEGER* a);
   a1int& setQString(const QString& s, int dec);
   [[nodiscard]] QString toQString(int dec) const;
 

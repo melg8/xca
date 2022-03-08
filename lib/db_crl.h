@@ -13,10 +13,10 @@ class db_crl final : public db_x509name {
  public:
   db_crl();
   pki_base* newPKI(enum pki_type type) final;
-  void revokeCerts(pki_crl* crl);
+  static void revokeCerts(pki_crl* crl);
   void inToCont(pki_base* pki) final;
   pki_base* insert(pki_base* item) final;
-  void removeSigner(pki_base* signer);
+  static void removeSigner(pki_base* signer);
   void updateCertView();
   pki_crl* newCrl(const crljob& crljob);
   void exportItems(const QModelIndexList& indexes,

@@ -13,8 +13,8 @@ class Options final : public QDialog, public Ui::Options {
  private:
   SearchPkcs11* searchP11;
   QStringList string_opts;
-  QString getDnString(QListWidget* w);
-  void setDnString(QString dn, QListWidget* w);
+  static QString getDnString(QListWidget* w);
+  static void setDnString(QString dn, QListWidget* w);
 
  public:
   Options(QWidget* parent);

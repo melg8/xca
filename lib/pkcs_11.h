@@ -96,23 +96,23 @@ class pkcs11 {
   pkcs11();
   ~pkcs11();
 
-  CK_RV tokenInfo(const slotid& slot, tkInfo* tkinfo);
-  tkInfo tokenInfo(const slotid& slot);
+  static CK_RV tokenInfo(const slotid& slot, tkInfo* tkinfo);
+  static tkInfo tokenInfo(const slotid& slot);
   tkInfo tokenInfo() { return tokenInfo(p11slot); }
-  [[nodiscard]] QString driverInfo(const slotid& slot) const {
+  [[nodiscard]] static QString driverInfo(const slotid& slot) {
     return slot.lib->driverInfo();
   }
   static slotidList getSlotList() { return libraries.getSlotList(); }
 
-  bool selectToken(slotid* slot, QWidget* w);
+  static bool selectToken(slotid* slot, QWidget* w);
   void changePin(const slotid& slot, bool so);
   void initPin(const slotid& slot);
-  void initToken(const slotid& slot,
-                 const unsigned char* pin,
-                 int pinlen,
-                 QString label);
-  QList<CK_MECHANISM_TYPE> mechanismList(const slotid& slot);
-  void mechanismInfo(const slotid& slot,
+  static void initToken(const slotid& slot,
+                        const unsigned char* pin,
+                        int pinlen,
+                        QString label);
+  static QList<CK_MECHANISM_TYPE> mechanismList(const slotid& slot);
+  static void mechanismInfo(const slotid& slot,
                      CK_MECHANISM_TYPE m,
                      CK_MECHANISM_INFO* info);
   void startSession(const slotid& slot, bool rw = false);

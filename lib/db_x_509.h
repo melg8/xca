@@ -16,7 +16,7 @@ class db_x509 : public db_x509super {
   Q_OBJECT
 
  protected:
-  pki_x509* get1SelectedCert();
+  static pki_x509* get1SelectedCert();
   dbheaderList getHeaders() override;
   void dereferenceIssuer();
 
@@ -30,29 +30,29 @@ class db_x509 : public db_x509super {
   void updateViewAll();
   void updateViewPKI(pki_base* pki);
   void remFromCont(const QModelIndex& idx) override;
-  QList<pki_x509*> getAllIssuers();
-  QList<pki_x509*> getCerts(bool unrevoked);
-  void writeIndex(const QString& fname, bool hierarchy) const;
-  void writeIndex(XFile& file, QList<pki_x509*> items) const;
+  static QList<pki_x509*> getAllIssuers();
+  static QList<pki_x509*> getCerts(bool unrevoked);
+  static void writeIndex(const QString& fname, bool hierarchy);
+  static void writeIndex(XFile& file, QList<pki_x509*> items);
   pki_base* insert(pki_base* item) override;
-  void markRequestSigned(pki_x509req* req, pki_x509* cert);
+  static void markRequestSigned(pki_x509req* req, pki_x509* cert);
   pki_x509* newCert(NewX509* dlg);
   void newCert(pki_x509* cert);
-  void writePKCS12(pki_x509* cert, XFile& file, bool chain) const;
-  void writePKCS7(pki_x509* cert,
-                  XFile& file,
-                  int flags,
-                  const QModelIndexList& list) const;
+  static void writePKCS12(pki_x509* cert, XFile& file, bool chain);
+  static void writePKCS7(pki_x509* cert,
+                         XFile& file,
+                         int flags,
+                         const QModelIndexList& list);
   void fillContextMenu(QMenu* menu, const QModelIndex& index);
   void inToCont(pki_base* pki) override;
-  a1int getUniqueSerial(pki_x509* signer);
-  void toToken(QModelIndex idx, bool alwaysSelect);
-  void toRequest(QModelIndex idx);
-  void updateCaProperties(pki_x509* cert);
+  static a1int getUniqueSerial(pki_x509* signer);
+  static void toToken(QModelIndex idx, bool alwaysSelect);
+  static void toRequest(QModelIndex idx);
+  static void updateCaProperties(pki_x509* cert);
   void toCertificate(QModelIndex index);
   void certRenewal(QModelIndexList indexes);
   void revoke(QModelIndexList indexes);
-  void do_revoke(QModelIndexList indexes, const x509rev& r);
+  static void do_revoke(QModelIndexList indexes, const x509rev& r);
   void unRevoke(QModelIndexList indexes);
   [[nodiscard]] int exportFlags(const QModelIndex& idx) const override;
   void exportItems(const QModelIndexList& indexes,

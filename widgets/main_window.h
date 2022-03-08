@@ -60,10 +60,10 @@ class MainWindow final : public QMainWindow, public Ui::MainWindow {
   void checkDB();
   XcaProgress* dhgenProgress;
   DHgen* dhgen;
-  [[nodiscard]] const QList<QStringList> getTranslators() const;
+  [[nodiscard]] static const QList<QStringList> getTranslators();
   QList<XcaTreeView*> views;
   dbhistory history;
-  void exportIndex(const QString& fname, bool hierarchy) const;
+  static void exportIndex(const QString& fname, bool hierarchy);
 
  protected:
   void init_images();
@@ -93,7 +93,7 @@ class MainWindow final : public QMainWindow, public Ui::MainWindow {
   void importMulti(pki_multi* multi, int force);
   void dropEvent(QDropEvent* event) final;
   void dragEnterEvent(QDragEnterEvent* event) final;
-  void initResolver();
+  static void initResolver();
 
  public slots:
   enum open_result init_database(const QString& dbName,
@@ -102,8 +102,8 @@ class MainWindow final : public QMainWindow, public Ui::MainWindow {
   void new_database();
   void load_database();
   void close_database();
-  void dump_database();
-  void default_database();
+  static void dump_database();
+  static void default_database();
   void about();
   void loadPem();
   bool pastePem(QString text, bool silent = false);

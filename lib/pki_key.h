@@ -162,10 +162,10 @@ class pki_key : public pki_base {
   QByteArray PEM_comment() const override;
   void collect_properties(QMap<QString, QString>& prp) const override;
 
-  BIGNUM* ssh_key_data2bn(QByteArray* ba) const;
-  void ssh_key_check_chunk(QByteArray* ba, const char* expect) const;
-  QByteArray ssh_key_next_chunk(QByteArray* ba) const;
-  void ssh_key_QBA2data(const QByteArray& ba, QByteArray* data) const;
+  static BIGNUM* ssh_key_data2bn(QByteArray* ba);
+  static void ssh_key_check_chunk(QByteArray* ba, const char* expect);
+  static QByteArray ssh_key_next_chunk(QByteArray* ba);
+  static void ssh_key_QBA2data(const QByteArray& ba, QByteArray* data);
   void ssh_key_bn2data(const BIGNUM* bn, QByteArray* data) const;
 
  private:
@@ -208,7 +208,7 @@ class pki_key : public pki_base {
   int ecParamNid() const;
   QString ecPubKey() const;
   QByteArray ed25519PubKey() const;
-  QByteArray ed25519PrivKey(const EVP_PKEY* pkey) const;
+  static QByteArray ed25519PrivKey(const EVP_PKEY* pkey);
   BIGNUM* ecPubKeyBN() const;
 #endif
   void d2i(QByteArray& ba);

@@ -106,14 +106,14 @@ class db_base : public QAbstractItemModel {
   void colResizeStart() { colResizing++; }
   void colResizeEnd() { colResizing--; }
   dbheaderList getAllHeaders() { return allHeaders; }
-  [[nodiscard]] QString pem2QString(QModelIndexList indexes) const;
+  [[nodiscard]] static QString pem2QString(QModelIndexList indexes);
 
   void deletePKI(QModelIndex idx);
   [[nodiscard]] QMimeData* mimeData(
       const QModelIndexList& indexes) const override;
   void emitDataChanged(pki_base* pki);
   [[nodiscard]] bool containsType(enum pki_type t) const;
-  void writeVcalendar(XFile& file, QStringList vcal) const;
+  static void writeVcalendar(XFile& file, QStringList vcal);
 
  public slots:
   virtual void newItem() {}

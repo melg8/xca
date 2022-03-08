@@ -237,7 +237,7 @@ pki_base* db_base::insertPKI(pki_base* pki) {
   return pki;
 }
 
-QString db_base::pem2QString(QModelIndexList indexes) const {
+QString db_base::pem2QString(QModelIndexList indexes) {
   BioByteArray bba;
 
   foreach (QModelIndex idx, indexes) {
@@ -632,7 +632,7 @@ QMimeData* db_base::mimeData(const QModelIndexList& indexes) const {
   return mimeData;
 }
 
-void db_base::writeVcalendar(XFile& file, QStringList vcal) const {
+void db_base::writeVcalendar(XFile& file, QStringList vcal) {
   QStringList ics;
   ics << "BEGIN:VCALENDAR"
       << "VERSION:2.0"

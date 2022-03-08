@@ -55,7 +55,7 @@ class NewX509 final : public QDialog, public Ui::NewX509 {
   void selfComment(QString msg);
   QMap<QString, QLineEdit*> templateLineEdits;
   QMap<QString, QCheckBox*> templateCheckBoxes;
-  pki_temp* caTemplate(pki_x509* ca) const;
+  static pki_temp* caTemplate(pki_x509* ca);
   void setupExplicitDN(NIDlist my_dn_nid);
   QList<nameEdit> setupExplicitInputs(NIDlist nid_list,
                                       QWidget* parent,
@@ -110,11 +110,11 @@ class NewX509 final : public QDialog, public Ui::NewX509 {
   int do_validateExtensions();
   void undo_validateExtensions();
   [[nodiscard]] enum pki_source getPkiSource() const;
-  [[nodiscard]] QList<pki_x509req*> getAllRequests() const;
-  [[nodiscard]] QList<pki_x509*> getAllIssuers() const;
-  [[nodiscard]] QList<pki_temp*> getAllTempsAndPredefs() const;
-  [[nodiscard]] QList<pki_key*> getUnusedKeys() const;
-  [[nodiscard]] QList<pki_key*> getAllKeys() const;
+  [[nodiscard]] static QList<pki_x509req*> getAllRequests();
+  [[nodiscard]] static QList<pki_x509*> getAllIssuers();
+  [[nodiscard]] static QList<pki_temp*> getAllTempsAndPredefs();
+  [[nodiscard]] static QList<pki_key*> getUnusedKeys();
+  [[nodiscard]] static QList<pki_key*> getAllKeys();
 
  public slots:
   void on_fromReqCB_clicked();

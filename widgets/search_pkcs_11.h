@@ -15,7 +15,7 @@ class searchThread final : public QThread {
   bool recursive;
   bool keepOnRunning;
 
-  bool checkLib(QString file);
+  static bool checkLib(QString file);
 
  public:
   searchThread(QString _dir, const QStringList _ext, bool _recursive);

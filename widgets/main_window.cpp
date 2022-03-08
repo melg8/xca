@@ -648,7 +648,7 @@ void MainWindow::exportIndexHierarchy() {
               true);
 }
 
-void MainWindow::exportIndex(const QString& fname, bool hierarchy) const {
+void MainWindow::exportIndex(const QString& fname, bool hierarchy) {
   qDebug() << fname << hierarchy;
   if (fname.isEmpty() || !Database.isOpen()) {
     return;

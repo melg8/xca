@@ -245,7 +245,7 @@ QList<pki_x509*> db_x509::getCerts(bool unrevoked) {
   return c;
 }
 
-void db_x509::writeIndex(const QString& fname, bool hierarchy) const {
+void db_x509::writeIndex(const QString& fname, bool hierarchy) {
   if (hierarchy) {
     QString dir = fname + "/";
     if (!QDir().mkpath(fname)) {
@@ -645,7 +645,7 @@ void db_x509::exportItems(const QModelIndexList& list,
   }
 }
 
-void db_x509::writeIndex(XFile& file, QList<pki_x509*> items) const {
+void db_x509::writeIndex(XFile& file, QList<pki_x509*> items) {
   QString index;
   foreach (pki_x509* cert, items) {
     if (cert) {
@@ -655,7 +655,7 @@ void db_x509::writeIndex(XFile& file, QList<pki_x509*> items) const {
   file.write(index.toUtf8());
 }
 
-void db_x509::writePKCS12(pki_x509* cert, XFile& file, bool chain) const {
+void db_x509::writePKCS12(pki_x509* cert, XFile& file, bool chain) {
   QStringList filt;
   pki_pkcs12* p12 = nullptr;
   try {
@@ -687,7 +687,7 @@ void db_x509::writePKCS12(pki_x509* cert, XFile& file, bool chain) const {
 void db_x509::writePKCS7(pki_x509* cert,
                          XFile& file,
                          int flags,
-                         const QModelIndexList& list) const {
+                         const QModelIndexList& list) {
   auto* p7 = new pki_pkcs7(QString());
 
   try {

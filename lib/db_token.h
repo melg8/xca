@@ -16,7 +16,7 @@ class db_token final : public db_base {
   bool setData(const QModelIndex& index, const QVariant& value, int role) final;
   void setSlot(const slotid& s) { slot = s; }
   void saveHeaderState() final;
-  void rename_token_in_database(pki_scard* token);
+  static void rename_token_in_database(pki_scard* token);
 };
 
 #endif  // DB_TOKEN_H

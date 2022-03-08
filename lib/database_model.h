@@ -20,15 +20,15 @@ class database_model final : public QObject {
   QList<db_base*> models;
   int dbTimer;
   void openSqlDB();
-  QSqlError initSqlDB();
+  static QSqlError initSqlDB();
   QString dbName;
-  [[nodiscard]] bool checkForOldDbFormat(const QString& dbfile) const;
+  [[nodiscard]] static bool checkForOldDbFormat(const QString& dbfile);
   [[nodiscard]] enum open_result verifyOldDbPass(const QString& dbname) const;
   void importOldDatabase(const QString& dbfile);
-  [[nodiscard]] QString get_default_db() const;
+  [[nodiscard]] static QString get_default_db();
   [[nodiscard]] QString checkPre2Xdatabase() const;
-  [[nodiscard]] enum open_result initPass(const QString& db_name,
-                                          const QString& passhash) const;
+  [[nodiscard]] static enum open_result initPass(const QString& db_name,
+                                                 const QString& passhash);
   void restart_timer();
   static void openDatabase(const QString& descriptor, const Passwd& pass);
   static void openRemoteDatabase(const QString& connName,

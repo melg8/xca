@@ -32,7 +32,7 @@ class KeyTreeView final : public XcaTreeView {
   void newItem();
   void load();
   void newItem(const QString& name);
-  void clipboardFormat(QAction*);
+  static void clipboardFormat(QAction*);
 };
 
 #endif  // KEY_TREE_VIEW_H

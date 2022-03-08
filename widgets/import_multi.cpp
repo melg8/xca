@@ -104,7 +104,7 @@ void ImportMulti::addItem(pki_base* pki) {
   mcont->rename_token_in_database(dynamic_cast<pki_scard*>(pki));
 }
 
-bool ImportMulti::openDB() const {
+bool ImportMulti::openDB() {
   if (!Database.isOpen()) {
     if (mainwin->init_database(QString()) == 2) {
       return false;

@@ -18,7 +18,7 @@
 #include "ui_help.h"
 #include "xca_dialog.h"
 
-const QList<QStringList> MainWindow::getTranslators() const {
+const QList<QStringList> MainWindow::getTranslators() {
   return QList<QStringList>{
       QStringList{"", tr("System")},
       QStringList{"zh_CN", tr("Chinese"), "Xczh", "xczh.me", "foxmail.com"},

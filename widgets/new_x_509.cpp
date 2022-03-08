@@ -421,7 +421,7 @@ void NewX509::fromX509super(pki_x509super* cert_or_req, bool applyTemp) {
   }
 }
 
-pki_temp* NewX509::caTemplate(pki_x509* ca) const {
+pki_temp* NewX509::caTemplate(pki_x509* ca) {
   QVariant sqlId = ca->getTemplateSqlId();
   if (!sqlId.isValid()) {
     return nullptr;
@@ -619,23 +619,23 @@ void NewX509::on_showReqBut_clicked() {
   CertDetail::showCert(this, reqList->currentPkiItem());
 }
 
-QList<pki_x509req*> NewX509::getAllRequests() const {
+QList<pki_x509req*> NewX509::getAllRequests() {
   return Database.model<db_x509req>()->getAllRequests();
 }
 
-QList<pki_x509*> NewX509::getAllIssuers() const {
+QList<pki_x509*> NewX509::getAllIssuers() {
   return Database.model<db_x509>()->getAllIssuers();
 }
 
-QList<pki_temp*> NewX509::getAllTempsAndPredefs() const {
+QList<pki_temp*> NewX509::getAllTempsAndPredefs() {
   return Database.model<db_temp>()->getPredefs() + Store.getAll<pki_temp>();
 }
 
-QList<pki_key*> NewX509::getAllKeys() const {
+QList<pki_key*> NewX509::getAllKeys() {
   return Database.model<db_key>()->getAllKeys();
 }
 
-QList<pki_key*> NewX509::getUnusedKeys() const {
+QList<pki_key*> NewX509::getUnusedKeys() {
   return Database.model<db_key>()->getUnusedKeys();
 }
 

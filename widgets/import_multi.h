@@ -17,7 +17,7 @@ class ImportMulti final : public QDialog, private Ui::ImportMulti {
  private:
   slotid slot;
   db_token* mcont;
-  void importError(QStringList failed);
+  static void importError(QStringList failed);
 
  public:
   ImportMulti(QWidget* parent);
@@ -30,7 +30,7 @@ class ImportMulti final : public QDialog, private Ui::ImportMulti {
   void tokenInfo(const slotid& s);
   void dragEnterEvent(QDragEnterEvent* event) final;
   void dropEvent(QDropEvent* event) final;
-  [[nodiscard]] bool openDB() const;
+  [[nodiscard]] static bool openDB();
 
  public slots:
   void on_butRemove_clicked();

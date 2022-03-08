@@ -17,8 +17,8 @@ class db_x509req final : public db_x509super {
   pki_base* insert(pki_base* item) final;
   pki_base* newPKI(enum pki_type type = none) final;
   void fillContextMenu(QMenu* menu, const QModelIndex& index);
-  QList<pki_x509req*> getAllRequests();
-  void resetX509count();
+  static QList<pki_x509req*> getAllRequests();
+  static void resetX509count();
   void setSigned(QModelIndex index, bool signe);
   void exportItem(const QModelIndex& index,
                   const pki_export* xport,

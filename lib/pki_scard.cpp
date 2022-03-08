@@ -286,7 +286,7 @@ void pki_scard::deleteFromToken() {
   deleteFromToken(slot);
 }
 
-pk11_attlist pki_scard::objectAttributesNoId(EVP_PKEY* pk, bool priv) const {
+pk11_attlist pki_scard::objectAttributesNoId(EVP_PKEY* pk, bool priv) {
   QByteArray ba;
   const RSA* rsa;
   const DSA* dsa;
