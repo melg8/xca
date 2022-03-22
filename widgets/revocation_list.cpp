@@ -34,7 +34,7 @@ static void setup_revRevItem(QTreeWidgetItem* item,
       item->setToolTip(i, rev->getIntName());
     }
   }
-  item->setText(Cserial, revit.getSerial());
+  item->setText(Cserial, revit.getSerial().toHex());
   item->setText(Cdate, revit.getDate().toSortable());
   item->setText(Creason, revit.getReason());
 
@@ -192,12 +192,12 @@ Revocation::Revocation(QModelIndexList indexes, QWidget* w)
     }
     std::sort(serials.begin(), serials.end());
     foreach (a1int a, serials)
-      sl << a;
+      sl << a.toHex();
     serial->setToolTip(sl.join("\n"));
     serial->setEnabled(false);
   } else if (indexes.size() == 1) {
     auto* cert = db_base::fromIndex<pki_x509>(indexes[0]);
-    serial->setText(cert->getSerial());
+    serial->setText(cert->getSerial().toHex());
     serial->setEnabled(false);
   } else {
     serial->setValidator(new QRegExpValidator(QRegExp("[A-Fa-f0-9]+"), serial));
@@ -216,7 +216,7 @@ x509rev Revocation::getRevocation() {
 }
 
 void Revocation::setRevocation(x509rev r) {
-  serial->setText(r.getSerial());
+  serial->setText(r.getSerial().toHex());
   invalid->setDate(r.getInvalDate());
   int i = reason->findText(r.getReason());
   if (i == -1) {

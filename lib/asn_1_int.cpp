@@ -3,8 +3,53 @@
 #include "exception.h"
 #include "func.h"
 
+#include <openssl/asn1.h>
 #include <openssl/bn.h>
 #include <openssl/err.h>
+
+#include <memory>
+
+static void OpenSslFree(char* ptr) noexcept { OPENSSL_free(ptr); }
+
+template <auto DeleteFn>
+struct FunctionDeleter {
+  template <class T>
+  void operator()(T* ptr) {
+    DeleteFn(ptr);
+  }
+};
+
+void Asn1IntegerDeleter::operator()(ASN1_INTEGER* ptr) {
+  ASN1_INTEGER_free(ptr);
+}
+
+using BigNum = std::unique_ptr<BIGNUM, FunctionDeleter<BN_free>>;
+using SslString = std::unique_ptr<char, FunctionDeleter<OpenSslFree>>;
+
+[[nodiscard]] static auto MakeUnique(BIGNUM* ptr) noexcept {
+  return BigNum{ptr};
+}
+
+[[nodiscard]] static BigNum Asn1IntegerToBn(const Asn1Integer& in) noexcept {
+  return MakeUnique(ASN1_INTEGER_to_BN(in.get(), nullptr));
+}
+
+[[nodiscard]] static SslString BigNumToDec(const BigNum& bn) noexcept {
+  return SslString{BN_bn2dec(bn.get())};
+}
+
+[[nodiscard]] static SslString BigNumToHex(const BigNum& bn) noexcept {
+  return SslString{BN_bn2hex(bn.get())};
+}
+
+static void Asn1IntegerSet(Asn1Integer& a, long v) {
+  ASN1_INTEGER_set(a.get(), v);
+}
+
+[[nodiscard]] static int Asn1IntegerCmp(const Asn1Integer& x,
+                                        const Asn1Integer& y) noexcept {
+  return ASN1_INTEGER_cmp(x.get(), y.get());
+}
 
 ASN1_INTEGER* a1int::dup(const ASN1_INTEGER* a) {
   // this wrapper casts the const to work around the nonconst
@@ -18,56 +63,51 @@ ASN1_INTEGER* a1int::dup(const ASN1_INTEGER* a) {
   return r;
 }
 
-a1int::a1int() {
-  in = ASN1_INTEGER_new();
-  Q_CHECK_PTR(in);
-  ASN1_INTEGER_set(in, 0);
+a1int::a1int() : in{ASN1_INTEGER_new()} {
+  Q_CHECK_PTR(in.get());
+
+  Asn1IntegerSet(in, 0);
   openssl_error();
 }
 
-a1int::a1int(const ASN1_INTEGER* i) { in = dup(i); }
+a1int::a1int(const ASN1_INTEGER* i) : in{dup(i)} {}
 
-a1int::a1int(const a1int& a) { in = dup(a.in); }
+a1int::a1int(const a1int& a) : in{dup(a.in.get())} {}
 
-a1int::a1int(const QString& hex) {
-  in = ASN1_INTEGER_new();
-  Q_CHECK_PTR(in);
+a1int::a1int(const QString& hex) : in{ASN1_INTEGER_new()} {
+  Q_CHECK_PTR(in.get());
   setHex(hex);
 }
 
-a1int::a1int(long l) {
-  in = ASN1_INTEGER_new();
-  Q_CHECK_PTR(in);
+a1int::~a1int() = default;
+
+a1int::a1int(long l) : in{ASN1_INTEGER_new()} {
+  Q_CHECK_PTR(in.get());
   set(l);
 }
 
-a1int::~a1int() { ASN1_INTEGER_free(in); }
-
 a1int& a1int::set(const ASN1_INTEGER* i) {
-  ASN1_INTEGER_free(in);
-  in = dup(i);
+  in.reset(dup(i));
   return *this;
 }
 
 a1int& a1int::set(long l) {
-  ASN1_INTEGER_set(in, l);
+  Asn1IntegerSet(in, l);
+
   openssl_error();
   return *this;
 }
 
 QString a1int::toQString(int dec) const {
-  QString r;
   if (in->length == 0) {
-    return r;
+    return {};
   }
-  BIGNUM* bn = ASN1_INTEGER_to_BN(in, nullptr);
+  const auto bn = Asn1IntegerToBn(in);
   openssl_error();
-  char* res = dec ? BN_bn2dec(bn) : BN_bn2hex(bn);
+
+  const auto res = dec ? BigNumToDec(bn) : BigNumToHex(bn);
   openssl_error();
-  r = res;
-  OPENSSL_free(res);
-  BN_free(bn);
-  return r;
+  return {res.get()};
 }
 
 QString a1int::toHex() const { return toQString(0); }
@@ -85,7 +125,8 @@ a1int& a1int::setQString(const QString& s, int dec) {
     BN_hex2bn(&bn, s.toLatin1());
   }
   openssl_error();
-  BN_to_ASN1_INTEGER(bn, in);
+
+  BN_to_ASN1_INTEGER(bn, in.get());  // TODO(melg): add functions for BigNum.
   openssl_error();
   BN_free(bn);
   return *this;
@@ -100,28 +141,30 @@ a1int& a1int::setRaw(const unsigned char* data, unsigned len) {
   if (!bn) {
     openssl_error();
   }
-  BN_to_ASN1_INTEGER(bn, in);
+  BN_to_ASN1_INTEGER(bn, in.get());  // TODO(melg): add functions for BigNum.
   openssl_error();
   BN_free(bn);
   return *this;
 }
 
-ASN1_INTEGER* a1int::get() const { return dup(in); }
+ASN1_INTEGER* a1int::get() const { return dup(in.get()); }
 
-const ASN1_INTEGER* a1int::get0() const { return in; }
+const ASN1_INTEGER* a1int::get0() const { return in.get(); }
 
 long a1int::getLong() const {
-  long l = ASN1_INTEGER_get(in);
+  long l = ASN1_INTEGER_get(in.get());
   openssl_error();
   return l;
 }
 
 a1int& a1int::operator++() {
-  BIGNUM* bn = ASN1_INTEGER_to_BN(in, nullptr);
+  BIGNUM* bn = ASN1_INTEGER_to_BN(in.get(), nullptr);
+
   openssl_error();
   BN_add(bn, bn, BN_value_one());
+
   openssl_error();
-  BN_to_ASN1_INTEGER(bn, in);
+  BN_to_ASN1_INTEGER(bn, in.get());
   openssl_error();
   BN_free(bn);
   return *this;
@@ -134,36 +177,36 @@ a1int a1int::operator++(int) {
 }
 
 a1int& a1int::operator=(const a1int& a) {
-  set(a.in);
+  set(a.in.get());  // TODO(melg): maybe set need unique ptr and not just ptr.
   return *this;
 }
 
 a1int& a1int::operator=(long i) {
-  ASN1_INTEGER_set(in, i);
+  ASN1_INTEGER_set(in.get(), i);
   openssl_error();
   return *this;
 }
 
 bool a1int::operator>(const a1int& a) const {
-  return (ASN1_INTEGER_cmp(in, a.in) > 0);
+  return Asn1IntegerCmp(in, a.in) > 0;
 }
 
 bool a1int::operator<(const a1int& a) const {
-  return (ASN1_INTEGER_cmp(in, a.in) < 0);
+  return Asn1IntegerCmp(in, a.in) < 0;
 }
 
 bool a1int::operator==(const a1int& a) const {
-  return (ASN1_INTEGER_cmp(in, a.in) == 0);
+  return Asn1IntegerCmp(in, a.in) == 0;
 }
 
 bool a1int::operator!=(const a1int& a) const {
-  return (ASN1_INTEGER_cmp(in, a.in) != 0);
+  return Asn1IntegerCmp(in, a.in) != 0;
 }
 
-a1int::operator QString() const { return toHex(); }
+// a1int::operator QString() const { return toHex(); }
 
 QByteArray a1int::i2d() {
-  return i2d_bytearray(I2D_VOID(i2d_ASN1_INTEGER), in);
+  return i2d_bytearray(I2D_VOID(i2d_ASN1_INTEGER), in.get());
 }
 
-int a1int::derSize() const { return i2d_ASN1_INTEGER(in, nullptr); }
+int a1int::derSize() const { return i2d_ASN1_INTEGER(in.get(), nullptr); }

@@ -123,7 +123,7 @@ void CertDetail::setCert(pki_x509* cert) {
     }
 
     // the serial
-    serialNr->setText(cert->getSerial());
+    serialNr->setText(cert->getSerial().toHex());
 
     // details of the issuer
     issuer->setX509name(cert->getIssuerName());
