@@ -92,7 +92,7 @@ X509_REVOKED* x509rev::toREVOKED(bool withReason) const {
   a1time d = date;
   X509_REVOKED* rev = X509_REVOKED_new();
   Q_CHECK_PTR(rev);
-  X509_REVOKED_set_serialNumber(rev, serial.get());
+  X509_REVOKED_set_serialNumber(rev, serial.get().get());
   X509_REVOKED_set_revocationDate(rev, d.get_utc());
   X509_REVOKED_add1_ext_i2d(rev, NID_invalidity_date, i.get(), 0, 0);
 

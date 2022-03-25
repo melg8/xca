@@ -42,7 +42,7 @@ using SslString = std::unique_ptr<char, FunctionDeleter<OpenSslFree>>;
   return SslString{BN_bn2hex(bn.get())};
 }
 
-static void Asn1IntegerSet(Asn1Integer& a, long v) {
+static void Asn1IntegerSet(Asn1Integer& a, int64_t v) {
   ASN1_INTEGER_set(a.get(), v);
 }
 
@@ -119,7 +119,7 @@ a1int& a1int::setQString(const QString& s, int dec) {
   if (s.isEmpty()) {
     return *this;
   }
-  if (dec) {
+  if (dec != 0) {
     BN_dec2bn(&bn, s.toLatin1());
   } else {
     BN_hex2bn(&bn, s.toLatin1());
@@ -147,9 +147,7 @@ a1int& a1int::setRaw(const unsigned char* data, unsigned len) {
   return *this;
 }
 
-ASN1_INTEGER* a1int::get() const { return dup(in.get()); }
-
-const ASN1_INTEGER* a1int::get0() const { return in.get(); }
+Asn1Integer a1int::get() const { return Asn1Integer{dup(in.get())}; }
 
 long a1int::getLong() const {
   long l = ASN1_INTEGER_get(in.get());
@@ -170,7 +168,7 @@ a1int& a1int::operator++() {
   return *this;
 }
 
-a1int a1int::operator++(int) {
+const a1int a1int::operator++(int) {
   a1int tmp = *this;
   operator++();
   return tmp;
@@ -203,9 +201,7 @@ bool a1int::operator!=(const a1int& a) const {
   return Asn1IntegerCmp(in, a.in) != 0;
 }
 
-// a1int::operator QString() const { return toHex(); }
-
-QByteArray a1int::i2d() {
+QByteArray a1int::i2d() const {
   return i2d_bytearray(I2D_VOID(i2d_ASN1_INTEGER), in.get());
 }
 

@@ -249,7 +249,7 @@ void pki_x509::init() {
 }
 
 void pki_x509::setSerial(const a1int& serial) {
-  X509_set_serialNumber(cert, serial.get());
+  X509_set_serialNumber(cert, serial.get().get());
   pki_openssl_error();
 }
 

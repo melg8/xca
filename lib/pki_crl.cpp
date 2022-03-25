@@ -307,10 +307,7 @@ bool pki_crl::verify(pki_x509* issuer) {
 }
 
 void pki_crl::setCrlNumber(a1int num) {
-  ASN1_INTEGER* tmpser = num.get();
-  pki_openssl_error();
-  X509_CRL_add1_ext_i2d(crl, NID_crl_number, tmpser, 0, 0);
-  ASN1_INTEGER_free(tmpser);
+  X509_CRL_add1_ext_i2d(crl, NID_crl_number, num.get().get(), 0, 0);
   pki_openssl_error();
 }
 

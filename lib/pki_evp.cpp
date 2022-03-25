@@ -796,6 +796,14 @@ int PEM_write_bio_PrivateKey_traditional(BIO* bp,
                                          unsigned char* kstr,
                                          int klen,
                                          pem_password_cb* cb,
+                                         void* u);
+
+int PEM_write_bio_PrivateKey_traditional(BIO* bp,
+                                         EVP_PKEY* x,
+                                         const EVP_CIPHER* enc,
+                                         unsigned char* kstr,
+                                         int klen,
+                                         pem_password_cb* cb,
                                          void* u) {
   QString pem = keytype::byPKEY(x).traditionalPemName();
 

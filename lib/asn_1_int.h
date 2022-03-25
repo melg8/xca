@@ -32,8 +32,7 @@ class a1int {
   [[nodiscard]] QString toHex() const;
   [[nodiscard]] QString toDec() const;
   [[nodiscard]] long getLong() const;
-  [[nodiscard]] ASN1_INTEGER* get() const;
-  [[nodiscard]] const ASN1_INTEGER* get0() const;
+  [[nodiscard]] Asn1Integer get() const;
   [[nodiscard]] int derSize() const;
 
   a1int& set(const ASN1_INTEGER* i);
@@ -41,17 +40,16 @@ class a1int {
   a1int& setHex(const QString& s);
   a1int& setDec(const QString& s);
   a1int& setRaw(const unsigned char* data, unsigned len);
-  QByteArray i2d();
+  QByteArray i2d() const;
 
   a1int& operator++();
-  a1int operator++(int);
+  const a1int operator++(int);
   a1int& operator=(const a1int& a);
   a1int& operator=(long i);
   bool operator>(const a1int& a) const;
   bool operator<(const a1int& a) const;
   bool operator==(const a1int& a) const;
   bool operator!=(const a1int& a) const;
-  //  operator QString() const;
 };
 
 #endif  // ASN_1_INT_H
