@@ -22,6 +22,10 @@ CrlDetail::CrlDetail(QWidget* w) : QDialog(w ? w : mainwin) {
   Database.connectToDbChangeEvt(this, SLOT(itemChanged(pki_base*)));
 }
 
+static QString AsHex(long value) noexcept {
+  return QString("%1").arg(value, 2, 16, QLatin1Char('0'));
+}
+
 void CrlDetail::setCrl(pki_crl* crl) {
   pki_x509* iss;
   x509v3ext e1;
@@ -62,7 +66,7 @@ void CrlDetail::setCrl(pki_crl* crl) {
   lUpdate->setToolTip(crl->getLastUpdate().toPrettyGMT());
   nUpdate->setText(crl->getNextUpdate().toPretty());
   nUpdate->setToolTip(crl->getNextUpdate().toPrettyGMT());
-  version->setText((++crl->getVersion()).toHex());
+  version->setText(AsHex(crl->getVersion() + 1));
 
   issuer->setX509name(crl->getSubject());
 

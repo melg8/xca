@@ -156,7 +156,7 @@ void pki_crl::createCrl(const QString d, pki_x509* iss) {
   pki_openssl_error();
 }
 
-a1int pki_crl::getVersion() { return {X509_CRL_get_version(crl)}; }
+long pki_crl::getVersion() { return X509_CRL_get_version(crl); }
 
 void pki_crl::setLastUpdate(const a1time& a) {
   a1time t(a);

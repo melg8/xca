@@ -74,7 +74,7 @@ class pki_crl final : public pki_x509name {
   x509revList getRevList();
   QString printV3ext();
   x509v3ext getExtByNid(int nid);
-  a1int getVersion();
+  long getVersion();
   QVariant column_data(const dbheader* hd) const final;
   QVariant getIcon(const dbheader* hd) const final;
   a1time column_a1time(const dbheader* hd) const final;
