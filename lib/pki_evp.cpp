@@ -789,7 +789,7 @@ void pki_evp::writeDefault(const QString& dirname) const {
   writeKey(file, pki_evp::passwd[0] ? EVP_des_ede3_cbc() : nullptr, mycb, true);
 }
 
-#ifndef LIBRESSL_VERSION_NUMBER
+#if OPENSSL_VERSION_NUMBER > 0x10101000L || !defined LIBRESSL_VERSION_NUMBER
 int PEM_write_bio_PrivateKey_traditional(BIO* bp,
                                          EVP_PKEY* x,
                                          const EVP_CIPHER* enc,
