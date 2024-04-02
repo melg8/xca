@@ -13,10 +13,12 @@
 
 class xcaWarningBox: public QMessageBox
 {
-    public:
-	xcaWarningBox(QWidget *w, const QString &txt,
+	Q_OBJECT
+
+	public:
+		xcaWarningBox(QWidget *w, const QString &txt,
 			QMessageBox::Icon icn = QMessageBox::Warning);
-	void addButton(QMessageBox::StandardButton button,
+		void addButton(QMessageBox::StandardButton button,
 			const QString &text = QString());
 };
 
@@ -26,7 +28,7 @@ class xcaWarningGui : public QObject, public xcaWarning_i
 
 	int showBox(const QString &txt, QMessageBox::Icon icn,
 			QMessageBox::StandardButtons b);
-    public:
+  public:
 	void information(const QString &msg);
 	void warning(const QString &msg);
 	void warningv3(const QString &msg, const extList &el);

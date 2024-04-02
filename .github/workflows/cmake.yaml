@@ -12,7 +12,7 @@ jobs:
       matrix:
 
         os: [ ubuntu, macos, windows ]
-        qt: [ "5.15.2", "6.3.1" ]
+        qt: [ "5.15.2", "6.6.2" ]
 
         include:
         - os: ubuntu
@@ -20,12 +20,14 @@ jobs:
           openssl_root: /usr
           artifact: build/xca-*-Linux.tar.gz
           host: linux
+          runs: ubuntu-latest
 
         - os: macos
           generator: Unix Makefiles
           openssl_root: /usr/local/opt/openssl@1.1
           artifact: build/xca-*.dmg
           host: mac
+          runs: macos-latest
 
         - os: windows
           generator: MinGW Makefiles
@@ -38,12 +40,15 @@ jobs:
         - os: windows
           qt: "5.15.2"
           winarch: win64_mingw81
+          runs: windows-2019
 
+        exclude:
         - os: windows
-          qt: "6.3.1"
-          winarch: win64_mingw
+          qt: "6.6.2"
+            #winarch: win64_mingw
+            #runs: windows-latest
 
-    runs-on: ${{matrix.os}}-latest
+    runs-on: ${{matrix.runs}}
 
     steps:
     - name: Install Sphinx
@@ -54,44 +59,45 @@ jobs:
       with:
         arch: ${{matrix.winarch}}
         version: ${{matrix.qt}}
- #       tools: "tools_openssl_x64 ${{matrix.winarch}}"
 
-    - uses: msys2/setup-msys2@v2
+    - name: Install MSYS2 and OpenSSL on Windows
+      uses: msys2/setup-msys2@v2
       if: matrix.os == 'windows'
       with:
         location: ${{env.MSYS}}
         msystem: mingw64
-        install: mingw-w64-x86_64-openssl openssl-devel
+        install: mingw-w64-x86_64-openssl openssl-devel base-devel mingw-w64-x86_64-gcc
 
     - name: Brew install OpenSSL
       if: matrix.os == 'macos'
       run: brew install openssl
 
     - name: Checkout XCA
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
     - name: Configure
       # No YAML Multiline mechanism (>, |, \, >-, >+2 whatever) works as expected
       # Give up. Live with the long line
-      run: cmake -B ${{github.workspace}}/build -G "${{matrix.generator}}" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DOPENSSL_ROOT_DIR=${{matrix.openssl_root}} --warn-uninitialized
+      run: cmake -B ${{github.workspace}}/build -G "${{matrix.generator}}" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DOPENSSL_ROOT_DIR=${{matrix.openssl_root}} --warn-uninitialized -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET="10.15"
 
     - name: Build
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j 5 -v
+      run: cmake --build ${{github.workspace}}/build -j 5 -v
 
     - name: Fixup after WindeployQT and Install
       if: matrix.os == 'windows'
       run: |
         cd ${{env.MSYS}}\msys64\mingw64\bin
-        cmake -E copy libgcc_s_seh-1.dll libstdc++-6.dll libwinpthread-1.dll ${{github.workspace}}/build
-        cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -t install
+        cmake -E copy libgcc_s_seh-1.dll libstdc++-6.dll libwinpthread-1.dll ${{github.workspace}}\build
+        cmake --build ${{github.workspace}}/build -t install
 
-    #- name: Test
-      #working-directory: ${{github.workspace}}/build
+    - name: Test
       # Execute tests defined by the CMake configuration.
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-      #run: ctest -C ${{env.BUILD_TYPE}}
+      run: |
+        cmake --build ${{github.workspace}}/build -t tests
+        ctest --test-dir ${{github.workspace}}/build -L console
 
     - name: Install
       if: matrix.os != 'windows'
@@ -101,10 +107,9 @@ jobs:
       run: |
         cd ${{github.workspace}}/build
         cpack -C ${{env.BUILD_TYPE}}
-#        type _CPack_Packages/win64/WIX/wix.log
 
     - name: Deploy
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         path: ${{matrix.artifact}}
         name: ${{matrix.os}}-${{matrix.qt}}

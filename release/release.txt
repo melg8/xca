@@ -6,28 +6,30 @@ Release schedule cheat sheet
    - ign_openssl_error()
    - for TRACE
 
-- update translation and xca.pro (qmake-qt4 -o makefile && make)
-- update changelog.txt doc/xca.sgml and README.md
-- ./git.release VERSION
+- update translation (cmake -B . && cmake --build . -t trans)
+- update changelog.txt and README.md
+- ./release/git.release VERSION
 - Create xca.dmg
-- Create and sign MSI Installer
-- git push git.hohnstaedt.de
+- Create (and sign) MSI Installer and portable app
 - update xca.hohnstaedt.de:
   scp changelog git.hohnstaedt.de:/var/cache/git/projects/changelog.txt
+- ./release/git.publish
 
+Apple Notarization
+------------------------
 https://developer.apple.com/documentation/xcode/notarizing_macos_software_before_distribution/customizing_the_notarization_workflow
 
 DMG=xca-2.4.0-High-Sierra.dmg
 
-xcrun notarytool submit "$DMG" --keychain-profile "AC_PASSWORD" --key-id HWR8GSJ73M --wait --webhook "https://example.com/notarization"
+xcrun notarytool submit "$DMG" --keychain-profile "AC_PASSWORD" --key-id HWR8GSJ73M --wait
 
 xcrun stapler staple "$DMG"
 
-xca.msi > Windows
-unzip xca-portable
-unzip xca-installer-dir > xca-portable
-execute xca.bat in xca-installer-dir
-cp xca.msi -> xca_build
-make xca.msi.signed
-mv xca.msi.signed ~/xca-2.4.0/xca-2.4.0.msi
+Microsoft Store
+-----------------
+OpenSSL:
+./Configure mingw64 --prefix=/c/OpenSSL --libdir=lib
 
+https://partner.microsoft.com ("Partner Center")
+
+MSIX Packaging Tool

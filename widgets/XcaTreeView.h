@@ -29,16 +29,16 @@ class XcaTreeView: public QTreeView
 {
 	Q_OBJECT
 
-	dbheader *curr_hd;
-	QTimer throttle;
+	dbheader *curr_hd{};
+	QTimer throttle{};
 
-   protected:
-	db_base *basemodel;
-	QSortFilterProxyModel *proxy;
-	MainWindow *mainwin;
+  protected:
+	db_base *basemodel{};
+	QSortFilterProxyModel *proxy{};
+	MainWindow *mainwin{};
 
-   public:
-	XcaTreeView(QWidget *parent = 0);
+  public:
+	XcaTreeView(QWidget *parent = nullptr);
 	virtual ~XcaTreeView();
 	void contextMenuEvent(QContextMenuEvent *e);
 	void setModel(QAbstractItemModel *model);
@@ -58,6 +58,7 @@ class XcaTreeView: public QTreeView
 	void contextMenu(QContextMenuEvent *e,
 			QMenu *parent = NULL, int sect = -1);
 	void keyPressEvent(QKeyEvent *event);
+	void changeEvent(QEvent *event);
 	virtual void showPki(pki_base *) {};
 	virtual void exportItems(const QModelIndexList &indexes);
 	virtual void load_default(load_base *load);
@@ -83,5 +84,6 @@ class XcaTreeView: public QTreeView
 	void showItem(pki_base *);
 	void showItem(const QModelIndex &index);
 	void showItem(const QString &name);
+	void itemSelectionChanged(const QModelIndex &m, const QModelIndex &);
 };
 #endif

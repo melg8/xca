@@ -45,7 +45,7 @@ ExportDialog::ExportDialog(QWidget *w, const QString &title,
 		fname + "." + types[0]->extension;
 	filename->setText(nativeSeparator(fn));
 
-	filter = filt + ";;" + tr("All files ( * )");
+	filter = tr("All files ( * )") + ";;" + filt;
 
 	foreach(const pki_export *t, types) {
 		if (t->flags & F_USUAL)
@@ -99,7 +99,7 @@ void ExportDialog::on_exportFormat_activated(int selected)
 
 bool ExportDialog::mayWriteFile(const QString &fname)
 {
-        if (QFile::exists(fname)) {
+	if (QFile::exists(fname)) {
 		xcaWarningBox msg(NULL,
 			tr("The file: '%1' already exists!").arg(fname));
 		msg.addButton(QMessageBox::Ok, tr("Overwrite"));

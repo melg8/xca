@@ -20,21 +20,17 @@ class X509SuperTreeView: public XcaTreeView
 		return dynamic_cast<db_x509super*>(basemodel);
 	}
 
-    protected:
-	QMenu *transform;
+  protected:
+	QMenu *transform{};
 
-    public:
-	X509SuperTreeView(QWidget *parent) : XcaTreeView(parent)
-	{
-		transform = NULL;
-	}
-	void fillContextMenu(QMenu *menu, QMenu *subExport,
+  public:
+	X509SuperTreeView(QWidget *parent) : XcaTreeView(parent) { }
+	void fillContextMenu(QMenu *menu, QMenu *,
 			const QModelIndex &index, QModelIndexList indexes);
 
-    public slots:
+  public slots:
 	void showPki(pki_base *pki);
 	void extractPubkey();
 	void toTemplate();
-	void toOpenssl();
 };
 #endif

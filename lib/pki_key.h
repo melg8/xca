@@ -1,4 +1,5 @@
-/*
+/* vi: set sw=4 ts=4:
+ *
  * Copyright (C) 2001 - 2020 Christian Hohnstaedt.
  *
  * All rights reserved.
@@ -28,7 +29,7 @@ extern builtin_curves builtinCurves;
 
 class keytype
 {
-    public:
+  public:
 	static QList<keytype> types()
 	{
 		return QList<keytype> {
@@ -45,10 +46,10 @@ class keytype
 #endif
 		};
 	}
-	int type;
-	QString name;
-	CK_MECHANISM_TYPE mech;
-	bool curve, length;
+	int type{};
+	QString name{};
+	CK_MECHANISM_TYPE mech{};
+	bool curve{}, length{};
 
 	keytype(int t, const QString &n, CK_MECHANISM_TYPE m, bool c, bool l)
 			: type(t), name(n), mech(m), curve(c), length(l) { }
@@ -94,7 +95,7 @@ class keytype
 
 class keyjob
 {
-    public:
+  public:
 	static keyjob defaultjob;
 	keytype ktype;
 	int size;
@@ -121,13 +122,13 @@ class keyjob
 		else if (!isED25519())
 			size = sl[1].toInt();
 		slot = slotid();
+		ign_openssl_error();
 	}
 	QString toString()
 	{
 		if (isED25519())
 			return ktype.name;
-		return QString("%1:%2").arg(ktype.name)
-				.arg(isEC() ?
+		return QString("%1:%2").arg(ktype.name) .arg(isEC() ?
 					OBJ_obj2QString(OBJ_nid2obj(ec_nid)) :
 					QString::number(size));
 	}
@@ -210,8 +211,7 @@ class pki_key: public pki_base
 		bool compare(const pki_base *ref) const;
 		int getKeyType() const;
 		bool isPrivKey() const;
-		bool verify(EVP_PKEY *pkey) const;
-		virtual bool verify_priv(EVP_PKEY *pkey) const;
+		virtual bool verify(EVP_PKEY *pkey) const;
 		int getUcount() const;
 		void setUcount(int c)
 		{
@@ -234,6 +234,7 @@ class pki_key: public pki_base
 			qFatal("generate in pki_key");
 		}
 		bool pem(BioByteArray &);
+		virtual bool pem(BioByteArray &b, const pki_export *xport);
 		QVariant column_data(const dbheader *hd) const;
 		QString modulus() const;
 		QString pubEx() const;

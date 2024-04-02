@@ -2,8 +2,8 @@
 .. index:: certdetail (certdetail)
 .. _certificates:
 
-Certificates
-============
+X.509 Certificates
+==================
 
 All certificates from the database are displayed in a tree view reflecting
 the chain dependencies.
@@ -13,7 +13,7 @@ CA certificate.
 
 .. _ca_cert:
 
-CA certificates
+CA Certificates
 ---------------
 
 XCA will recognize CA certificates if the CA flag in the *Basic Constraints*
@@ -85,33 +85,33 @@ Certificate Export
   - **PEM:** PEM encoded
   - **PEM with Certificate chain:** PEM encoded certificate
     and all issuers up to the root certificate in one file
-  - **PEM all trusted Certificates:** List of all PEM encoded
-    certificates that are marked as *Always trusted*
-    (usually all self-signed certificates) in one file for e.g.
-    apache as trusted certificate store.
-  - **PEM all Certificates:** All PEM encoded certificates in one file.
   - **DER:** DER encoded certificate.
   - **PKCS#7:** DER encoded PKCS#7 structure containing the certificate.
-  - **PKCS#7 with Certificate chain:** DER encoded PKCS#7 structure containing
-    the certificate and all issuers up to the root certificate.
-  - **PKCS#7 all trusted Certificates:** DER encoded PKCS#7 structure
-    containing all certificates that are marked as *Always trusted*
-  - **PKCS#7 all Certificates:** DER encoded PKCS#7 structure
-    containing all certificates.
+  - **PKCS#7 chain:** DER encoded PKCS#7 structure containing
+    the selected certificate and all issuers up to the root certificate.
+  - **PKCS#7 selected certificates:** DER encoded PKCS#7 structure
+    containing all selected certificates.
   - **PKCS#12:** PKCS#12 structure containing the certificate
     and the corresponding private key
-  - **PKCS#12:** PKCS#12 structure containing the certificate, the
+  - **PKCS#12 chain:** PKCS#12 structure containing the certificate, the
     corresponding private key and the chain of all issuers certificates.
   - **PEM cert + key:** concatenation of the private key and certificate
     in a format used by apache or the X509 patch for OpenSSH.
   - **PEM cert + PKCS8 key:** concatenation of the
     private key in PKCS#8 format and certificate.
+  - **OpenVPN:** The selected certificate, its corresponding private key
+    and all issuing certificates in one text file with tags suitable
+    as part of an OpenVPN configuration file.
+  - **vCalendar (*.ics):** expiry notifications for all selected certificates
+    to be imported into your favorite calendar app.
+  - **CA vCalendar (*.ics):** expiry notifications for the CA certificate,
+    valid, issued cdrtificates and the latest CRL.
+  - **OpenSSL config:** Create an OpenSSL config file from the content of
+    this certificate, which can be used to generate a similar certificate
+    with openssl: `openssl req -new -x509 -config <file>`
 
 - **Token:** Store certificate on the Security token containing the private key.
 - **Other token:** Store certificate on any Security token.
-- **OpenSSL config:** Create an OpenSSL config file from the content of this
-  certificate, which can be used to generate a similar certificate with
-  openssl: `openssl req -new -x509 -config <file>`
 
 When exporting PKCS#12 structures XCA asks later for an encryption password.
 

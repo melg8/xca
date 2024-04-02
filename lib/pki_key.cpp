@@ -61,7 +61,7 @@ void pki_key::autoIntName(const QString &file)
 void pki_key::d2i(QByteArray &ba)
 {
 	EVP_PKEY *k = (EVP_PKEY*)d2i_bytearray(D2I_VOID(d2i_PUBKEY), ba);
-        pki_openssl_error();
+	pki_openssl_error();
 	if (k) {
 		if (key)
 			EVP_PKEY_free(key);
@@ -73,21 +73,21 @@ void pki_key::d2i_old(QByteArray &ba, int type)
 {
 	const unsigned char *p, *p1;
 	p = p1 = (const unsigned char *)ba.constData();
-	EVP_PKEY *k = d2i_PublicKey(type, NULL, &p1, ba.count());
+	EVP_PKEY *k = d2i_PublicKey(type, NULL, &p1, ba.size());
 
-        pki_openssl_error();
+	pki_openssl_error();
 
 	if (k) {
 		if (key)
 			EVP_PKEY_free(key);
 		key = k;
 	}
-        ba = ba.mid(p1-p);
+	ba = ba.mid(p1-p);
 }
 
 QByteArray pki_key::i2d() const
 {
-        return i2d_bytearray(I2D_VOID(i2d_PUBKEY), key);
+	return i2d_bytearray(I2D_VOID(i2d_PUBKEY), key);
 }
 
 void pki_key::write_SSH2_ed25519_private(BIO *b,
@@ -125,8 +125,11 @@ void pki_key::write_SSH2_ed25519_private(BIO *b,
 
 bool pki_key::pem(BioByteArray &b)
 {
-	const pki_export *xport = pki_export::by_id(Settings["KeyFormat"]);
+	return pem(b, pki_export::by_id(Settings["KeyFormat"]));
+}
 
+bool pki_key::pem(BioByteArray &b, const pki_export *xport)
+{
 	if (xport->match_all(F_PRIVATE))
 		return false;
 	if (xport->match_all(F_SSH2))
@@ -156,7 +159,7 @@ QString pki_key::length() const
 {
 	bool dsa_unset = false;
 
-	if (EVP_PKEY_id(key) == EVP_PKEY_DSA) {
+	if (getKeyType() == EVP_PKEY_DSA) {
 		const BIGNUM *p = NULL;
 		const DSA *dsa = EVP_PKEY_get0_DSA(key);
 		if (dsa)
@@ -378,16 +381,22 @@ QList<int> pki_key::possibleHashNids()
 
 	switch (EVP_PKEY_type(getKeyType())) {
 		case EVP_PKEY_RSA:
-			nids << NID_md5 << NID_sha1 << NID_sha224 << NID_sha256 <<
-				NID_sha384 << NID_sha512 << NID_ripemd160;
+			nids << NID_md5 << NID_ripemd160 << NID_sha1 << NID_sha224 << NID_sha256 <<
+				NID_sha384 << NID_sha512;
 			break;
 		case EVP_PKEY_DSA:
 			nids << NID_sha1 << NID_sha256;
 			break;
+#ifndef OPENSSL_NO_EC
 		case EVP_PKEY_EC:
-			nids << NID_sha1  << NID_sha224 << NID_sha256 <<
+			nids << NID_sha1 << NID_sha224 << NID_sha256 <<
 				NID_sha384 << NID_sha512;
 			break;
+#ifdef EVP_PKEY_ED25519
+		case EVP_PKEY_ED25519:
+			nids << NID_undef;
+#endif
+#endif
 	}
 	return nids;
 };
@@ -442,7 +451,7 @@ QString pki_key::BN2QString(const BIGNUM *bn) const
 	Q_CHECK_PTR(buf);
 	BN_bn2bin(bn, buf);
 	for (j = 0; j< size; j++) {
-		sprintf(zs, "%02X%c",buf[j], ((j+1)%16 == 0) ? '\n' :
+		snprintf(zs, sizeof zs, "%02X%c",buf[j], ((j+1)%16 == 0) ? '\n' :
 				j<size-1 ? ':' : ' ');
 		x += zs;
 	}
@@ -661,7 +670,7 @@ EVP_PKEY *pki_key::load_ssh2_key(const QByteArray &b)
 		ssh_key_check_chunk(&ba, "ssh-ed25519");
 		QByteArray pub = ssh_key_next_chunk(&ba);
 		pk = EVP_PKEY_new_raw_public_key(EVP_PKEY_ED25519, NULL,
-			(const unsigned char *)pub.constData(), pub.count());
+			(const unsigned char *)pub.constData(), pub.size());
 		pki_openssl_error();
 #endif
 #endif
@@ -789,45 +798,21 @@ void pki_key::writeSSH2public(XFile &file) const
 
 bool pki_key::verify(EVP_PKEY *pkey) const
 {
-	bool verify = true;
-	const BIGNUM *a = NULL;
-	const BIGNUM *b = NULL;
-	const BIGNUM *c = NULL;
-
-	switch (EVP_PKEY_type(EVP_PKEY_id(pkey))) {
-	case EVP_PKEY_RSA:
-		RSA_get0_key(EVP_PKEY_get0_RSA(pkey), &a, &b, NULL);
-		verify = a && b;
-		break;
-	case EVP_PKEY_DSA:
-		DSA_get0_pqg(EVP_PKEY_get0_DSA(pkey), &a, &b, &c);
-		verify = a && b && c;
-		break;
-#ifndef OPENSSL_NO_EC
-	case EVP_PKEY_EC:
-		verify = EC_KEY_check_key(EVP_PKEY_get0_EC_KEY(pkey)) == 1;
-		break;
-#ifdef EVP_PKEY_ED25519
-	case EVP_PKEY_ED25519: {
-		size_t len;
-		verify = EVP_PKEY_get_raw_private_key(pkey, NULL, &len) == 1 &&
-				len == ED25519_KEYLEN;
-		break;
+#ifndef LIBRESSL_VERSION_NUMBER
+	EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new(pkey, NULL);
+	Q_CHECK_PTR(ctx);
+	int verify = EVP_PKEY_public_check(ctx);
+	EVP_PKEY_CTX_free(ctx);
+	if (verify == -2) {
+		// Operation not supported assume true
+		pki_ign_openssl_error();
 	}
-#endif
-#endif
-	default:
-		verify = false;
-	}
-	if (verify)
-		verify = verify_priv(pkey);
 	pki_openssl_error();
-	return verify;
-}
-
-bool pki_key::verify_priv(EVP_PKEY *) const
-{
+	return verify != 0;
+#else
+	(void)pkey;
 	return true;
+#endif
 }
 
 QString pki_key::fingerprint(const QString &format) const

@@ -22,6 +22,9 @@
 #include <openssl/pem.h>
 #include <openssl/pkcs12.h>
 #include <openssl/err.h>
+#if (OPENSSL_VERSION_NUMBER >= 0x30000000L)
+#include <openssl/proverr.h>
+#endif
 
 Passwd pki_evp::passwd;
 
@@ -139,6 +142,7 @@ void pki_evp::generate(const keyjob &task)
 	case EVP_PKEY_ED25519: {
 		EVP_PKEY *pkey = NULL;
 		EVP_PKEY_CTX *pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_ED25519, NULL);
+		Q_CHECK_PTR(pctx);
 		EVP_PKEY_keygen_init(pctx);
 		EVP_PKEY_keygen(pctx, &pkey);
 		EVP_PKEY_CTX_free(pctx);
@@ -212,10 +216,16 @@ pki_evp::pki_evp(EVP_PKEY *pkey)
 
 bool pki_evp::openssl_pw_error() const
 {
-	switch (ERR_peek_error() & 0xff000fff) {
+	unsigned long e = ERR_peek_error();
+
+	switch (ERR_PACK(ERR_GET_LIB(e), 0, ERR_GET_REASON(e))) {
 	case ERR_PACK(ERR_LIB_PEM, 0, PEM_R_BAD_DECRYPT):
 	case ERR_PACK(ERR_LIB_PEM, 0, PEM_R_BAD_PASSWORD_READ):
 	case ERR_PACK(ERR_LIB_EVP, 0, EVP_R_BAD_DECRYPT):
+#if (OPENSSL_VERSION_NUMBER >= 0x30000000L)
+	case ERR_PACK(ERR_LIB_PROV, 0, PROV_R_BAD_DECRYPT):
+#endif
+	case ERR_PACK(ERR_LIB_PKCS12, 0, PKCS12_R_PKCS12_CIPHERFINAL_ERROR):
 		pki_ign_openssl_error();
 		return true;
 	}
@@ -229,14 +239,15 @@ void pki_evp::fromPEMbyteArray(const QByteArray &ba, const QString &name)
 		tr("Please enter the password to decrypt the private key %1.")
 			.arg(name));
 	pkey = load_ssh_ed25519_privatekey(ba, p);
+	pki_ign_openssl_error();
 
 	while (!pkey) {
 		pkey = PEM_read_bio_PrivateKey(BioByteArray(ba).ro(), NULL,
 						PwDialogCore::pwCallback, &p);
-		if (openssl_pw_error())
-			XCA_PASSWD_ERROR();
 		if (p.getResult() != pw_ok)
 			throw p.getResult();
+		if (openssl_pw_error())
+			XCA_PASSWD_ERROR();
 		if (pki_ign_openssl_error())
 			break;
 	}
@@ -349,7 +360,7 @@ EVP_PKEY *pki_evp::load_ssh_ed25519_privatekey(const QByteArray &ba,
 	pub = ssh_key_next_chunk(&content);
 	ssh_key_check_chunk(&pub, "ssh-ed25519");
 	pub = ssh_key_next_chunk(&pub);
-	if (pub.count() != ED25519_KEYLEN)
+	if (pub.size() != ED25519_KEYLEN)
 		return NULL;
 
 	// Followed by the private key
@@ -364,7 +375,7 @@ EVP_PKEY *pki_evp::load_ssh_ed25519_privatekey(const QByteArray &ba,
 		return NULL;
 	priv = ssh_key_next_chunk(&priv);
 	// The private key is concatenated by the public key in one chunk
-	if (priv.count() != 2 * ED25519_KEYLEN)
+	if (priv.size() != 2 * ED25519_KEYLEN)
 		return NULL;
 	// The last ED25519_KEYLEN bytes must match the public key
 	if (pub != priv.mid(ED25519_KEYLEN))
@@ -395,10 +406,10 @@ void pki_evp::fload(const QString &fname)
 	do {
 		pkey = PEM_read_bio_PrivateKey(BioByteArray(ba).ro(),
 						NULL, cb, &p);
-		if (openssl_pw_error())
-			XCA_PASSWD_ERROR();
 		if (p.getResult() != pw_ok)
 			throw p.getResult();
+		if (openssl_pw_error())
+			XCA_PASSWD_ERROR();
 		if (pki_ign_openssl_error())
 			break;
 	} while (!pkey);
@@ -454,7 +465,14 @@ void pki_evp::fload(const QString &fname)
 	set_EVP_PKEY(pkey, fname);
 }
 
-EVP_PKEY *pki_evp::decryptKey() const
+bool pki_evp::validateDatabasePassword(const Passwd &passwd)
+{
+	return !passHash.isEmpty() &&
+			(sha512passwT(passwd, passHash) == passHash ||
+			 sha512passwd(passwd, passHash) == passHash);
+}
+
+EVP_PKEY *pki_evp::tryDecryptKey() const
 {
 	Passwd ownPassBuf;
 	int ret;
@@ -474,10 +492,7 @@ EVP_PKEY *pki_evp::decryptKey() const
 		ownPassBuf = "Bogus";
 	} else {
 		ownPassBuf = passwd;
-		while (passHash.isEmpty() ||
-			(sha512passwT(ownPassBuf, passHash) != passHash &&
-			 sha512passwd(ownPassBuf, passHash) != passHash))
-		{
+		while (!validateDatabasePassword(ownPassBuf)) {
 			pass_info p(XCA_TITLE, tr("Please enter the database password for decrypting the key '%1'").arg(getIntName()));
 			ret = PwDialogCore::execute(&p, &ownPassBuf,
 							passHash.isEmpty());
@@ -487,8 +502,8 @@ EVP_PKEY *pki_evp::decryptKey() const
 		}
 	}
 	QByteArray myencKey = getEncKey();
-	qDebug() << "myencKey.count()"<<myencKey.count();
-	if (myencKey.count() == 0)
+	qDebug() << "myencKey.size()"<<myencKey.size();
+	if (myencKey.size() == 0)
 		return NULL;
 	EVP_PKEY *priv = NULL;
 	X509_SIG *p8 = d2i_PKCS8_bio(BioByteArray(myencKey).ro(), NULL);
@@ -500,8 +515,105 @@ EVP_PKEY *pki_evp::decryptKey() const
 			PKCS8_PRIV_KEY_INFO_free(p8inf);
 		}
 		X509_SIG_free(p8);
+		if (!p8inf) {
+			pki_ign_openssl_error();
+			throw errorEx(tr("Decryption of private key '%1' failed")
+							.arg(getIntName()));
+		}
+	} else {
+		pki_ign_openssl_error();
+		priv = legacyDecryptKey(myencKey, ownPassBuf);
+	}
+	pki_openssl_error();
+	return priv;
+}
+
+EVP_PKEY *pki_evp::legacyDecryptKey(QByteArray &myencKey,
+				    Passwd &ownPassBuf) const
+{
+	unsigned char *p;
+	const unsigned char *p1;
+	int outl, decsize;
+	unsigned char iv[EVP_MAX_IV_LENGTH];
+	unsigned char ckey[EVP_MAX_KEY_LENGTH];
+
+	qDebug() << "legacyDecrypt" << this << myencKey.size();
+	EVP_PKEY *tmpkey;
+	EVP_CIPHER_CTX *ctx;
+	const EVP_CIPHER *cipher = EVP_des_ede3_cbc();
+	p = (unsigned char *)OPENSSL_malloc(myencKey.size());
+	Q_CHECK_PTR(p);
+	p1 = p;
+	memset(iv, 0, EVP_MAX_IV_LENGTH);
+
+	memcpy(iv, myencKey.constData(), 8); /* recover the iv */
+	/* generate the key */
+	EVP_BytesToKey(cipher, EVP_sha1(), iv,
+		ownPassBuf.constUchar(), ownPassBuf.size(), 1, ckey, NULL);
+	ctx = EVP_CIPHER_CTX_new();
+	EVP_DecryptInit(ctx, cipher, ckey, iv);
+	EVP_DecryptUpdate(ctx, p , &outl,
+		(const unsigned char*)myencKey.constData() +8,
+		myencKey.size() -8);
+	decsize = outl;
+	EVP_DecryptFinal_ex(ctx, p + decsize , &outl);
+
+	EVP_CIPHER_CTX_cleanup(ctx);
+	decsize += outl;
+	tmpkey = d2i_PrivateKey(getKeyType(), NULL, &p1, decsize);
+	OPENSSL_cleanse(p, myencKey.size());
+	OPENSSL_free(p);
+	EVP_CIPHER_CTX_free(ctx);
+	pki_openssl_error();
+	if (EVP_PKEY_type(getKeyType()) == EVP_PKEY_RSA) {
+		RSA *rsa = EVP_PKEY_get1_RSA(tmpkey);
+		RSA_blinding_on(rsa, NULL);
+	}
+	myencKey.fill(0);
+	return tmpkey;
+}
+
+// Returns true if it was converted or already a PKCS#8 structure
+bool pki_evp::updateLegacyEncryption()
+{
+	try {
+		QByteArray myencKey = getEncKey();
+		qDebug() << "myencKey:" << myencKey.size();
+		X509_SIG *p8 = d2i_PKCS8_bio(BioByteArray(myencKey).ro(), NULL);
+		X509_SIG_free(p8);
+		if (p8) {
+			qDebug() << "Key" << this << "already in PKCS#8 format";
+			return true;
+		}
+		if (getOwnPass() == ptPrivate) {
+			// Keys with individual password cannot be converted automatically
+			return false;
+		}
+		pki_ign_openssl_error();
+
+		EVP_PKEY *newkey = legacyDecryptKey(myencKey, passwd);
+		ign_openssl_error();
+		if (newkey) {
+			set_evp_key(newkey);
+			encryptKey();
+			sqlUpdatePrivateKey();
+			qDebug() << "Successfully updated encryption scheme of" << this;
+			return true;
+		}
+		qDebug() << "updating encryption scheme of" << this << "failed" << myencKey.size();
+
+	} catch (...) {
+		qDebug() << "CATCH: updating encryption scheme of" << this << "failed";
 	}
 	pki_ign_openssl_error();
+	return false;
+}
+
+EVP_PKEY *pki_evp::decryptKey() const
+{
+	EVP_PKEY *priv = nullptr;
+	while (!priv)
+		priv = tryDecryptKey();
 	return priv;
 }
 
@@ -552,10 +664,7 @@ void pki_evp::encryptKey(const char *password)
 			int ret = 0;
 			ownPassBuf = passwd;
 			pass_info p(XCA_TITLE, tr("Please enter the database password for encrypting the key"));
-			while (passHash.isEmpty() ||
-				(sha512passwT(ownPassBuf, passHash) != passHash &&
-				 sha512passwd(ownPassBuf, passHash) != passHash))
-			{
+			while (!validateDatabasePassword(ownPassBuf)) {
 				ret = PwDialogCore::execute(&p, &ownPassBuf,
 							passHash.isEmpty());
 				if (ret != 1)
@@ -585,7 +694,7 @@ void pki_evp::encryptKey(const char *password)
 void pki_evp::set_evp_key(EVP_PKEY *pkey)
 {
 	if (key)
-		free(key);
+		EVP_PKEY_free(key);
 	key = pkey;
 }
 
@@ -635,7 +744,7 @@ QByteArray pki_evp::getEncKey() const
 	QSqlError e;
 	QByteArray ba;
 
-	if (encKey.count() > 0 || !sqlItemId.isValid())
+	if (encKey.size() > 0 || !sqlItemId.isValid())
 		return encKey;
 
 	SQL_PREPARE(q, "SELECT private FROM private_keys WHERE item=?");
@@ -659,11 +768,10 @@ QSqlError pki_evp::deleteSqlData()
 	return q.lastError();
 }
 
-bool pki_evp::pem(BioByteArray &b)
+bool pki_evp::pem(BioByteArray &b, const pki_export *xport)
 {
 	EVP_PKEY *pkey;
 	int keytype;
-	const pki_export *xport = pki_export::by_id(Settings["KeyFormat"]);
 
 	if (xport->match_all(F_PEM | F_PRIVATE)) {
 		pkey = decryptKey();
@@ -704,7 +812,7 @@ bool pki_evp::pem(BioByteArray &b)
 					 NULL, NULL);
 		EVP_PKEY_free(pkey);
 	} else
-		return pki_key::pem(b);
+		return pki_key::pem(b, xport);
 
 	return true;
 }
@@ -794,7 +902,7 @@ void pki_evp::writeKey(XFile &file, const EVP_CIPHER *enc,
 	}
 	EVP_PKEY *pkey = key ? decryptKey() : NULL;
 	if (!pkey) {
-	        pki_openssl_error();
+		pki_openssl_error();
 		return;
 	}
 	BioByteArray b;
@@ -810,55 +918,18 @@ void pki_evp::writeKey(XFile &file, const EVP_CIPHER *enc,
 	file.write(b);
 }
 
-bool pki_evp::verify_priv(EVP_PKEY *pkey) const
+bool pki_evp::verify(EVP_PKEY *pkey) const
 {
-	bool verify = true;
-	unsigned char data[32], sig[1024];
-	size_t datalen = sizeof data, siglen = sizeof sig;
-	EVP_MD_CTX *ctx = NULL;
-	const EVP_MD *md = EVP_sha256();
-	EVP_PKEY_CTX *pkctx = NULL;
-
 	if (!EVP_PKEY_isPrivKey(pkey))
-		return true;
-	do {
-		ctx = EVP_MD_CTX_new();
+		return pki_key::verify(pkey);
+
+	EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new(pkey, NULL);
+	Q_CHECK_PTR(ctx);
+	int verify = EVP_PKEY_check(ctx);
+	EVP_PKEY_CTX_free(ctx);
+	if (verify == -2) {
+		// Operation not supported assume true
 		pki_ign_openssl_error();
-		RAND_bytes(data, datalen);
-		Q_CHECK_PTR(ctx);
-		verify = false;
-
-		/* Sign some random data in "data" */
-#ifdef EVP_PKEY_ED25519
-		if (EVP_PKEY_id(pkey) == EVP_PKEY_ED25519)
-			md = NULL;
-#endif
-		if (!EVP_DigestSignInit(ctx, &pkctx, md, NULL, pkey))
-			break;
-
-		if (EVP_PKEY_id(pkey) == EVP_PKEY_RSA)
-			EVP_PKEY_CTX_set_rsa_padding(pkctx, RSA_PKCS1_PADDING);
-
-		if (!EVP_DigestSign(ctx, sig, &siglen, data, datalen))
-			break;
-
-		/* Verify the signature */
-		if (!EVP_DigestVerifyInit(ctx, NULL, md, NULL, pkey))
-			break;
-
-		if (EVP_DigestVerify(ctx, sig, siglen, data, datalen) != 1)
-			break;
-
-		verify = true;
-	} while (0);
-
-	if (ctx)
-		EVP_MD_CTX_free(ctx);
-
-	if (EVP_PKEY_id(pkey) == EVP_PKEY_RSA && EVP_PKEY_isPrivKey(pkey)) {
-		const RSA *rsa = EVP_PKEY_get0_RSA(pkey);
-		if (RSA_check_key(rsa) != 1)
-			verify = false;
 	}
 	pki_openssl_error();
 	return verify;

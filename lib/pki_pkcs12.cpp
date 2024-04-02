@@ -18,6 +18,7 @@
 
 #include <openssl/err.h>
 #include <openssl/pkcs12.h>
+#include <openssl/x509.h>
 #include <openssl/stack.h>
 
 pki_pkcs12::pki_pkcs12(const QString &d, pki_x509 *acert, pki_key *akey)
@@ -33,8 +34,10 @@ pki_pkcs12::pki_pkcs12(const QString &fname)
 	Passwd pass;
 	EVP_PKEY *mykey = NULL;
 	X509 *mycert = NULL;
-	key = NULL; cert = NULL;
 	pass_info p(XCA_TITLE, tr("Please enter the password to decrypt the PKCS#12 file:\n%1").arg(compressFilename(fname)));
+	const X509_ALGOR *macalgid = NULL;
+	const ASN1_INTEGER *maciter = NULL;
+	const ASN1_OBJECT *macobj = NULL;
 
 	setFilename(fname);
 	XFile file(fname);
@@ -47,6 +50,14 @@ pki_pkcs12::pki_pkcs12(const QString &fname)
 			PKCS12_free(pkcs12);
 		throw errorEx(tr("Unable to load the PKCS#12 (pfx) file %1.")
 				.arg(fname));
+	}
+	PKCS12_get0_mac(NULL, &macalgid, NULL, &maciter, pkcs12);
+	if (macalgid)
+		X509_ALGOR_get0(&macobj, NULL, NULL, macalgid);
+	if (macobj) {
+		algorithm = OBJ_obj2QString(macobj);
+		if (maciter)
+			algorithm += QString(", iteration %1").arg(a1int(maciter).toDec());
 	}
 	while (!PKCS12_verify_mac(pkcs12, pass.constData(), pass.size())) {
 		if (pass.size() > 0)
@@ -118,7 +129,7 @@ pki_pkcs12::pki_pkcs12(const QString &fname)
 	pki_openssl_error();
 }
 
-void pki_pkcs12::writePKCS12(XFile &file) const
+void pki_pkcs12::writePKCS12(XFile &file, encAlgo &encAlgo) const
 {
 	Passwd pass;
 	PKCS12 *pkcs12;
@@ -137,14 +148,84 @@ void pki_pkcs12::writePKCS12(XFile &file) const
 		if (x && x != cert)
 			sk_X509_push(certstack, x->getCert());
 	}
+	int certAlgoNid, keyAlgoNid;
+	certAlgoNid = keyAlgoNid = encAlgo.getEncAlgoNid();
+
+	// The very ancient 40BitRC2_CBC algorithm at least can
+	// be combined with TripleDES_CBC for the keys.
+	if (keyAlgoNid == NID_pbe_WithSHA1And40BitRC2_CBC)
+		keyAlgoNid = NID_pbe_WithSHA1And3_Key_TripleDES_CBC;
+
 	pkcs12 = PKCS12_create(pass.data(), getIntName().toUtf8().data(),
 				key->decryptKey(), cert->getCert(), certstack,
-				0, NID_pbe_WithSHA1And3_Key_TripleDES_CBC,
-				0, 0, 0);
+				keyAlgoNid, certAlgoNid, 0, 0, 0);
+	pki_openssl_error();
+	Q_CHECK_PTR(pkcs12);
+
+	if (encAlgo.legacy())
+		PKCS12_set_mac(pkcs12, pass.data(), -1, NULL, 0, 1, EVP_sha1());
+
 	BioByteArray b;
 	i2d_PKCS12_bio(b, pkcs12);
 	sk_X509_free(certstack);
 	pki_openssl_error();
 	PKCS12_free(pkcs12);
 	file.write(b);
+}
+
+void pki_pkcs12::collect_properties(QMap<QString, QString> &prp) const
+{
+	if (!algorithm.isEmpty())
+		prp["Algorithm"] = algorithm;
+	if (!alias.isEmpty())
+		prp["Friendly Name"] = alias;
+}
+
+// see https://www.rfc-editor.org/rfc/rfc8018 Appendix B.2 for possible encryption schemes
+const QList<int> encAlgo::all_encAlgos(
+{
+	NID_pbe_WithSHA1And40BitRC2_CBC,
+	NID_pbe_WithSHA1And3_Key_TripleDES_CBC,
+	NID_aes_256_cbc
+});
+
+int encAlgo::default_encAlgo(NID_pbe_WithSHA1And3_Key_TripleDES_CBC);
+
+encAlgo::encAlgo(int nid) : encAlgo_nid(nid)
+{
+}
+
+encAlgo::encAlgo(const QString &name) : encAlgo_nid(default_encAlgo)
+{
+	QString s(name);
+	encAlgo_nid = OBJ_txt2nid(CCHAR(s.remove(QChar(' '))));
+	ign_openssl_error();
+}
+
+QString encAlgo::name() const
+{
+	return QString(encAlgo_nid == NID_undef ? "" : OBJ_nid2sn(encAlgo_nid));
+}
+
+QString encAlgo::displayName() const
+{
+	QString n = name();
+	if (legacy())
+		n += QString(" (%1)").arg(QObject::tr("insecure"));
+	return n;
+}
+
+int encAlgo::getEncAlgoNid() const
+{
+	return encAlgo_nid;
+}
+
+const encAlgo encAlgo::getDefault()
+{
+	return encAlgo(default_encAlgo);
+}
+
+void encAlgo::setDefault(const QString &def)
+{
+	default_encAlgo = encAlgo(def).encAlgo_nid;
 }

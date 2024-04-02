@@ -39,12 +39,9 @@ extern char segv_data[1024];
 class tkInfo
 {
 private:
-	CK_TOKEN_INFO token_info;
+	CK_TOKEN_INFO token_info{};
 public:
-	tkInfo()
-	{
-		memset(&token_info, 0, sizeof token_info);
-	}
+	tkInfo() { }
 	tkInfo(const CK_TOKEN_INFO *ti)
 	{
 		set(ti);
@@ -100,6 +97,49 @@ public:
 			arg(token_info.ulMinPinLen).
 			arg(token_info.ulMaxPinLen);
 	}
+	bool force_keygen_named_curve() const
+	{
+		// Workaround for "www.CardContact.de" bug
+		return manufacturerID() == "www.CardContact.de";
+	}
+	bool need_SO_for_object_mod() const
+	{
+		// Yubikey Need SO Pin to modify objects
+		return manufacturerID() == "Yubico (www.yubico.com)";
+	}
+	bool set_token_attr_false_dsa_param() const
+	{
+		// nCipher Attributes
+		// as on 10/26/2015 - Thales' PKCS11 provider has
+		// issue to generate Domain Parameters
+		return manufacturerID() == "nCipher Corp. Ltd";
+	}
+	QList<QStringList> fixed_ids() const
+	{
+		// Yubi keys have fixed set of IDs
+		// Use QStringList to not invent a new type: (QString + unsigned)
+		static const QList<QStringList> ids {
+			{ "9a: PIV Authentication", "1" },
+			{ "9c: Digital Signature", "2" },
+			{ "9d: Key Management", "3" },
+			{ "9e: Card Authentication", "4" }
+		};
+		if (manufacturerID() == "Yubico (www.yubico.com)") {
+			if (model() == "YubiKey NEO")
+				return ids;
+			if (model() == "YubiKey YK4" || model() == "YubiKey YK5") {
+				QList<QStringList> retired(ids);
+				for (int i=0; i< 20; i++)
+					retired.append(QStringList {
+						QString("%1: Retired Key %2")
+								.arg(i+0x82, 0, 16).arg(i+1),
+						QString::number(i + 5)
+					});
+				return retired;
+			}
+		}
+		return QList<QStringList>();
+	}
 };
 
 class pkcs11
@@ -112,15 +152,16 @@ class pkcs11
 		slotid p11slot;
 		CK_SESSION_HANDLE session;
 		CK_OBJECT_HANDLE p11obj;
+		static int pctr;
 
 	public:
 		static pkcs11_lib_list libraries;
 		pkcs11();
 		~pkcs11();
 
-		CK_RV tokenInfo(const slotid &slot, tkInfo *tkinfo);
-		tkInfo tokenInfo(const slotid &slot);
-		tkInfo tokenInfo()
+		CK_RV tokenInfo(const slotid &slot, tkInfo *tkinfo) const;
+		tkInfo tokenInfo(const slotid &slot) const;
+		tkInfo tokenInfo() const
 		{
 			return tokenInfo(p11slot);
 		}
@@ -133,6 +174,7 @@ class pkcs11
 			return libraries.getSlotList();
 		}
 
+		void closeSession(const slotid &slot);
 		bool selectToken(slotid *slot, QWidget *w);
 		void changePin(const slotid &slot, bool so);
 		void initPin(const slotid &slot);
@@ -148,8 +190,9 @@ class pkcs11
 				   CK_OBJECT_HANDLE object);
 		void storeAttribute(pk11_attribute &attribute,
 				   CK_OBJECT_HANDLE object);
-		QList<CK_OBJECT_HANDLE> objectList(pk11_attlist &atts);
-		QString tokenLogin(QString name, bool so, bool force=false);
+		QList<CK_OBJECT_HANDLE> objectList(pk11_attlist &atts) const;
+		QString tokenLogin(const QString &name, bool so, bool force=false);
+		bool tokenLoginForModification();
 		void getRandom();
 		void logout();
 		bool needsLogin(bool so);
@@ -158,9 +201,10 @@ class pkcs11
 		void setPin(unsigned char *oldPin, unsigned long oldPinLen,
 			unsigned char *pin, unsigned long pinLen);
 		CK_OBJECT_HANDLE createObject(pk11_attlist &attrs);
-		pk11_attr_data findUniqueID(unsigned long oclass);
+		pk11_attr_data findUniqueID(unsigned long oclass) const;
 		pk11_attr_data generateKey(QString name,
-			unsigned long ec_rsa_mech, unsigned long bits, int nid);
+			unsigned long ec_rsa_mech, unsigned long bits, int nid,
+			const pk11_attr_data &id);
 		int deleteObjects(QList<CK_OBJECT_HANDLE> objects);
 		EVP_PKEY *getPrivateKey(EVP_PKEY *pub, CK_OBJECT_HANDLE obj);
 		int encrypt(int flen, const unsigned char *from,

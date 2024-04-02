@@ -12,6 +12,8 @@
 #include <QRegularExpression>
 #include <QVariant>
 #include <QByteArray>
+#include <QPalette>
+#include <QBrush>
 #include "BioByteArray.h"
 #include "asn1time.h"
 #include "pkcs11_lib.h"
@@ -22,8 +24,8 @@
 #include "xfile.h"
 #include "pki_export.h"
 
-#define pki_openssl_error() _openssl_error(*this, C_FILE, __LINE__)
-#define pki_ign_openssl_error() _ign_openssl_error(*this, C_FILE, __LINE__)
+#define pki_openssl_error() _openssl_error(*this, __FILE__, __LINE__)
+#define pki_ign_openssl_error() _ign_openssl_error(*this, __FILE__, __LINE__)
 
 enum pki_source {
 	unknown,
@@ -48,27 +50,32 @@ class pki_base : public QObject
 {
 		Q_OBJECT
 
+		mutable unsigned hashcache{};
+
 	public: /* static */
 		static QRegularExpression limitPattern;
 		static QString rmslashdot(const QString &fname);
 		static unsigned hash(const QByteArray &ba);
 		static bool pem_comment;
 		static int count;
-		static QList<pki_base*> allitems;
+		static void setupColors(const QPalette &pal);
 
 	protected:
-		QVariant sqlItemId;
-		QString desc, comment;
-		a1time insertion_date;
-		enum pki_type pkiType;
+		QVariant sqlItemId{};
+		QString desc{}, comment{};
+		a1time insertion_date{};
+		enum pki_type pkiType{ none };
 		/* model data */
-		pki_base *parent;
+		pki_base *parent{};
+		QString filename{};
+		QList<pki_base*> childItems{};
+		mutable QRegularExpression lastPattern{};
+		int iamvisible{ 1 };
+		static QBrush red, yellow, cyan;
+
 		void my_error(const QString &error) const;
-		QString filename;
 		virtual QByteArray PEM_comment() const;
 		virtual void collect_properties(QMap<QString, QString> &) const;
-		QList<pki_base*> childItems;
-		mutable QRegularExpression lastPattern;
 
 	public:
 		enum msg_type {
@@ -82,9 +89,9 @@ class pki_base : public QObject
 			print_pem,
 			print_coloured,
 		};
-		enum pki_source pkiSource;
+		enum pki_source pkiSource{ unknown };
 
-		pki_base(const QString &d = QString(), pki_base *p = NULL);
+		pki_base(const QString &d = QString());
 		pki_base(const pki_base *p);
 		virtual ~pki_base();
 
@@ -174,9 +181,8 @@ class pki_base : public QObject
 		virtual void writeDefault(const QString&) const;
 
 		/* Qt Model-View methods */
-		virtual QVariant bg_color(const dbheader *hd) const
+		virtual QVariant bg_color(const dbheader *) const
 		{
-			(void)hd;
 			return QVariant();
 		}
 		virtual QVariant column_data(const dbheader *hd) const;

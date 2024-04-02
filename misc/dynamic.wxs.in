@@ -4,7 +4,10 @@
     <Fragment>
         <DirectoryRef Id="INSTALLDIR">
             <Component Id="Clibcrypto11x64" Guid="44133d17-96b5-4aee-8a24-9c722482add5">
-                <File Id="libcrypto11x64.dll" Source="@OPENSSL_ROOT_DIR@/bin/libcrypto-1_1-x64.dll" KeyPath="yes"/>
+                <File Id="libcrypto11x64.dll" Source="@OPENSSL_ROOT_DIR@/bin/libcrypto-@OPENSSL_LIBRARY_MAJOR@-x64.dll" KeyPath="yes"/>
+                <?if @OPENSSL_LIBRARY_MAJOR@ = 3 ?>
+                    <File Id="libcryptolegacy.dll" Source="@OPENSSL_ROOT_DIR@/lib/ossl-modules/legacy.dll"/>
+                <?endif?>
             </Component>
             <Component Id="Cvcruntime140" Guid="f0b03b2a-14f7-4631-bfe3-d4c6c9b57e1d">
                 <File Id="vcruntime140.dll" Source="@SYSTEM32@/vcruntime140.dll" KeyPath="yes"/>
@@ -30,67 +33,20 @@
             </Component>
         </DirectoryRef>
         <FeatureGroup Id="DatabaseGroup">
-            <Feature Id="Databases" Title="Database Drivers"
-                     Description="All remote database drivers. The file based SQLite driver will be always installed." Level="1">
+            <Feature Id="Databases" Title="Remote Database Drivers"
+                     Description="QT remote database drivers. Additional DLL from the manufacturer are required. See https://github.com/chris2511/xca" Level="1">
                 <Feature Id="SqlOdbc" Title="ODBC SQL Driver" Level="1"
-                        Description="Access to ODBC databases like Microsoft SQL Server">
+                         Description="Access to ODBC databases sources like Microsoft SQL Server. This driver requires no additional DLL from Microsoft.">
                     <ComponentRef Id="Cqsqlodbc" />
                 </Feature>
-                <!-- MySQL Driver -->
-<?if NOT "@MYSQL_BINDIR@" = "" ?>
-                <Feature Id="SqlMariaDB" Title="MySQL / MariaDB SQL Driver" Level="1"
-                        Description="Native support for MySQL and MariaDB databases. Contains 3rd party DLLs">
-                    <ComponentRef Id="Cqsqlmysql" />
-                    <ComponentRef Id="Clibmysql" />
-                </Feature>
-<?endif ?>
-<?if NOT "@PSQL_BINDIR@" = "" ?>
                 <Feature Id="SqlPostgres" Title="PostgreSQL Driver" Level="1"
-                            Description="Native support for PostgreSQL databases. Contains 3rd party DLLs">
+                         Description="Additional PostgreSQL Commandline Tools required from: https://www.enterprisedb.com/downloads/postgres-postgresql-downloads">
                     <ComponentRef Id="Cqsqlpsql" />
-                    <ComponentRef Id="Clibpq" />
-                    <ComponentRef Id="Clibssl11x64" />
-                    <ComponentRef Id="Clibiconv2" />
-                    <ComponentRef Id="Clibintl9" />
                 </Feature>
-<?endif ?>
+                <Feature Id="SqlMariaDB" Title="MariaDB / mySQL Driver" Level="1"
+                         Description="MariaDB support requires the MinGW variant of the https://github.com/thecodemonkey86/qt_mysql_driver ">
+                </Feature>
             </Feature>
         </FeatureGroup>
-        <DirectoryRef Id="sqldrivers">
-<?if NOT "@MYSQL_BINDIR@" = "" ?>
-            <Component Id="Cqsqlmysql" Guid="4cf3f2cf-8a22-4479-8ed6-24f96e8f9480">
-                <File Id="qsqlmysql.dll" Source="@MYSQL_BINDIR@/sqldrivers/qsqlmysql.dll"/>
-            </Component>
-<?endif ?>
-<?if NOT "@PSQL_BINDIR@" = ""  ?>
-            <Component Id="Cqsqlpsql" Guid="526161ae-1023-411e-b7a1-747c93923b31">
-                <File Id="qsqlpsql.dll" Source="sqldrivers/qsqlpsql.dll"/>
-            </Component>
-<?endif ?>
-        </DirectoryRef>
-
-        <!-- PostgreSQL Driver -->
-        <DirectoryRef Id="INSTALLDIR">
-<?if NOT "@MYSQL_BINDIR@" = "" ?>
-            <Component Id="Clibmysql" Guid="9c9d150d-8a36-4cb7-956e-e70258227b3f">
-                <File Id="libmysql.dll" Source="@MYSQL_BINDIR@/libmysql.dll" KeyPath="yes"/>
-            </Component>
-<?endif ?>
-<?if NOT "@PSQL_BINDIR@" = "" ?>
-            <Component Id="Clibssl11x64" Guid="6b19ce1c-4f7e-447f-8998-9209e642a43b">
-                <File Id="libssl11x64.dll" Source="@PSQL_BINDIR@/libssl-1_1-x64.dll" KeyPath="yes"/>
-            </Component>
-            <Component Id="Clibpq" Guid="f243d4ea-d51d-42fc-a3c0-4eb186c55d34">
-                <File Id="libpq.dll" Source="@PSQL_BINDIR@/libpq.dll" KeyPath="yes"/>
-            </Component>
-            <Component Id="Clibiconv2" Guid="6ef1f17c-8771-4ace-84f0-799d53062ec1">
-                <File Id="libiconv2.dll" Source="@PSQL_BINDIR@/libiconv-2.dll" KeyPath="yes"/>
-            </Component>
-            <Component Id="Clibintl9" Guid="64455f86-1d00-4cac-b0ce-f1a9d0f13bce">
-                <File Id="libintl9.dll" Source="@PSQL_BINDIR@/libintl-9.dll" KeyPath="yes"/>
-            </Component>
-<?endif ?>
-        </DirectoryRef>
-
     </Fragment>
 </Wix>

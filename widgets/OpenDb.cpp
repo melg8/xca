@@ -12,28 +12,36 @@
 
 #include "MainWindow.h"
 #include "OpenDb.h"
+#include "Help.h"
 #include "XcaWarning.h"
 #include "lib/base.h"
 #include "lib/dbhistory.h"
 
-DbMap OpenDb::getDatabases()
+DbMap OpenDb::databases {
+	{ "QPSQL",  "PostgreSQL" },
+	{ "QMYSQL", "MySQL / MariaDB" },
+	{ "QODBC",  "Open Database Connectivity (ODBC)" }
+};
+
+void OpenDb::initDatabases()
 {
 	QStringList list = QSqlDatabase::drivers();
-	DbMap databases;
 
-	databases["QPSQL7"]   = "PostgreSQL";
-	databases["QMYSQL3"]  = "MySQL / MariaDB";
-	databases["QODBC3"]   = "Open Database Connectivity (ODBC)";
-
+	qDebug() << "SQL Plugins:" << list.join(",");;
 	foreach (QString driver, databases.keys()) {
 		if (!list.contains(driver))
 			databases.take(driver);
+		{
+			QSqlDatabase db = QSqlDatabase::addDatabase(driver, driver + "_C");
+			if (!db.isValid()) {
+				qDebug() << "Database" << driver << "is Invalid";
+				databases.take(driver);
+			}
+		}
+		QSqlDatabase::removeDatabase(driver + "_C");
 	}
-	qDebug() << "Available Remote DB Drivers: " << databases.size();
-	foreach (QString driver, databases.keys())
-		qDebug() << driver;
-
-	return databases;
+	qDebug() << "Valid Remote DB Drivers: " << databases.size()
+			<< "[" << databases.keys().join(",") << "]";
 }
 
 bool OpenDb::hasSqLite()
@@ -43,7 +51,7 @@ bool OpenDb::hasSqLite()
 
 void OpenDb::driver_selected()
 {
-	if (getDbType() == "QODBC3")
+	if (getDbType() == "QODBC")
 		dbName_label->setText("DSN");
 	else
 		dbName_label->setText(tr("Database name"));
@@ -51,12 +59,11 @@ void OpenDb::driver_selected()
 
 bool OpenDb::hasRemoteDrivers()
 {
-	return getDatabases().size() > 0;
+	return databases.size() > 0;
 }
 
 void OpenDb::fillDbDropDown(const QString &current)
 {
-	DbMap databases = getDatabases();
 	dbType->clear();
 	foreach(QString driver, databases.keys()) {
 		dbType->insertItem(0, databases[driver], driver);
@@ -65,7 +72,6 @@ void OpenDb::fillDbDropDown(const QString &current)
 	}
 	if (dbType->count() == 1) {
 		dbType->setCurrentIndex(0);
-		dbType->setEnabled(false);
 	}
 }
 
@@ -105,6 +111,8 @@ OpenDb::OpenDb(QWidget *parent, const QString &db)
 	driver_selected();
 	connect(dbType, SIGNAL(currentIndexChanged(int)),
 		this, SLOT(driver_selected()));
+
+	mainwin->helpdlg->register_ctxhelp_button(this, "remote_db");
 }
 
 QString OpenDb::getDbType() const

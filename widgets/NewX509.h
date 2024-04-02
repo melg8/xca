@@ -12,6 +12,7 @@
 #include "ui_NewX509.h"
 #include "lib/oid.h"
 #include "kvView.h"
+#include "XcaDetail.h"
 #include <openssl/x509v3.h>
 #include <QListWidget>
 
@@ -28,44 +29,45 @@ class x509name;
 class x509v3ext;
 class extList;
 
-class nameEdit {
-    public:
-	int nid;
-	QLineEdit *edit;
-	QLabel *label;
+class nameEdit
+{
+  public:
+	int nid{};
+	QLineEdit *edit{};
+	QLabel *label{};
 	nameEdit(int n, QLineEdit *e, QLabel *l) {
 		nid = n; edit = e; label = l;
 	}
 };
 
-class NewX509: public QDialog, public Ui::NewX509
+class NewX509: public XcaDetail, public Ui::NewX509
 {
 		Q_OBJECT
 	private:
-		NIDlist aia_nid;
-		NIDlist attr_nid;
-		QList<nameEdit> attrEdits;
-		QList<nameEdit> nameEdits;
-		X509V3_CTX ext_ctx;
+		NIDlist aia_nid{};
+		NIDlist attr_nid{};
+		QList<nameEdit> attrEdits{};
+		QList<nameEdit> nameEdits{};
+		X509V3_CTX ext_ctx{};
 		void editV3ext(QLineEdit *le, QString types, int n);
-		enum pki_type pt;
-		enum pki_source pkiSource;
+		enum pki_type pt{ none };
+		enum pki_source pkiSource{ generated };
 		void templateChanged(QString templatename);
 		QString mandatoryDnRemain();
-		QStringList tabnames;
-		QList<pki_key*> unusedKeys, allKeys;
-		pki_x509 *ctx_cert;
-		QString v3ext_backup;
-		kvmodel *extDNmodel;
+		QStringList tabnames{};
+		QList<pki_key*> unusedKeys, allKeys{};
+		pki_x509 *ctx_cert{};
+		QString v3ext_backup{};
+		kvmodel *extDNmodel{};
 		extList getExtDuplicates();
 		void checkIcon(const QString &text, int nid, QLabel*img);
 		void selfComment(QString msg);
-		QMap<QString, QLineEdit*> templateLineEdits;
-		QMap<QString, QCheckBox*> templateCheckBoxes;
+		QMap<QString, QLineEdit*> templateLineEdits{};
+		QMap<QString, QCheckBox*> templateCheckBoxes{};
 		pki_temp *caTemplate(pki_x509 *ca) const;
 		void setupExplicitDN(NIDlist my_dn_nid);
 		QList<nameEdit> setupExplicitInputs(NIDlist nid_list,
-                        QWidget *parent, QWidget *old, int columns);
+				QWidget *parent, QWidget *old, int columns);
 
 	public:
 		NewX509(QWidget *w = nullptr);
@@ -74,6 +76,7 @@ class NewX509: public QDialog, public Ui::NewX509
 		void setRequest(); // reduce to request form
 		void setTemp(pki_temp *temp); // reduce to template form
 		void setCert(); // reduce to certificate form
+		void disableAllButNameComment();
 		void toTemplate(pki_temp *temp);
 		void fromTemplate(pki_temp *temp);
 		void defineTemplate(pki_temp *temp);
@@ -120,11 +123,12 @@ class NewX509: public QDialog, public Ui::NewX509
 		QList<pki_temp*> getAllTempsAndPredefs() const;
 		QList<pki_key*> getUnusedKeys() const;
 		QList<pki_key*> getAllKeys() const;
+		static void showTemp(QWidget *parent, pki_temp *x);
 
 	public slots:
 		void on_fromReqCB_clicked();
-		void on_keyList_currentIndexChanged(const QString &);
-		void on_reqList_currentIndexChanged(const QString &);
+		void on_keyList_currentIndexChanged(int);
+		void on_reqList_currentIndexChanged(int);
 		void newKeyDone(pki_key *nkey);
 		void on_applyTime_clicked();
 		void on_editSubAlt_clicked();

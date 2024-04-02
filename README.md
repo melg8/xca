@@ -3,21 +3,16 @@
 [![CMake](https://github.com/chris2511/xca/actions/workflows/cmake.yaml/badge.svg)](https://github.com/chris2511/xca/actions/workflows/cmake.yaml)
 
 ## __Release Notes__
- * The latest release is *2.4.0*
- * Most notable changes
- * * Add support for Ed25519 keys
- * * Add commandline support (e.g. generate CRL)
+ * The latest release is *2.6.0*
+ * Drivers for SQL Servers must be [installed separately](#sql-remote-database-drivers) since 2.5.0
  * Fix a lot of bugs
- * Since version 2 of XCA the database format changed to SQL
-   Don't try to open it with older versions of XCA (< 1.4.0).
-   They will corrupt the database.
  * Please report issues on github <https://github.com/chris2511/xca/issues>
 
 ## __Changelog:__
 
 A detailled changelog can be found here:
 
-<http://hohnstaedt.de/xca/index.php/software/changelog>
+<https://hohnstaedt.de/xca/index.php/software/changelog>
 
 ## __Documentation__
 
@@ -32,14 +27,18 @@ This application is documented in the *Help* menu and here:
 To build XCA you need:
  - a toolchain
  - cmake: https://cmake.org
- - Qt5: https://www.qt.io
+ - Qt5 or Qt6: https://www.qt.io
  - OpenSSL: https://www.openssl.org (1.1.1 or higher)
+   or libressl-3.6.x
  - Sphinx-Build: https://www.sphinx-doc.org
 
 ### Linux / Unix
 
  - Install the dependencies
    ```
+   # Bookworm
+   sudo apt install build-essential libssl-dev pkg-config qtbase5-dev qttools5-dev-tools libqt5sql5 libqt5help5 cmake qttools5-dev python3-sphinxcontrib.qthelp
+   # Bullseye
    sudo apt install build-essential libssl-dev pkg-config qtbase5-dev qttools5-dev-tools libqt5sql5 libqt5help5 cmake qttools5-dev python3-sphinx
    ```
  - Clone: `git clone https://github.com/chris2511/xca.git`
@@ -53,7 +52,7 @@ To build XCA you need:
 - Install the dependencies
   ```
   xcode-select --install
-  brew install openssl qt5 python3 cmake
+  brew install openssl@3 qt6 python3 cmake
   pip3 install sphinx
   ```
 - Clone: `git clone https://github.com/chris2511/xca.git`
@@ -64,11 +63,12 @@ To build XCA you need:
 
 XCA can be used with Xcode after initializing the directory with:
 `cmake -G Xcode -B .`
+
 ### Windows
 
 - Install the dependencies
   - Install Python for windows from the store or https://www.python.org/downloads/windows/
-  - Install OpenSSL from here: https://slproweb.com/download/Win64OpenSSL-1_1_1m.msi and verify the sha256 from https://github.com/slproweb/opensslhashes/blob/master/win32_openssl_hashes.json
+  - Install OpenSSL from here: https://slproweb.com/download/Win64OpenSSL-3_1_5.msi and verify the sha256 from https://github.com/slproweb/opensslhashes/blob/master/win32_openssl_hashes.json
   - To install the Qt libraries, cmake and the MinGW compiler [aqtinstall](https://github.com/miurahr/aqtinstall) is used.
     Sphinx is used to generate the documentation
     ```
@@ -77,31 +77,54 @@ XCA can be used with Xcode after initializing the directory with:
   - Add the PATH shown by pip to your PATH
   - Install Qt, cmake and the MinGW toolchain
     ```
-    aqt install-qt windows desktop 5.15.2 win64_mingw81
-    aqt install-tool windows desktop tools\_cmake qt.tools.cmake.win64
-    aqt install-tool windows desktop tools\_mingw qt.tools.win64\_mingw810
-    aqt install-tool windows desktop tools\_vcredist qt.tools.vcredist_64
+    aqt install-qt windows desktop 6.6.0 win64_mingw
+    aqt install-tool windows desktop tools_mingw90 qt.tools.win64_mingw900
+    aqt install-tool windows desktop tools_vcredist qt.tools.vcredist_64
     ```
   - If 7z is missing, install it from the store. `7-Zip File Manager (unofficial)` or from 7-zip.org
+  - Install the "vcredist\\vcredist_64.exe"
   - Add cmake, MinGW, OpenSSL and Qt5 to your Path
     ```
     %USERPROFILE%\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0\LocalCache\local-packages\Python310\Scripts;
     %USERPROFILE%\AppData\Local\Microsoft\WindowsApps;
     %USERPROFILE%\Tools\CMake_64\bin;
-    %USERPROFILE%\Tools\mingw810_64\bin;
-    %USERPROFILE%\5.15.2\mingw81_64\bin;
+    %USERPROFILE%\Tools\mingw_64\bin;
+    %USERPROFILE%\5.15.2\mingw_64\bin;
     ```
-  - Create `Qt5_DIR` environment variable:
+  - Create `CMAKE_PREFIX_PATH` environment variable:
     ```
-    %USERPROFILE%\5.15.2\mingw81_64\lib\cmake
+    %USERPROFILE%\6.6.0\mingw_64\lib\cmake
     ```
-  - Install `https://wixtoolset.org/releases/` if you want to create the installer
-  - Optional for the remote database connections:
-    - MySQL: qsqlmysql.dll\_Qt\_SQL\_driver\_5.15.2\_MinGW\_8.1.0\_64-bit.zip from
-             https://github.com/thecodemonkey86/qt_mysql_driver
-    - PostgreSQL: postgresql-14.1-1-windows-x64.exe
+  - Install `https://wixtoolset.org/releases/` if you want to create the MSI installer
 
 - Clone: `git clone https://github.com/chris2511/xca.git`
 - Configure: `cmake -B build -G "MinGW Makefiles" xca`
 - Make: `cmake --build build -j5`
-- Build the MSI installer: `cd build && cpack`
+- Create the Portable App: `cmake --build build -t install`
+- Build the MSI installer (and the Portable App): `cd build ; cpack`
+
+## __SQL Remote Database Drivers__
+
+MySQL plugins are not shipped with QT anymore because of license issues.
+
+### Linux
+
+- Debian: `libqt6sql6-psql` `libqt6sql6-mysql` or `libqt6sql6-odbc`.
+- RPM: `libqt6-database-plugin-pgsql` `libqt6-database-plugin-mysql` `libqt6-database-plugin-odbc`
+They should pull in all necessary dependencies.
+
+### Apple macos
+
+- **PostgreSQL**: Install the https://postgresapp.com/
+- **ODBC**: It requires the `/usr/local/opt/libiodbc/lib/libiodbc.2.dylib`.
+    When installing unixodbc via `brew` the library must be symlinked from
+    `/opt/homebrew/Cellar/libiodbc/3.52.16/lib/libiodbc.2.dylib`
+- **MariaDB**: Probably via ODBC ?
+
+### Windows
+
+- **PostgreSQL**: https://www.enterprisedb.com/downloads/postgres-postgresql-downloads (Commandline tools).
+  Add the `bin` directory of the Postgres installation directory to your PATH (C:\\Program Files\\PostgreSQL\\16)
+- **ODBC**: Use the `ODBC Datasources 64bit app` to configure the SQL Server
+- **MariaDB (MySQL)**: Install the Plugin from here: https://github.com/thecodemonkey86/qt_mysql_driver.
+  Select the MinGW variant and install it as documented.

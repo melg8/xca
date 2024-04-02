@@ -4,10 +4,11 @@
  * Collisions are of course possible.
  *
  * All binaries are stored Base64 encoded in a column of type
- * ' B64_BLOB ' It is defined here as 'VARCHAR(8000)'
+ * ' B64_BLOB ' It is defined here as 'TEXT' which is huge, except
+ * on mysql where LONGTEXT is used.
  */
 
-#define B64_BLOB "VARCHAR(8000)"
+#define B64_BLOB "_B64_BLOB_"
 
 /*
  * The B64(DER(something)) function means DER encode something
@@ -302,6 +303,16 @@
 << "ALTER TABLE items ADD del SMALLINT NOT NULL DEFAULT 0"
 << "CREATE INDEX i_items_del ON items (del)"
 << "UPDATE settings SET value='7' WHERE key_='schema'"
+	;
+
+	schemas[7]
+// OpenVPN TA (tls-auth) keys associated to the CA to be
+// the same for all issued certificates
+<< "CREATE TABLE takeys ("
+	"item INTEGER UNIQUE, "        // reference to items(id) of the CA
+	"value " B64_BLOB ", "         // The base64 encoded 2048 bit key
+	"FOREIGN KEY (item) REFERENCES items (id))"
+<< "UPDATE settings SET value='8' WHERE key_='schema'"
 	;
 
 /* When adding new tables or views, also add them to the list

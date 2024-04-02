@@ -19,18 +19,16 @@
 #include "XcaWarningCore.h"
 
 #include <QThread>
+#include <QInputDialog>
 
 void pki_scard::init(void)
 {
 	ownPass = ptPin;
 	pkiType = smartCard;
 	isPub = false;
-
-	card_serial = card_manufacturer = card_label = "";
-	card_model = slot_label = "";
 }
 
-pki_scard::pki_scard(const QString name)
+pki_scard::pki_scard(const QString &name)
 	:pki_key(name)
 {
 	init();
@@ -206,7 +204,6 @@ EVP_PKEY *pki_scard::load_pubkey(pkcs11 &p11, CK_OBJECT_HANDLE object) const
 		EVP_PKEY_assign_EC_KEY(pkey, ec);
 		break;
 	}
-#endif
 #ifdef EVP_PKEY_ED25519
 	case CKK_EC_EDWARDS: {
 		QByteArray ba;
@@ -227,6 +224,7 @@ EVP_PKEY *pki_scard::load_pubkey(pkcs11 &p11, CK_OBJECT_HANDLE object) const
 		pki_openssl_error();
 		break;
 	}
+#endif
 #endif
 	default:
 		throw errorEx(QString("Unsupported CKA_KEY_TYPE: %1\n").arg(keytype));
@@ -249,9 +247,7 @@ void pki_scard::load_token(pkcs11 &p11, CK_OBJECT_HANDLE object)
 	pk11_attr_data id(CKA_ID);
 	p11.loadAttribute(id, object);
 	if (id.getAttribute()->ulValueLen > 0) {
-		BIGNUM *cka_id = id.getBignum();
-		object_id = BNoneLine(cka_id);
-		BN_free(cka_id);
+		object_id = QString(id.getData().toHex());
 	}
 
 	try {
@@ -292,9 +288,9 @@ pk11_attr_data pki_scard::getIdAttr() const
 	pk11_attr_data id(CKA_ID);
 	if (object_id.isEmpty())
 		return id;
-	BIGNUM *bn = NULL;
-	BN_hex2bn(&bn, CCHAR(object_id));
-	id.setBignum(bn, true);
+
+	QByteArray val = QByteArray::fromHex(object_id.toLocal8Bit());
+	id.setValue(reinterpret_cast<const unsigned char*>(val.constData()), val.length());
 	return id;
 }
 
@@ -349,12 +345,12 @@ pk11_attlist pki_scard::objectAttributesNoId(EVP_PKEY *pk, bool priv) const
 		attrs << pk11_attr_ulong(CKA_KEY_TYPE, CKK_EC) <<
 			pk11_attr_data(CKA_EC_PARAMS, ba);
 		break;
-#endif
 #ifdef EVP_PKEY_ED25519
 	case EVP_PKEY_ED25519:
 		attrs << pk11_attr_ulong(CKA_KEY_TYPE, CKK_EC_EDWARDS);
 		// should it also return params, somehow?
 		break;
+#endif
 #endif
 	default:
 		throw errorEx(QString("Unknown Keytype %d")
@@ -382,7 +378,7 @@ void pki_scard::deleteFromToken(const slotid &slot)
 			arg(getIntName()).arg(ti.label()).arg(ti.serial())))
 		return;
 
-	if (p11.tokenLogin(card_label, false).isNull())
+	if (!p11.tokenLoginForModification())
 		return;
 
 	pk11_attlist atts = objectAttributes(true);
@@ -400,7 +396,7 @@ int pki_scard::renameOnToken(const slotid &slot, const QString &name)
 	p11.startSession(slot, true);
 	QList<CK_OBJECT_HANDLE> objs;
 
-	if (p11.tokenLogin(card_label, false).isNull())
+	if (!p11.tokenLoginForModification())
 		return 0;
 	pk11_attr_data label(CKA_LABEL, name.toUtf8());
 
@@ -455,7 +451,7 @@ void pki_scard::store_token(const slotid &slot, EVP_PKEY *pkey)
 		load_token(p11, objs[0]);
 		return;
 	}
-	pk11_attr_data new_id = p11.findUniqueID(CKO_PUBLIC_KEY);
+	pk11_attr_data new_id = select_id(p11);
 
 	pub_atts << new_id <<
 		pk11_attr_bool(CKA_TOKEN, true) <<
@@ -534,12 +530,14 @@ void pki_scard::store_token(const slotid &slot, EVP_PKEY *pkey)
 
 	}
 
-
-	tkInfo ti = p11.tokenInfo();
-	if (p11.tokenLogin(ti.label(), false).isNull())
+	if (!p11.tokenLoginForModification())
 		throw errorEx(tr("PIN input aborted"));
 
-	p11.createObject(pub_atts);
+	try {
+		p11.createObject(pub_atts);
+	} catch (errorEx &e) {
+		XCA_ERROR(e);
+	}
 	p11.createObject(priv_atts);
 
 	pub_atts.reset();
@@ -566,11 +564,11 @@ QList<int> pki_scard::possibleHashNids()
 		case EVP_PKEY_RSA:
 			switch (mechanism) {
 			case CKM_MD5_RSA_PKCS:    nids << NID_md5; break;
+			case CKM_RIPEMD160_RSA_PKCS: nids << NID_ripemd160; break;
 			case CKM_SHA1_RSA_PKCS:   nids << NID_sha1; break;
 			case CKM_SHA256_RSA_PKCS: nids << NID_sha256; break;
 			case CKM_SHA384_RSA_PKCS: nids << NID_sha384; break;
 			case CKM_SHA512_RSA_PKCS: nids << NID_sha512; break;
-			case CKM_RIPEMD160_RSA_PKCS: nids << NID_ripemd160; break;
 			}
 			break;
 		case EVP_PKEY_DSA:
@@ -657,24 +655,49 @@ class keygenThread: public QThread
 {
 public:
 	errorEx err;
-	pk11_attr_data id;
 	const keyjob task;
 	QString name;
 	pkcs11 *p11;
+	pk11_attr_data id;
 
-	keygenThread(const keyjob &t, const QString &n, pkcs11 *_p11)
-		: QThread(), task(t), name(n), p11(_p11) { }
+	keygenThread(const keyjob &t, const QString &n, pkcs11 *_p11,
+				const pk11_attr_data &_id)
+		: QThread(), task(t), name(n), p11(_p11), id(_id) { }
 
 	void run()
 	{
 		try {
 			id = p11->generateKey(name, task.ktype.mech, task.size,
-						task.ec_nid);
+						task.ec_nid, id);
 		} catch (errorEx &e) {
 			err = e;
 		}
 	}
 };
+
+pk11_attr_data pki_scard::select_id(const pkcs11 &p11) const
+{
+	tkInfo ti = p11.tokenInfo();
+	pk11_attr_data new_id(CKA_ID);
+
+	QList<QStringList> fixed_ids = ti.fixed_ids();
+	if (fixed_ids.size() > 0) {
+		QMap<QString, unsigned long> map;
+		QStringList items;
+		for (QStringList item : fixed_ids) {
+			items << item[0];
+			map[item[0]] = item[1].toULong();
+		}
+		QString idname = QInputDialog::getItem(nullptr, XCA_TITLE,
+			tr("Select Slot of %1").arg(ti.model()),
+			items, 0, false);
+		if (map.contains(idname))
+			new_id.setULong(map[idname]);
+	} else {
+		new_id = p11.findUniqueID(CKO_PUBLIC_KEY);
+	}
+	return new_id;
+}
 
 void pki_scard::generate(const keyjob &task)
 {
@@ -683,13 +706,14 @@ void pki_scard::generate(const keyjob &task)
 	pkcs11 p11;
 	p11.startSession(task.slot, true);
 	p11.getRandom();
-	tkInfo ti = p11.tokenInfo();
 
-	if (p11.tokenLogin(ti.label(), false).isNull())
+	pk11_attr_data new_id = select_id(p11);
+
+	if (!p11.tokenLoginForModification())
 		return;
 
 	XcaProgress progress;
-	keygenThread kt(task, getIntName(), &p11);
+	keygenThread kt(task, getIntName(), &p11, new_id);
 	kt.start();
 	while (!kt.wait(20)) {
 		progress.increment();
@@ -720,15 +744,14 @@ QString pki_scard::getTypeString(void) const
 EVP_PKEY *pki_scard::decryptKey() const
 {
 	slotid slot_id;
-	QString pin, key_id;
+	QString key_id;
 
 	if (!prepare_card(&slot_id))
 		throw errorEx(tr("Failed to find the key on the token"));
 
 	pkcs11 *p11 = new pkcs11();
 	p11->startSession(slot_id);
-	pin = p11->tokenLogin(card_label, false);
-	if (pin.isNull()) {
+	if (p11->tokenLogin(card_label, false).isNull()) {
 		delete p11;
 		throw errorEx(tr("Invalid Pin for the token"));
 	}
@@ -779,11 +802,6 @@ void pki_scard::initPin()
 
 	pkcs11 p11;
 	p11.initPin(slot);
-}
-
-int pki_scard::verify()
-{
-	return true;
 }
 
 bool pki_scard::isToken()

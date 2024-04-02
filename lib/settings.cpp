@@ -1,8 +1,16 @@
+/* vi: set sw=4 ts=4:
+ *
+ * Copyright (C) 2018 Christian Hohnstaedt.
+ *
+ * All rights reserved.
+ */
+
 #include "settings.h"
 #include "func.h"
 #include "sql.h"
 #include "pki_key.h"
 #include "digest.h"
+#include "pki_pkcs12.h"
 #include "pki_export.h"
 
 #include <QDir>
@@ -12,9 +20,8 @@
 settings Settings;
 
 svalue::svalue(settings *s, const QString &k)
+	:  setting(s), key(k)
 {
-	setting = s;
-	key = k;
 }
 
 QString svalue::get() const
@@ -34,6 +41,7 @@ settings::settings()
 	defaul["string_opt"] = "MASK:0x2002";
 	defaul["workingdir"] = "";
 	defaul["default_hash"] = digest::getDefault().name();
+	defaul["pkcs12_enc_algo"] = encAlgo::getDefault().name();
 	defaul["ical_expiry"] = "1W";
 	defaul["cert_expiry"] = "80%";
 	defaul["serial_len"] = "64";
@@ -59,6 +67,8 @@ void settings::setAction(const QString &key, const QString &value)
 		ASN1_STRING_set_default_mask_asc((char*)CCHAR(value));
 	else if (key == "default_hash")
 		digest::setDefault(value);
+	else if (key == "pkcs12_enc_algo")
+		encAlgo::setDefault(value);
 	else if (key == "defaultkey")
 		keyjob::defaultjob = keyjob(value);
 	else if (key == "optionflags") {

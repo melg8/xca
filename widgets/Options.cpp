@@ -41,7 +41,6 @@ Options::Options(QWidget *parent)
 	mbstring->setCurrentIndex(string_opts.indexOf(
 								QString(Settings["string_opt"])));
 
-	searchP11 = NULL;
 	transDnEntries->setText(transDnEntries->text()
 			.arg(OBJ_nid2ln(NID_commonName))
 			.arg(dn_translations[NID_commonName]));
@@ -75,6 +74,11 @@ Options::Options(QWidget *parent)
 	pkcs11List->setModel(&pkcs11::libraries);
 	pkcs11List->showDropIndicator();
 	pkcs11List->setSelectionMode(QAbstractItemView::ExtendedSelection);
+
+#ifdef APPSTORE_COMPLIANT
+	onlyTokenHashes->hide();
+	tabWidget->removeTab(2);
+#endif
 }
 
 Options::~Options()
@@ -147,6 +151,7 @@ int Options::exec()
 	Settings["disable_netscape"] = disableNetscape->checkState();
 
 	Settings["default_hash"] = hashAlgo->current().name();
+    	Settings["pkcs12_enc_algo"] = pkcs12EncAlgo->current().name();
 	Settings["mandatory_dn"] = getDnString(extDNlist);
 	Settings["explicit_dn"] = getDnString(expDNlist);
 	Settings["string_opt"] = string_opts[mbstring->currentIndex()];

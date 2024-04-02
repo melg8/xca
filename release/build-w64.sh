@@ -1,62 +1,33 @@
-#!/bin/sh -e
+#!/bin/sh
 
+# in C:\msys64\msys2.ini: MSYS2_PATH_TYPE=inherit
 
-XCA_DIR="`dirname $0`"
-XCA_DIR="`cd $XCA_DIR/.. && pwd`"
-
-HOST=x86_64-w64-mingw32
-export CROSS="${HOST}-"
-TARGET=mingw64
-read LIBTOOL_DIR < "`dirname $0`/../Libtool.version"
-LIBTOOL_GZ="${LIBTOOL_DIR}".tar.gz
-LIBTOOL_DL="http://ftp.gnu.org/gnu/libtool/${LIBTOOL_GZ}"
-
-read OPENSSL_DIR < "`dirname $0`/../OpenSSL.version"
-OPENSSL_GZ="${OPENSSL_DIR}".tar.gz
-OPENSSL_DL="https://www.openssl.org/source/${OPENSSL_GZ}"
-
-unpack() {
-  eval "dir=\${$1_DIR} gz=\${$1_GZ} dl=\${$1_DL} PATCH=\${$1_PATCH}"
-  test -f "$gz" || curl "$dl" -o "$gz"
-  echo "Building '$dir'"
-  rm -rf "$dir"
-  tar -zxf "$gz"
-  cd "$dir"
-  if test -f "$PATCH"; then
-    patch -p1 < "$PATCH"
-    test ! -x bootstrap || ./bootstrap
-  fi
+# Build xca on Windows 
+do_openssl() {
+  test -f $INSTALL_DIR/bin/libcrypto-3-x64.dll && return
+  test -f "$OSSL".tar.gz || curl -O https://www.openssl.org/source/"$OSSL".tar.gz
+  test -d "$OSSL" || tar zxf "$OSSL".tar.gz
+  cd "$OSSL"
+  ./Configure mingw64 --prefix=$INSTALL_DIR --libdir=lib
+  make -j4
+  make install
 }
 
-do_openssl()
-{(
-unpack OPENSSL
-./Configure ${TARGET} shared --cross-compile-prefix="${CROSS}" --prefix="${INSTALL_DIR}"
-make && make install_sw
-)}
+OSSL="openssl-3.1.5"
+XCA_DIR="$(cd `dirname $0`/.. && pwd)"
+TOP_DIR="`dirname $XCA_DIR`"
+QT_DIR="$TOP_DIR/QT/6.6.2/mingw_64"
+BUILDDIR="$TOP_DIR/w64-release"
+INSTALL_DIR="/c/OpenSSL"
+JOBS=7
 
-do_libtool()
-{(
-unpack LIBTOOL
-./configure --host ${HOST} --prefix ${INSTALL_DIR}
-make && make install
-)}
+PATH="$TOP_DIR/QT/Tools/mingw1120_64/bin:$INSTALL_DIR/bin:$PATH"
 
+cd $TOP_DIR
+do_openssl
 
-do_XCA()
-{(
-  mkdir -p $XCA_BUILD
-  cd $XCA_BUILD
-  $XCA_DIR/configure --host ${HOST} --with-qt=${INSTALL_DIR}/../qt/5.12.0
-  make -j5 USE_HOSTTOOLS=no
-  cp xca-portable*.zip msi-installer-dir*.zip ..
-)}
-
-XCA_BUILD="`pwd`"/xca_build
-export INSTALL_DIR=`pwd`/install
-
-if test -f build-libs; then
-  do_openssl
-  do_libtool
-fi
-do_XCA
+cd $TOP_DIR
+cmake -B "$BUILDDIR" -G "MinGW Makefiles" -DCMAKE_PREFIX_PATH="$QT_DIR:$INSTALL_DIR" xca
+cmake --build "$BUILDDIR" -j5
+cmake --build "$BUILDDIR" -t install
+cd "$BUILDDIR" && cpack

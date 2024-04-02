@@ -14,10 +14,8 @@ set_property(TARGET ${PROJECT_NAME}
              PROPERTY MACOSX_BUNDLE_INFO_PLIST ${D}/Info.plist)
 
 ##### XCA Templates
-set(TEMPLATES CA.xca TLS_server.xca TLS_client.xca)
-foreach(templ ${TEMPLATES})
-  list(APPEND XCA_TEMPLATES ${S}/${templ})
-endforeach()
+list(APPEND XCA_TEMPLATES CA.xca TLS_server.xca TLS_client.xca)
+list(TRANSFORM XCA_TEMPLATES PREPEND ${S}/)
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE ${XCA_TEMPLATES})
 list(APPEND APP_RESOURCES "${XCA_TEMPLATES}")
 
@@ -67,6 +65,9 @@ if (UNIX AND NOT APPLE)
   )
   install(FILES misc/xca.xml
         DESTINATION ${CMAKE_INSTALL_DATADIR}/mime/packages
+  )
+  install(FILES misc/de.hohnstaedt.xca.metainfo.xml
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo
   )
 elseif(WIN32)
   install(FILES ${TEXT_FILES} ${XCA_TEMPLATES}

@@ -12,7 +12,7 @@
 #include "database_model.h"
 #include <QDir>
 
-pki_crl::pki_crl(const QString name )
+pki_crl::pki_crl(const QString &name)
 	:pki_x509name(name)
 {
 	crl = X509_CRL_new();
@@ -41,6 +41,8 @@ void pki_crl::fromPEM_BIO(BIO *bio, const QString &name)
 	X509_CRL *_crl;
 	_crl = PEM_read_bio_X509_CRL(bio, NULL, NULL, NULL);
 	openssl_error_msg(name);
+	if (!_crl)
+		throw errorEx();
 	X509_CRL_free(crl);
 	crl = _crl;
 }

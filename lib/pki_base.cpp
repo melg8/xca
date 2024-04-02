@@ -20,36 +20,22 @@ pki_lookup Store;
 
 QRegularExpression pki_base::limitPattern;
 bool pki_base::pem_comment;
-QList<pki_base*> pki_base::allitems;
+QBrush pki_base::red, pki_base::cyan, pki_base::yellow;
 
-pki_base::pki_base(const QString &name, pki_base *p)
+pki_base::pki_base(const QString &name) : desc(name)
 {
-	desc = name;
-	parent = p;
-	childItems.clear();
-	pkiType=none;
-	pkiSource=unknown;
-	allitems << this;
-	qDebug() << "NEW pki_base::count" << allitems.count();
 }
 
 pki_base::pki_base(const pki_base *p)
 {
 	desc = p->desc;
-	parent = p->parent;
-	childItems.clear();
 	pkiType = p->pkiType;
 	pkiSource = p->pkiSource;
-	allitems << this;
-	qDebug() << "COPY pki_base::count" << allitems.count();
 	p->inheritFilename(this);
 }
 
 pki_base::~pki_base(void)
 {
-	if (!allitems.removeOne(this))
-		qDebug() << "DEL" << getIntName() << "NOT FOUND";
-	qDebug() << "DEL pki_base::count" << allitems.count();
 }
 
 QString pki_base::comboText() const
@@ -84,9 +70,6 @@ QString pki_base::getUnderlinedName() const
 
 bool pki_base::visible() const
 {
-	if (limitPattern.pattern().isEmpty() || limitPattern == lastPattern)
-		return true;
-	lastPattern = limitPattern;
 	return getIntName().contains(limitPattern) ||
 		comment.contains(limitPattern);
 }
@@ -115,7 +98,14 @@ bool pki_base::childVisible() const
 
 int pki_base::isVisible()
 {
-	return visible() ? 1 : childVisible() ? 2 : 0;
+	qDebug() << limitPattern << lastPattern;
+	if (limitPattern.pattern().isEmpty())
+		iamvisible = 1;
+	else if (limitPattern != lastPattern) {
+		lastPattern = limitPattern;
+		iamvisible = visible() ? 1 : childVisible() ? 2 : 0;
+	}
+	return iamvisible;
 }
 
 QString pki_base::getMsg(msg_type msg) const
@@ -249,8 +239,10 @@ pki_base *pki_base::child(int row)
 
 void pki_base::insert(pki_base *item)
 {
-	if (!childItems.contains(item))
+	if (!childItems.contains(item)) {
 		childItems.prepend(item);
+		item->setParent(this);
+	}
 }
 
 int pki_base::childCount() const
@@ -260,13 +252,13 @@ int pki_base::childCount() const
 
 int pki_base::indexOf(const pki_base *child) const
 {
-	int ret = childItems.indexOf(const_cast<pki_base *>(child));
-	return ret >= 0 ? ret : 0;
+	return childItems.indexOf(const_cast<pki_base *>(child));
 }
 
 void pki_base::takeChild(pki_base *pki)
 {
-	childItems.removeOne(pki);
+	if (childItems.removeOne(pki))
+		pki->setParent(nullptr);
 }
 
 QList<pki_base*> pki_base::getChildItems() const
@@ -277,7 +269,10 @@ QList<pki_base*> pki_base::getChildItems() const
 
 pki_base *pki_base::takeFirst()
 {
-	return childItems.takeFirst();
+	pki_base *pki = childItems.takeFirst();
+	if (pki)
+		 pki->setParent(nullptr);
+	return pki;
 }
 
 QString pki_base::pki_source_name() const
@@ -365,7 +360,9 @@ unsigned pki_base::hash(const QByteArray &ba)
 }
 unsigned pki_base::hash() const
 {
-	return hash(i2d());
+	if (!hashcache)
+		hashcache = hash(i2d());
+	return hashcache;
 }
 
 QString pki_base::get_dump_filename(const QString &dir,
@@ -405,6 +402,7 @@ QString pki_base::getTypeString() const
 	case x509:       t = "x.509 Certificate"; break;
 	case revocation: t = "Certificate revocation list"; break;
 	case tmpl:       t = "XCA Template"; break;
+	case smartCard:  t = "Token Key"; break;
 	default:         t = "Unknown"; break;
 	}
 	return t;
@@ -417,7 +415,8 @@ void pki_base::print(BioByteArray &bba, enum print_opt opt) const
 		"Not Before", "Not After", "Verify Ok",
 		"Unstructured Name", "Challange Password",
 		"Last Update", "Next Update", "CA", "Self signed",
-		"Key", "Signature", "Extensions", "Comment",
+		"Key", "Signature", "Extensions", "Comment", "Algorithm",
+		"Friendly Name"
 	};
 	if (opt == print_coloured) {
 		QMap<QString, QString> prp;
@@ -487,4 +486,18 @@ QStringList pki_base::icsVEVENT(const a1time &expires,
 	QString("TRIGGER:-P%1").arg(alarm) <<
 	"END:VALARM" <<
 	"END:VEVENT";
+}
+
+void pki_base::setupColors(const QPalette &pal)
+{
+	int factor = 50;
+	if (pal.window().color().value() > pal.windowText().color().value())
+		factor = 125;
+
+	qDebug() << "WindowColor" << pal.window().color().value()
+			 << "TextColor" << pal.windowText().color().value()
+			 << "Factor" << factor;
+	red = QBrush(QColor(255, 0, 0).lighter(factor));
+	yellow = QBrush(QColor(255, 255, 0).lighter(factor));
+	cyan = QBrush(QColor(127, 255, 212).lighter(factor));
 }

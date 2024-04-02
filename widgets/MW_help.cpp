@@ -23,6 +23,8 @@ const QList<QStringList> MainWindow::getTranslators() const
 {
 	return QList<QStringList> {
 	QStringList{ "", tr("System") },
+	QStringList{ "bg", tr("Bulgarian"),
+		"Svetoslav Slavkov", "contact", "sslavkov.eu" },
 	QStringList{ "zh_CN", tr("Chinese"),
 		"Xczh", "xczh.me", "foxmail.com" },
 	QStringList{ "hr", tr("Croatian"),
@@ -33,10 +35,14 @@ const QList<QStringList> MainWindow::getTranslators() const
 		"Patrick Monnerat", "patrick", "monnerat.net" },
 	QStringList{ "de", tr("German"),
 		"Christian Hohnstädt", "christian", "hohnstaedt.de" },
+	QStringList{ "id", tr("Indonesian"),
+		"Andika Triwidada", "andika", "gmail.com" },
 	QStringList{ "it", tr("Italian"),
 		"Paolo Basenghi", "paul69", "libero.it" },
 	QStringList{ "ja", tr("Japanese"),
-		"ぶらすず", "burasuzu", "gmail.com" },
+		"D2N", "gritty.hat3143", "mx.d2-networks.jp" },
+	QStringList{ "fa", tr("Persian"),
+		"Erfan Esmayili Barzi", "erfankam", "gmail.com" },
 	QStringList{ "pl", tr("Polish"),
 		"Jacek Tyborowski", "jacek", "tyborowski.pl" },
 	QStringList{ "pt_BR", tr("Portuguese in Brazil"),
@@ -46,11 +52,7 @@ const QList<QStringList> MainWindow::getTranslators() const
 		"Slavko", "linux", "slavino.sk" },
 	QStringList{ "es", tr("Spanish"),
 		"Miguel Romera", "mrmsoftdonation", "gmail.com" },
-	QStringList{ "id", tr("Indonesian"),
-		"Andika Triwidada", "andika", "gmail.com" },
 	QStringList{ "tr", tr("Turkish") },
-	QStringList{ "fa", tr("Persian"),
-		"Erfan Esmayili Barzi", "erfankam", "gmail.com" },
 	};
 };
 
@@ -101,15 +103,15 @@ void MainWindow::about()
 	Entropy::seed_rng();
 	cont = QString(
 	"<p><h3><center><u>XCA%7</u></center></h3>"
-	"<p>Copyright 2001 - 2021 by Christian Hohnstädt\n"
+	"<p>Copyright 2001 - 2024 by Christian Hohnstädt\n"
 	"<p>Version: %3<p>%1" /* commithash, OpenSSL & Qt Version */
 	"<p><a href=\"https://hohnstaedt.de/xca\">https://hohnstaedt.de/xca</a>"
-	"<p>Entropy strength: %2"
+	"<p>OpenSSL legacy provider%2 loaded"
 	"<p><table border=\"0\">"
 	"<tr><td>Installation path:</td><td>%4</td></tr>"
 	"<tr><td>User settings path:</td><td>%5</td></tr>"
 	"<tr><td>Working directory:</td><td>%6</td></tr>"
-	"</table>"
+	"</table><br/>"
 	"<hr><table border=\"0\">"
 	"<tr><th align=left>Christian Hohnst&auml;dt</th><td><u>&lt;christian@hohnstaedt.de&gt;</u></td></tr>"
 	"<tr><td></td><td>Programming, Translation and Testing</td></tr>"
@@ -118,13 +120,16 @@ void MainWindow::about()
 	"</table><hr><center><u><b>Maintained Translations</b></u></center>"
 	"<p><table><tr>%8</tr></table>")
 			.arg(version)
-			.arg(Entropy::strength())
+			.arg(legacy_loaded ? "" : " not")
 			.arg(version_str(true))
-			.arg(nativeSeparator(QStandardPaths::writableLocation(
-					     QStandardPaths::AppDataLocation)))
+			.arg(nativeSeparator(QCoreApplication::applicationDirPath()))
 			.arg(nativeSeparator(getUserSettingsDir()))
 			.arg(nativeSeparator(QString(Settings["workingdir"])))
+#ifndef APPSTORE_COMPLIANT
 			.arg(portable_app() ? " (Portable)" : "")
+#else
+			.arg(" (App Store)")
+#endif
 			.arg(rows.join("</tr><tr>"));
 
 	textbox->setHtml(cont);

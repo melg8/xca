@@ -35,12 +35,9 @@ static QString defaultlang()
 }
 
 XcaApplication::XcaApplication(int &argc, char *argv[])
-	:QApplication(argc, argv)
+	: QApplication(argc, argv)
 {
 	QLocale lang;
-	qtTr = NULL;
-	xcaTr = NULL;
-	mainw = NULL;
 
 	QFile file(defaultlang());
 
@@ -59,13 +56,13 @@ XcaApplication::XcaApplication(int &argc, char *argv[])
 			langAvail << QLocale(language);
 	}
 	setupLanguage(lang);
-#ifdef Q_OS_MAC
+#ifdef Q_OS_MACOS
 	QStringList libp = libraryPaths();
 	libp.prepend(applicationDirPath() + "/../Plugins");
 	setLibraryPaths(libp);
 #endif
 
-	tableFont = QFont("Courier", QApplication::font().pointSize()
+	tableFont = QFont("Courier New", QApplication::font().pointSize()
 #if defined (Q_OS_WIN32)
 	+1
 #else
@@ -196,14 +193,15 @@ bool XcaApplication::notify(QObject* receiver, QEvent* event)
 		return QApplication::notify(receiver, event);
 	} catch (errorEx &err) {
 		XCA_ERROR(err);
-        } catch (...) {
+	} catch (...) {
 		qWarning() << QString("Event exception: ")
 			 << receiver << event;
-        }
+	}
 	return false;
 }
 
 XcaApplication::~XcaApplication()
 {
+	delete xcaTr;
+	delete qtTr;
 }
-

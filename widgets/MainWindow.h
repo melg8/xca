@@ -12,7 +12,6 @@
 
 #include "lib/oid.h"
 #include "lib/Passwd.h"
-#include "lib/main.h"
 #include "lib/database_model.h"
 #include "lib/dbhistory.h"
 #include "lib/dhgen.h"
@@ -31,20 +30,21 @@ class QProgressBar;
 class DHgen;
 class Help;
 
+extern MainWindow *mainwin;
+
 class tipMenu : public QMenu
 {
 	Q_OBJECT
 
-    public:
+  public:
 	tipMenu(QString n, QWidget *w) : QMenu(n, w) {}
 	bool event (QEvent * e)
 	{
-
-        if (e->type() == QEvent::ToolTip && activeAction() &&
-		    activeAction()->toolTip() != activeAction()->text()) {
-            const QHelpEvent *helpEvent = static_cast <QHelpEvent *>(e);
-            QToolTip::showText(helpEvent->globalPos(),
-				activeAction()->toolTip());
+		if (e->type() == QEvent::ToolTip && activeAction() &&
+			activeAction()->toolTip() != activeAction()->text()) {
+			const QHelpEvent *helpEvent = static_cast <QHelpEvent *>(e);
+			QToolTip::showText(helpEvent->globalPos(),
+			                   activeAction()->toolTip());
 		} else {
 			QToolTip::hideText();
 		}
@@ -58,23 +58,24 @@ class MainWindow: public QMainWindow, public Ui::MainWindow
 
 	private:
 		static OidResolver *resolver;
-		QString string_opt;
-		QList<QWidget*> wdList;
-		QList<QWidget*> wdMenuList;
-		QList<QWidget*> scardList;
-		QList<QAction*> acList;
-		tipMenu *historyMenu;
+		QString string_opt{};
+		QList<QWidget*> wdList{};
+		QList<QWidget*> wdMenuList{};
+		QList<QWidget*> scardList{};
+		QList<QAction*> acList{};
+		tipMenu *historyMenu{};
+		QLineEdit *searchEdit{};
+		QStringList urlsToOpen{};
+		XcaProgress *dhgenProgress{};
+		DHgen *dhgen{};
+		QList<XcaTreeView *> views{};
+		dbhistory history{};
 		void set_geometry(QString geo);
-		QLineEdit *searchEdit;
-		QStringList urlsToOpen;
 		int checkOldGetNewPass(Passwd &pass);
 		void checkDB();
-		XcaProgress *dhgenProgress;
-		DHgen *dhgen;
 		const QList<QStringList> getTranslators() const;
-		QList<XcaTreeView *> views;
-		dbhistory history;
 		void exportIndex(const QString &fname, bool hierarchy) const;
+		QAction *languageMenuEntry(const QStringList &sl);
 
 	protected:
 		void init_images();
@@ -88,6 +89,7 @@ class MainWindow: public QMainWindow, public Ui::MainWindow
 		void showDatabaseName();
 
 	public:
+		static bool legacy_loaded;
 		int exitApp;
 		QLabel *dbindex;
 		Help *helpdlg;
@@ -121,7 +123,7 @@ class MainWindow: public QMainWindow, public Ui::MainWindow
 		void default_database();
 		void about();
 		void loadPem();
-		bool pastePem(QString text, bool silent=false);
+		bool pastePem(const QString &text, bool silent=false);
 		void pastePem();
 		void changeDbPass();
 		void openURLs(QStringList &files);

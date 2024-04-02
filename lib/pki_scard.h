@@ -26,17 +26,17 @@ class pki_scard: public pki_key
 {
 		Q_OBJECT
 	protected:
-		QString card_serial;
-		QString card_manufacturer;
-		QString card_model;
-		QString card_label;
-		QString slot_label;
-		QString object_id;
-		QList<CK_MECHANISM_TYPE> mech_list;
+		QString card_serial{};
+		QString card_manufacturer{};
+		QString card_model{};
+		QString card_label{};
+		QString slot_label{};
+		QString object_id{};
+		QList<CK_MECHANISM_TYPE> mech_list{};
 		void init(void);
 
 	public:
-		pki_scard(const QString name);
+		pki_scard(const QString &name);
 		virtual ~pki_scard();
 		void load_token(pkcs11 &p11, CK_OBJECT_HANDLE object);
 		bool prepare_card(slotid *slot) const;
@@ -73,13 +73,13 @@ class pki_scard: public pki_key
 		void changePin();
 		void initPin();
 		void changeSoPin();
-		int verify();
 		bool isToken();
 		QVariant getIcon(const dbheader *hd) const;
 		QList<CK_MECHANISM_TYPE> getMech_list()
 		{
 			return mech_list;
 		}
+		pk11_attr_data select_id(const pkcs11 &p11) const;
 		pk11_attlist objectAttributes(bool priv) const;
 		pk11_attlist objectAttributesNoId(EVP_PKEY *pk, bool priv) const;
 		void setMech_list(QList<CK_MECHANISM_TYPE> ml) { mech_list = ml; };

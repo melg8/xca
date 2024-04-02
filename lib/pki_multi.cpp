@@ -40,10 +40,13 @@ pki_multi::~pki_multi()
 void pki_multi::append_item(pki_base *pki)
 {
 	pki_multi *m = dynamic_cast<pki_multi*>(pki);
-	if (m)
-		multi += m;
-	else
+	if (m) {
+		multi += m->multi;
+		m->multi.clear();
+		delete m;
+	} else {
 		multi << pki;
+	}
 }
 
 #define D5 "-----"
@@ -124,9 +127,13 @@ void pki_multi::fromPEMbyteArray(const QByteArray &_ba, const QString &name)
 			XCA_ERROR(err);
 			delete item;
 			item = NULL;
+		} catch (...) {
+			delete item;
+			item = NULL;
 		}
 		ba.remove(0, sizeof BEGIN -1);
 	}
+	pki_ign_openssl_error();
 	if (multi.size() == old_count)
 		throw errorEx(tr("No known PEM encoded items found"));
 }
@@ -171,8 +178,13 @@ void pki_multi::probeAnything(const QString &fname)
 
 void pki_multi::print(BioByteArray &bba, enum print_opt opt) const
 {
+	pki_base::print(bba, opt);
 	foreach(pki_base *pki, multi)
 		pki->print(bba, opt);
+}
+
+void pki_multi::collect_properties(QMap<QString, QString> &) const
+{
 }
 
 QList<pki_base *> pki_multi::pull()

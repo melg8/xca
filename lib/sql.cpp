@@ -27,11 +27,6 @@ void DbTransaction::debug(const char *func, const char *file, int line)
 			.arg(line).arg(func).arg(mutex).arg(error);
 }
 
-DbTransaction::DbTransaction()
-{
-	has_begun = false;
-}
-
 DbTransaction::~DbTransaction()
 {
 	if (has_begun)
@@ -130,7 +125,7 @@ QString XSqlQuery::rewriteQuery(QString _q)
 		"items" , "crls" , "private_keys" , "public_keys" ,
 		"tokens" , "token_mechanism" , "templates" , "certs" ,
 		"authority" , "revocations" , "requests" , "x509super" ,
-		"settings" ,
+		"settings" , "takeys",
 
 		"view_public_keys" , "view_certs" , "view_requests" ,
 		"view_crls" , "view_templates" , "view_private",

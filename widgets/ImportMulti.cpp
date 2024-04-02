@@ -20,6 +20,7 @@
 #include "CrlDetail.h"
 #include "CertDetail.h"
 #include "KeyDetail.h"
+#include "NewX509.h"
 
 #include <QPushButton>
 #include <QMessageBox>
@@ -29,8 +30,8 @@
 #include <QMimeData>
 #include <typeinfo>
 
-ImportMulti::ImportMulti(QWidget *parent)
-	: QDialog(parent ? parent : mainwin)
+ImportMulti::ImportMulti(QWidget *w)
+	: QDialog(w && w->isVisible() ? w : nullptr)
 {
 	setupUi(this);
 	setWindowTitle(XCA_TITLE);
@@ -87,17 +88,18 @@ void ImportMulti::addItem(pki_base *pki)
 		return;
 	}
 
-	pki_x509 *cert = dynamic_cast<pki_x509 *>(pki);
-	pki_crl *crl = dynamic_cast<pki_crl *>(pki);
-	pki_x509super *cert_or_req = dynamic_cast<pki_x509super *>(pki);
+	if (Database.isOpen()) {
+		pki_x509 *cert = dynamic_cast<pki_x509 *>(pki);
+		pki_crl *crl = dynamic_cast<pki_crl *>(pki);
+		pki_x509super *cert_or_req = dynamic_cast<pki_x509super *>(pki);
 
-	if (cert)
-		cert->setSigner(cert->findIssuer());
-	if (cert_or_req)
-		cert_or_req->lookupKey();
-	if (crl)
-		crl->lookupIssuer();
-
+		if (cert)
+			cert->setSigner(cert->findIssuer());
+		if (cert_or_req)
+			cert_or_req->lookupKey();
+		if (crl)
+			crl->lookupIssuer();
+	}
 	if (!dynamic_cast<pki_key*>(pki) &&
 	    !dynamic_cast<pki_x509name*>(pki))
 	{
@@ -163,34 +165,31 @@ void ImportMulti::on_butRemove_clicked()
 
 void ImportMulti::on_butOk_clicked()
 {
-	if (!openDB())
-		return;
+	QModelIndexList indexes;
 
-	Transaction;
-	if (!TransBegin())
-		return;
+	for (int i = 0; i < mcont->rowCount(); i++)
+		indexes << mcont->index(i, 0, QModelIndex());
 
-	while (mcont->rowCount(QModelIndex()))
-		import(mcont->index(0, 0, QModelIndex()));
-
-	TransCommit();
-	accept();
+	importIndexes(indexes);
 }
 
 void ImportMulti::on_butImport_clicked()
 {
 	QItemSelectionModel *selectionModel = listView->selectionModel();
-	QModelIndexList indexes = selectionModel->selectedIndexes();
 
+	importIndexes(selectionModel->selectedIndexes());
+}
+
+void ImportMulti::importIndexes(const QModelIndexList &indexes)
+{
 	if (!openDB())
 		return;
 
 	Transaction;
 	if (!TransBegin())
 		return;
+
 	foreach(QModelIndex index, indexes) {
-		if (index.column() != 0)
-			continue;
 		import(index);
 	}
 	TransCommit();
@@ -223,11 +222,10 @@ void ImportMulti::on_renameToken_clicked()
 	QItemSelectionModel *selectionModel = listView->selectionModel();
 	QModelIndexList indexes = selectionModel->selectedIndexes();
 	QModelIndex index;
-	QString items;
 
-        foreach(index, indexes) {
-                if (index.column() != 0)
-                        continue;
+	foreach(index, indexes) {
+		if (index.column() != 0)
+			continue;
 		listView->edit(index);
 		break;
 	}
@@ -235,16 +233,25 @@ void ImportMulti::on_renameToken_clicked()
 
 pki_base *ImportMulti::import(const QModelIndex &idx)
 {
-	pki_base *pki = mcont->fromIndex(idx);
+	return idx.column() == 0 ? import(mcont->fromIndex(idx)) : nullptr;
+}
 
-	for (int i = 0; i < mcont->rowCount(idx); i++)
-		import(mcont->index(i, 0, idx));
-
-	if (!pki)
+pki_base *ImportMulti::import(pki_base *pki)
+{
+	if (!pki || pki->getSqlItemId().isValid())
 		return NULL;
 
-	mcont->remFromCont(idx);
+	QModelIndex idx = mcont->index(pki);
+	if (idx.isValid())
+		mcont->remFromCont(idx);
 
+	if (!Database.isOpen()) {
+		try {
+			Database.open_default();
+		} catch(...) {
+			XCA_INFO(tr("Could not open the default database"));
+		};
+	}
 	if (!Database.isOpen()) {
 		delete pki;
 		return NULL;
@@ -255,17 +262,21 @@ pki_base *ImportMulti::import(const QModelIndex &idx)
 void ImportMulti::on_butDetails_clicked()
 {
 	QItemSelectionModel *selectionModel = listView->selectionModel();
-	QModelIndex index;
 
-	if (!selectionModel->selectedIndexes().count())
-	        return;
+	if (selectionModel->selectedIndexes().count())
+		showDetail(selectionModel->selectedIndexes().first());
+	if (mcont->rowCount(QModelIndex()) == 0)
+		accept();
+}
 
-	index = selectionModel->selectedIndexes().first();
-	pki_base *pki = db_base::fromIndex(index);
+void ImportMulti::showDetail(const QModelIndex &idx)
+{
+	showDetail(db_base::fromIndex(idx));
+}
 
-	if (!pki)
-		return;
-	try {
+void ImportMulti::showDetail(pki_base *pki)
+{
+	if (pki) try {
 		pki_x509super *pki_super = dynamic_cast<pki_x509super*>(pki);
 		if (pki_super) {
 			CertDetail::showCert(this, pki_super);
@@ -283,8 +294,7 @@ void ImportMulti::on_butDetails_clicked()
 		}
 		pki_temp *temp = dynamic_cast<pki_temp*>(pki);
 		if (temp) {
-			XCA_WARN(tr("Details of the item '%1' cannot be shown")
-				.arg("XCA template"));
+			NewX509::showTemp(this, temp);
 			return;
 		}
 		XCA_WARN(tr("The type of the item '%1' is not recognized").
@@ -334,13 +344,17 @@ void ImportMulti::execute(int force, QStringList failed)
 		return;
 	}
 	/* if there is only 1 item and force is 0 import it silently */
-	if (entries() == 1 && force == 0 && openDB()) {
+	if (entries() == 1) {
 		QModelIndex idx = mcont->index(0, 0, QModelIndex());
-		pki_base *pki = import(idx);
-		if (pki && !Settings["suppress_messages"])
-			XCA_INFO(pki->getMsg(pki_base::msg_import).
-				arg(pki->getIntName()));
-		accept();
+		if (force == 0 && openDB()) {
+			pki_base *pki = import(idx);
+			if (pki && !Settings["suppress_messages"])
+				XCA_INFO(pki->getMsg(pki_base::msg_import).
+					arg(pki->getIntName()));
+
+		} else {
+			showDetail(idx);
+		}
 		return;
 	}
 	/* the behaviour for more than one item */

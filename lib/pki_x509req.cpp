@@ -22,8 +22,7 @@ pki_x509req::pki_x509req(const QString &name)
 {
 	request = X509_REQ_new();
 	pki_openssl_error();
-	pkiType=x509_req;
-	done = false;
+	pkiType = x509_req;
 	resetX509count();
 }
 
@@ -162,6 +161,8 @@ void pki_x509req::fromPEM_BIO(BIO *bio, const QString &name)
 	X509_REQ *req;
 	req = PEM_read_bio_X509_REQ(bio, NULL, NULL, NULL);
 	openssl_error_msg(name);
+	if (!req)
+		throw errorEx();
 	X509_REQ_free(request);
 	request = req;
 }
@@ -302,7 +303,7 @@ QString pki_x509req::getAttribute(int nid) const
 	count = X509_ATTRIBUTE_count(att);
 	for (int j = 0; j < count; j++)
 		ret << asn1ToQString(X509_ATTRIBUTE_get0_type(att, j)->
-				             value.asn1_string);
+		                    value.asn1_string);
 	return ret.join(", ");
 }
 

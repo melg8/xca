@@ -17,12 +17,12 @@
 #include "exception.h"
 #include "pass_info.h"
 
+#include <openssl/rand.h>
+
 pki_x509::pki_x509(X509 *c)
-	:pki_x509super()
+	:pki_x509super(), cert(c)
 {
 	init();
-	cert = c;
-	pki_openssl_error();
 }
 
 pki_x509::pki_x509(const pki_x509 *crt)
@@ -145,6 +145,7 @@ QSqlError pki_x509::deleteSqlData()
 		<< "UPDATE crls SET issuer=NULL WHERE issuer=?"
 		<< "UPDATE certs SET issuer=NULL WHERE issuer=?"
 		<< "DELETE FROM revocations WHERE caId=?"
+		<< "DELETE FROM takeys WHERE item=?"
 		;
 	foreach(QString task, tasks) {
 		SQL_PREPARE(q, task);
@@ -172,7 +173,7 @@ QSqlError pki_x509::deleteSqlData()
 pki_x509 *pki_x509::findIssuer()
 {
 	XSqlQuery q;
-	pki_x509 *issuer;
+	pki_x509 *issuer = NULL;
 	unsigned hash;
 
 	if ((issuer = getSigner()) != NULL)
@@ -189,16 +190,21 @@ pki_x509 *pki_x509::findIssuer()
 	q.bindValue(0, hash);
 	q.exec();
 	while (q.next()) {
-		issuer = Store.lookupPki<pki_x509>(q.value(0));
-		if (!issuer) {
-			qDebug("Certificate with id %d not found",
-                                q.value(0).toInt());
+		pki_x509 *an_issuer = Store.lookupPki<pki_x509>(q.value(0));
+		qDebug() << "Possibvle Issuer of" << *this << *an_issuer << an_issuer->getNotAfter();
+		if (!an_issuer) {
+			qDebug("Certificate with id %d not found", q.value(0).toInt());
+			continue;
 		}
-		if (verify(issuer)) {
-			return issuer;
+		if (verify_only(an_issuer)) {
+			if (!issuer || (issuer->getNotAfter() < an_issuer->getNotAfter())) {
+				qDebug() << "New issuer of" << *this << *an_issuer << an_issuer->getNotAfter();
+				issuer = an_issuer;
+			}
 		}
 	}
-	return NULL;
+	verify(issuer);
+	return issuer;
 }
 
 void pki_x509::fromPEM_BIO(BIO *bio, const QString &fname)
@@ -206,6 +212,8 @@ void pki_x509::fromPEM_BIO(BIO *bio, const QString &fname)
 	X509 *_cert;
 	_cert = PEM_read_bio_X509(bio, NULL, NULL, NULL);
 	openssl_error_msg(fname);
+	if (!_cert)
+		throw errorEx();
 	X509_free(cert);
 	cert = _cert;
 }
@@ -241,10 +249,7 @@ pki_x509::~pki_x509()
 
 void pki_x509::init()
 {
-	caTemplateSqlId = QVariant();
-	crlDays = 30;
 	crlExpire.setUndefined();
-	cert = NULL;
 	pkiType = x509;
 }
 
@@ -269,6 +274,42 @@ pki_x509 *pki_x509::getBySerial(const a1int &a) const
 			return pki;
 	}
 	return NULL;
+}
+
+QString pki_x509::getTaKey()
+{
+	XSqlQuery q;
+	QByteArray b;
+	pki_x509 *issuer = getSigner();
+	if (!isCA() && issuer && issuer != this)
+		return issuer->getTaKey();
+
+	Transaction;
+	if (!TransBegin())
+		return QString();
+
+	SQL_PREPARE(q, "SELECT value FROM takeys WHERE item = ?");
+	q.bindValue(0, sqlItemId);
+	q.exec();
+	if (q.next()) {
+		b = QByteArray::fromBase64(q.value(0).toByteArray());
+		qDebug() << "Loaded TA key" << this << b.size() << QString::fromLatin1(b.toHex()).left(6);
+	} else {
+		b.resize(2048/8);
+		RAND_bytes((unsigned char*)b.data(), 2048/8);
+		SQL_PREPARE(q, "INSERT INTO takeys (item, value) VALUES ( ?, ? )");
+		q.bindValue(0, sqlItemId);
+		q.bindValue(1, b.toBase64());
+		q.exec();
+		qDebug() << "Generated TA key" << this << b.size() << QString::fromLatin1(b.toHex()).left(6);
+	}
+	TransCommit();
+	QString takey("-----BEGIN OpenVPN Static key V1-----\n");
+	QString hex(QString::fromLatin1(b.toHex()));
+	for (int i=0; i<16; i++)
+		takey += hex.mid(32*i, 32) + "\n";
+	takey += "-----END OpenVPN Static key V1-----\n";
+	return takey;
 }
 
 a1int pki_x509::hashInfo(const EVP_MD *md) const
@@ -328,7 +369,7 @@ void pki_x509::load_token(pkcs11 &p11, CK_OBJECT_HANDLE object)
 
 void pki_x509::d2i(QByteArray &ba)
 {
-        X509 *c = (X509*)d2i_bytearray(D2I_VOID(d2i_X509), ba);
+	X509 *c = (X509*)d2i_bytearray(D2I_VOID(d2i_X509), ba);
 	if (c) {
 		X509_free(cert);
 		cert = c;
@@ -383,7 +424,7 @@ void pki_x509::store_token(bool alwaysSelect)
 		pk11_attr_data(CKA_LABEL, desc.toUtf8()) <<
 		(card ? card->getIdAttr() : p11.findUniqueID(CKO_CERTIFICATE));
 
-	if (p11.tokenLogin(p11.tokenInfo().label(), false).isNull())
+	if (!p11.tokenLoginForModification())
 		return;
 
 	p11.createObject(p11_atts);
@@ -415,10 +456,10 @@ void pki_x509::deleteFromToken()
 pk11_attlist pki_x509::objectAttributes()
 {
 	pk11_attlist attrs;
-        attrs <<
-                pk11_attr_ulong(CKA_CLASS, CKO_CERTIFICATE) <<
-                pk11_attr_ulong(CKA_CERTIFICATE_TYPE, CKC_X_509) <<
-                pk11_attr_data(CKA_VALUE, i2d());
+	attrs <<
+		pk11_attr_ulong(CKA_CLASS, CKO_CERTIFICATE) <<
+		pk11_attr_ulong(CKA_CERTIFICATE_TYPE, CKC_X_509) <<
+		pk11_attr_data(CKA_VALUE, i2d());
 	return attrs;
 }
 
@@ -438,7 +479,7 @@ void pki_x509::deleteFromToken(const slotid &slot)
 	{
 		return;
 	}
-	if (p11.tokenLogin(ti.label(), false).isNull())
+	if (!p11.tokenLoginForModification())
 		return;
 
 	p11.deleteObjects(objs);
@@ -456,9 +497,8 @@ int pki_x509::renameOnToken(const slotid &slot, const QString &name)
 		return 0;
 
 	pk11_attr_data label(CKA_LABEL, name.toUtf8());
-	tkInfo ti = p11.tokenInfo();
-	if (p11.tokenLogin(ti.label(), false).isNull())
-                return 0;
+	if (!p11.tokenLoginForModification())
+		return 0;
 	p11.storeAttribute(label, objs[0]);
 	return 1;
 }
@@ -994,10 +1034,6 @@ bool pki_x509::visible() const
 
 QVariant pki_x509::bg_color(const dbheader *hd) const
 {
-#define BG_RED     QBrush(QColor(255,  0,  0))
-#define BG_YELLOW  QBrush(QColor(255,255,  0))
-#define BG_CYAN    QBrush(QColor(127,255,212))
-
 	if (Settings["no_expire_colors"])
 		return QVariant();
 
@@ -1023,15 +1059,15 @@ QVariant pki_x509::bg_color(const dbheader *hd) const
 	switch (hd->id) {
 		case HD_cert_notBefore:
 			if (nb > now || !nb.isValid() || nb.isUndefined())
-				return QVariant(BG_RED);
+				return QVariant(red);
 			break;
 		case HD_cert_notAfter: {
 			if (na.isUndefined())
-				return QVariant(BG_CYAN);
+				return QVariant(cyan);
 			if (na < now)
-				return QVariant(BG_RED);
+				return QVariant(red);
 			if (certwarn < now)
-				return QVariant(BG_YELLOW);
+				return QVariant(yellow);
 			break;
 		}
 		case HD_cert_crl_expire:
@@ -1041,9 +1077,9 @@ QVariant pki_x509::bg_color(const dbheader *hd) const
 				if (!crlExpire.isUndefined()) {
 					crlwarn = crlex.addSecs(-2 *60*60*24);
 					if (crlex < now)
-						return QVariant(BG_RED);
+						return QVariant(red);
 					if (crlwarn < now || !crlex.isValid())
-						return QVariant(BG_YELLOW);
+						return QVariant(yellow);
 				}
 			}
 	}

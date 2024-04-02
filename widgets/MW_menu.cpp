@@ -30,7 +30,7 @@
 #include <QFileDialog>
 #include <QActionGroup>
 
-static QAction *languageMenuEntry(const QStringList &sl)
+QAction *MainWindow::languageMenuEntry(const QStringList &sl)
 {
 	QString lang, tooltip;
 	QLocale locale;
@@ -48,7 +48,7 @@ static QAction *languageMenuEntry(const QStringList &sl)
 	if (sl.length() > 2)
 		tooltip += " - " + sl[2];
 
-	QAction *a = new QAction(lang, NULL);
+	QAction *a = new QAction(lang, this);
 	a->setToolTip(tooltip);
 	a->setData(QVariant(locale));
 	a->setDisabled(!XcaApplication::languageAvailable(locale));
@@ -64,7 +64,7 @@ void MainWindow::init_menu()
 	static QMenu *file = NULL, *help = NULL, *import = NULL,
 			*token = NULL, *languageMenu = NULL, *extra = NULL;
 	static QActionGroup * langGroup = NULL;
-	QAction *a;
+	QAction *a, *options;
 
 	delete file;
 	delete help;
@@ -78,54 +78,67 @@ void MainWindow::init_menu()
 	wdMenuList.clear();
 	scardList.clear();
 	acList.clear();
+	setMenuBar(new QMenuBar(nullptr));
 
 	langGroup = new QActionGroup(this);
-
-	historyMenu = new tipMenu(tr("Recent DataBases") + " ...", this);
-	update_history_menu();
-
-	connect(historyMenu, SIGNAL(triggered(QAction*)),
-                this, SLOT(open_database(QAction*)));
 
 	languageMenu = new tipMenu(tr("Language"), this);
 	connect(languageMenu, SIGNAL(triggered(QAction*)),
 		qApp, SLOT(switchLanguage(QAction*)));
 
 	foreach(const QStringList &sl, getTranslators()) {
-		QAction *a = languageMenuEntry(sl);
+		a = languageMenuEntry(sl);
 		langGroup->addAction(a);
 		languageMenu->addAction(a);
 	}
+
+
+#ifndef APPSTORE_COMPLIANT
+	historyMenu = new tipMenu(tr("Recent DataBases") + " ...", this);
+	update_history_menu();
+
+	connect(historyMenu, SIGNAL(triggered(QAction*)),
+	        this, SLOT(open_database(QAction*)));
+
 	file = menuBar()->addMenu(tr("&File"));
-	file->addAction(tr("New DataBase"), this, SLOT(new_database()),
-			QKeySequence::New)
-			->setEnabled(OpenDb::hasSqLite());
-	file->addAction(tr("Open DataBase"), this, SLOT(load_database()),
-			QKeySequence::Open)
-			->setEnabled(OpenDb::hasSqLite());
+
+	a = file->addAction(tr("New DataBase"), this, SLOT(new_database()));
+	a->setShortcut(QKeySequence::New);
+	a->setEnabled(OpenDb::hasSqLite());
+
+	a = file->addAction(tr("Open DataBase"), this, SLOT(load_database()));
+	a->setShortcut(QKeySequence::Open);
+	a->setEnabled(OpenDb::hasSqLite());
+
 	file->addAction(tr("Open Remote DataBase"),
-			this, SLOT(openRemoteSqlDB()))
-			->setEnabled(OpenDb::hasRemoteDrivers());
+			this, SLOT(openRemoteSqlDB()))->
+			setEnabled(OpenDb::hasRemoteDrivers());
 	file->addMenu(historyMenu);
 	file->addAction(tr("Set as default DataBase"), this,
 				SLOT(default_database()));
-	acList += file->addAction(tr("Close DataBase"), this,
-		SLOT(close_database()), QKeySequence::Close);
-
-	a = new QAction(tr("Options"), this);
-	connect(a, SIGNAL(triggered()), this, SLOT(setOptions()));
-	a->setMenuRole(QAction::PreferencesRole);
-	file->addAction(a);
+	a = file->addAction(tr("Close DataBase"), this, SLOT(close_database()));
+	a->setShortcut(QKeySequence::Close);
 	acList += a;
 
-	file->addMenu(languageMenu);
-	file->addSeparator();
+#endif
+	options = new QAction(tr("Options"), this);
+	connect(options, SIGNAL(triggered()), this, SLOT(setOptions()));
+	options->setMenuRole(QAction::PreferencesRole);
+#ifndef APPSTORE_COMPLIANT
+	file->addAction(options);
+#endif
+	acList += options;
+
 	a = new QAction(tr("Exit"), this);
 	connect(a, SIGNAL(triggered()),
 		qApp, SLOT(quit()), Qt::QueuedConnection);
 	a->setMenuRole(QAction::QuitRole);
 	a->setShortcut(QKeySequence::Quit);
+#ifndef APPSTORE_COMPLIANT
+	file->addMenu(languageMenu);
+	file->addSeparator();
 	file->addAction(a);
+#endif
 
 	import = menuBar()->addMenu(tr("I&mport"));
 	import->addAction(tr("Keys"), keyView, SLOT(load()) );
@@ -136,9 +149,10 @@ void MainWindow::init_menu()
 	import->addAction(tr("Template"), tempView, SLOT(load()) );
 	import->addAction(tr("Revocation list"), crlView, SLOT(load()));
 	import->addAction(tr("PEM file"), this, SLOT(loadPem()) );
-	import->addAction(tr("Paste PEM file"), this, SLOT(pastePem()),
-			QKeySequence::Paste);
+	import->addAction(tr("Paste PEM file"), this, SLOT(pastePem()))->
+			setShortcut(QKeySequence::Paste);
 
+#ifndef APPSTORE_COMPLIANT
 	token = menuBar()->addMenu(tr("Token"));
 	token->addAction(tr("&Manage Security token"), this,
 				SLOT(manageToken()));
@@ -150,7 +164,7 @@ void MainWindow::init_menu()
 				SLOT(changeSoPin()) );
 	token->addAction(tr("Init PIN"), this,
 				SLOT(initPin()) );
-
+#endif
 	extra = menuBar()->addMenu(tr("Extra"));
 	acList += extra->addAction(tr("&Dump DataBase"), this,
 				SLOT(dump_database()));
@@ -168,16 +182,23 @@ void MainWindow::init_menu()
 				 SLOT(generateDHparam()));
 	extra->addAction(tr("OID Resolver"), resolver, SLOT(show()));
 
+#ifdef APPSTORE_COMPLIANT
+	extra->addSeparator();
+	extra->addMenu(languageMenu);
+	extra->addAction(options);
+#endif
 	help = menuBar()->addMenu(tr("&Help") );
-	help->addAction(tr("Content"), helpdlg, SLOT(content()),
-			QKeySequence::HelpContents);
+	help->addAction(tr("Content"), helpdlg, SLOT(content()))->
+			setShortcut(QKeySequence::HelpContents);
 	a = new QAction(tr("About"), this);
 	connect(a, SIGNAL(triggered()), this, SLOT(about()));
 	a->setMenuRole(QAction::AboutRole);
 	a->setShortcut(QKeySequence::WhatsThis);
 	help->addAction(a);
 	wdMenuList += import;
+#ifndef APPSTORE_COMPLIANT
 	scardList += token;
+#endif
 
 	setItemEnabled(Database.isOpen());
 }
@@ -193,9 +214,8 @@ void MainWindow::update_history_menu()
 		QString txt = hist[i];
 		if (!QFile::exists(txt) && !database_model::isRemoteDB(txt))
 			continue;
-		txt = QFileInfo(txt).fileName();
-		if (txt.size() > 20)
-			txt = QString("...") + txt.mid(txt.size() - 20);
+		if (txt.size() > 33)
+			txt = QString("...") + txt.mid(txt.size() - 30);
 		a = historyMenu->addAction(QString("%1 %2").arg(j++).arg(txt));
 		a->setData(QVariant(hist[i]));
 		a->setToolTip(hist[i]);

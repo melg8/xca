@@ -25,7 +25,9 @@ MW_help.cpp		TempTreeView.h		v3ext.cpp
 MW_menu.cpp		X509SuperTreeView.cpp	v3ext.h
 MainWindow.cpp		X509SuperTreeView.h	validity.cpp
 MainWindow.h		XcaApplication.cpp	validity.h
+pkcs12EncBox.h          XcaDetail.h
+pkcs12EncBox.cpp        XcaDetail.cpp
 )
 
 list(TRANSFORM xca_sources PREPEND ${PROJECT_SOURCE_DIR}/widgets/)
-target_sources(${CMAKE_PROJECT_NAME} PRIVATE ${xca_sources})
+target_sources(xcalib PRIVATE ${xca_sources})

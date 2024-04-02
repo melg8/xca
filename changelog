@@ -1,3 +1,57 @@
+xca 2.6.0 Mon Feb 26 2024
+
+ * Update documentation of certificate export and remote databases
+ * Close #520: Fix permanent processor load
+ * Close #518: Export certificates for ovpn file
+ * Close #512 #474 #481 #506 #509: SHA1 based MAC for PKCS12
+ * Close #458 #511 #503 #500 #494 #484 #482 #475: Support legacy keys
+   and automatically transform them if possible.
+ * Close #493: Renew Certificate freeze XCA
+ * Close #477: paste an encrypted private key results in a crash
+ * Fix crash when deleting CA certificates
+ * Close #480: add flatpak build information and github action
+ * Close #402: Subject Alternative Name not filled by all CN
+ * Improve import: Finish multi import when empty
+ * Add File extensions in Info.plist supported by XCA
+ * Close #384: Quick view of certificates without trying to open XCA
+ * Close #459: pass private key password
+ * Close #465: Export PEM + Key in one File
+ * Close #460: Impossible to import PKCS#12 (RC40_CBC)
+ * Make XCA AppStore compliant with -DAPPSTORE_COMPLIANT=ON
+
+xca 2.5.0 Sun Sep 24 2023
+
+ * Close #423: parameter --name is not respected when running with CLI
+ * Close #457: Support Qt5 < 5.12 / python3-sphinxcontrib.qthelp
+ * Close #440: yellow background makes date text hard to read in dark themes
+ * Close #437: loading CRL at startup generates an error
+ * Close #444 cannot update template internal name
+ * Close #442: asan checks failed
+ * Close #446: show more information in Recent Databases
+ * Improve/Fix database loading
+ * Document vCalendar/ics feature #456
+ * Fix possible segfault caused by wrong free()
+ * Add Bulgarian translation
+ * Close #368: error while creating CRL with CA using EC key (ed25519)
+ * Treat CKA_ID as byte array, not Bignum
+ * Fix #321 - decryptKey shows OpenSSL error
+ * Merge #325 Update entitlement.plist
+ * Close #366: Not Responding after upgrade
+ * Add Persian translation .ts file to XCA.
+ * Close #327: "Dump database" dumps everything to everywhere
+ * Close #317: "Please insert card: ..." message
+ * Add Indonesian translation
+ * Close #283 Nitrokey HSM2 can't create EC keys on 2.4.0
+ * Switch from autotools/qmake to cmake
+ * Close #278: Miss components to connect remote database
+ * Commandline: Add "--list-items" to print a list of database items
+ * Close #67: possibility to ignore password prompt from CLI
+ * Close #259: Follow the XDG base directory specification
+ * Add support for Qt6 and OpenSSL 3.x
+ * Drop support for Qt4
+ * Drop support for old XCA < 2.0.0 databases
+ * Drop support for OpenSSL < 1.1.0
+
 xca 2.4.0 Fri May 07 2021
 
  * Unify XCA icon (certificate) on all platforms

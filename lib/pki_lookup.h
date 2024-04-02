@@ -41,6 +41,10 @@ class pki_lookup
 	{
 		add(id.toULongLong(), pki);
 	}
+	void remove(QVariant id)
+	{
+		lookup.remove(id.toULongLong());
+	}
 	void add(quint64 id, pki_base *pki)
 	{
 		if (id == 0)
@@ -118,7 +122,7 @@ class pki_lookup
 	void flush()
 	{
 		qDeleteAll(lookup);
-                lookup.clear();
+		lookup.clear();
 	}
 };
 #endif

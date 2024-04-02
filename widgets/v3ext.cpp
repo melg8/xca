@@ -48,7 +48,7 @@ void v3ext::addInfo(QLineEdit *myle, const QStringList &sl, int n,
 		copy_cn->hide();
 }
 
-void v3ext::addItem(QString list)
+void v3ext::addItem(const QString &list)
 {
 	int i;
 	QStringList sl;
@@ -82,7 +82,7 @@ void v3ext::setupLineEdit(const QString &s, QLineEdit *l)
 	} else if (s == "URI") {
 		tt = tr("A uniform resource indicator");
 		QRegularExpression rx("[a-z][a-z0-9\\.\\+\\-]*://.*");
-                v = new QRegularExpressionValidator(rx, this);
+		v = new QRegularExpressionValidator(rx, this);
 	} else if (s == "DNS") {
 		if (nid == NID_subject_alt_name)
 			tt = tr("A DNS domain name or 'copycn'");
@@ -100,17 +100,17 @@ void v3ext::setupLineEdit(const QString &s, QLineEdit *l)
 		l->setText(QString("copy"));
 		l->setReadOnly(true);
 		QRegularExpression rx("copy");
-                v = new QRegularExpressionValidator(rx, this);
+		v = new QRegularExpressionValidator(rx, this);
 	}
 	l->setToolTip(tt);
 	l->setValidator(v);
 }
 
 /* for one TYPE:Content String */
-void v3ext::addEntry(QString line)
+void v3ext::addEntry(const QString &l)
 {
 	int idx;
-	QString type, value;
+	QString type, value, line(l);
 
 	line = line.trimmed();
 	idx = line.indexOf(':');

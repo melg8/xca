@@ -16,7 +16,7 @@
 #include <QHelpLink>
 #endif
 
-Help::Help() : QWidget(NULL), helpengine(nullptr)
+Help::Help() : QWidget(NULL)
 {
 	setupUi(this);
 	setWindowTitle(XCA_TITLE);
@@ -98,4 +98,10 @@ void Help::register_ctxhelp_button(QDialog *dlg, const QString &help_ctx) const
 		qWarning() << "Unknown help context: " << help_ctx;
 		buttonBox->button(QDialogButtonBox::Help)->setEnabled(false);
 	}
+}
+
+void Help::changeEvent(QEvent *event)
+{
+	if (event->type() == QEvent::LanguageChange)
+		retranslateUi(this);
 }

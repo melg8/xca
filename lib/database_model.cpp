@@ -36,10 +36,44 @@ xca_db Database;
 
 bool database_model::open_without_password = false;
 
+const QString &database_model::detect_provider()
+{
+	// Since we may access the database via ODBC, we need to ask
+	// the backend engine directly.
+	static const QList<QStringList> db_probes {
+		{ "SELECT sqlite_version()", "3", "SQLITE" },
+		{ "SELECT version()", "postgresql", "POSTGRES" },
+		{ "SELECT @@version", "mysql", "MARIADB" },
+		{ "SELECT @@version", "mariadb", "MARIADB" },
+		{ "SELECT @@version", "microsoft", "MICROSOFT" },
+	};
+	if (db_provider.isEmpty()) {
+		QSqlDatabase db = QSqlDatabase::database();
+		if (!db.isOpen())
+			return db_provider;
+
+		db_provider = "UNKNOWN";
+		XSqlQuery q;
+		foreach(QStringList probe, db_probes) {
+			qDebug() << probe[0];
+			if (q.exec(probe[0]) && !q.lastError().isValid() && q.next()) {
+				QString id = q.value(0).toString().simplified();
+				qDebug() << probe[1] << id;
+				if (id.contains(probe[1], Qt::CaseInsensitive)) {
+					db_provider = probe[2];
+					break;
+				}
+			}
+		}
+	}
+	qDebug() << "db_provider:" << db_provider;
+	return db_provider;
+}
+
 QSqlError database_model::initSqlDB()
 {
-#define MAX_SCHEMAS 7
-#define SCHEMA_VERSION "7"
+#define MAX_SCHEMAS 8
+#define SCHEMA_VERSION "8"
 
 	QStringList schemas[MAX_SCHEMAS];
 
@@ -53,6 +87,10 @@ QSqlError database_model::initSqlDB()
 	if (!db.isOpen())
 		return QSqlError();
 
+	QString b64_blob = "TEXT";
+	if (detect_provider() == "MARIADB")
+		b64_blob = "LONGTEXT";
+
 	Transaction;
 	if (!TransBegin())
 		return db.lastError();
@@ -62,6 +100,7 @@ QSqlError database_model::initSqlDB()
 		if (i >= ARRAY_SIZE(schemas))
 			break;
 		foreach(QString sql, schemas[i]) {
+			sql.replace("_B64_BLOB_", b64_blob);
 			qDebug("EXEC[%d]: '%s'", i, CCHAR(sql));
 			if (!q.exec(sql) || q.lastError().isValid()) {
 				TransRollback();
@@ -70,7 +109,7 @@ QSqlError database_model::initSqlDB()
 		}
 	}
 
-	if (i != MAX_SCHEMAS)
+	if (i < MAX_SCHEMAS)
 		throw errorEx(QObject::tr("Failed to update the database schema to the current version"));
 
 	TransCommit();
@@ -98,8 +137,12 @@ database_model::database_model(const QString &name, const Passwd &pass)
 	enum open_result result;
 	QSqlError err;
 
+#ifndef APPSTORE_COMPLIANT
 	dbName = name;
-	dbTimer = 0;
+#else
+	(void)name;
+	dbName = "default.xdb";
+#endif
 
 	if (dbName.isEmpty())
 		dbName = get_default_db();
@@ -139,11 +182,15 @@ database_model::database_model(const QString &name, const Passwd &pass)
 	 * keys first, followed by x509[req], and crls last.
 	 * Templates don't care.
 	 */
-	models << new db_key();
+	db_key *dbkey = new db_key();
+	models << dbkey;
 	models << new db_x509req();
 	models << new db_x509();
 	models << new db_crl();
 	models << new db_temp();
+
+	if (dbkey)
+		dbkey->updateKeyEncryptionScheme();
 
 	foreach(db_base *m, models) {
 		Q_CHECK_PTR(m);
@@ -290,17 +337,9 @@ void database_model::as_default_database(const QString &db)
 database_model::~database_model()
 {
 	QByteArray ba;
-	QString connName;
-	bool dbopen;
+	QString connName =  QSqlDatabase::database().connectionName();
 
-	{
-		/* Destroy "db" at the end of the block */
-		QSqlDatabase db = QSqlDatabase::database();
-		connName= db.connectionName();
-		dbopen = db.isOpen();
-	}
-
-	if (!dbopen) {
+	if (!QSqlDatabase::database().isOpen()) {
 		QSqlDatabase::removeDatabase(connName);
 		Settings.clear();
 		return;

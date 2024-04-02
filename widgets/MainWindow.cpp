@@ -35,6 +35,7 @@
 #include "lib/pki_scard.h"
 #include "lib/dhgen.h"
 #include "lib/load_obj.h"
+#include "lib/pki_pkcs12.h"
 
 #include "XcaDialog.h"
 #include "XcaWarning.h"
@@ -44,7 +45,9 @@
 #include "Help.h"
 #include "OidResolver.h"
 
-OidResolver *MainWindow::resolver = NULL;
+OidResolver *MainWindow::resolver;
+MainWindow *mainwin;
+bool MainWindow::legacy_loaded;
 
 void MainWindow::enableTokenMenu(bool enable)
 {
@@ -76,6 +79,8 @@ MainWindow::MainWindow() : QMainWindow()
 	dbindex->setMargin(6);
 
 	dn_translations_setup();
+	pki_export::init_elements();
+
 	statusBar()->addWidget(dbindex, 1);
 
 	setupUi(this);
@@ -87,13 +92,8 @@ MainWindow::MainWindow() : QMainWindow()
 	wdList << keyButtons << reqButtons << certButtons <<
 		tempButtons <<	crlButtons;
 
-	QStringList drivers = QSqlDatabase::drivers();
-	foreach(QString driver, drivers) {
-		QSqlDatabase d = QSqlDatabase::addDatabase(driver, driver +"_C");
-		qDebug() << "DB driver:" << driver;
-	}
+	OpenDb::initDatabases();
 
-	historyMenu = NULL;
 	helpdlg = new Help();
 	init_menu();
 	setItemEnabled(false);
@@ -124,15 +124,14 @@ MainWindow::MainWindow() : QMainWindow()
 
 	views << keyView << reqView << certView << crlView << tempView;
 
+	pki_base::setupColors(palette());
+
 	foreach(XcaTreeView *v, views)
 		v->setMainwin(this, searchEdit);
 
 	XcaProgress::setGui(new XcaProgressGui(this));
 	xcaWarning::setGui(new xcaWarningGui());
 	PwDialogCore::setGui(new PwDialogUI());
-
-	dhgen = nullptr;
-	dhgenProgress = nullptr;
 }
 
 void MainWindow::dropEvent(QDropEvent *event)
@@ -216,7 +215,7 @@ void MainWindow::loadPem()
 	keyView->load_default(&l);
 }
 
-bool MainWindow::pastePem(QString text, bool silent)
+bool MainWindow::pastePem(const QString &text, bool silent)
 {
 	bool success = false;
 	QByteArray pemdata = text.toLatin1();
@@ -304,7 +303,7 @@ void MainWindow::initToken()
 		p11.initToken(slot, pin.constUchar(), pin.size(), label);
 	} catch (errorEx &err) {
 		XCA_ERROR(err);
-        }
+	}
 }
 
 void MainWindow::changePin(bool so)
@@ -320,7 +319,7 @@ void MainWindow::changePin(bool so)
 		p11.changePin(slot, so);
 	} catch (errorEx &err) {
 		XCA_ERROR(err);
-        }
+	}
 }
 
 void MainWindow::changeSoPin()
@@ -341,7 +340,7 @@ void MainWindow::initPin()
 		p11.initPin(slot);
 	} catch (errorEx &err) {
 		XCA_ERROR(err);
-        }
+	}
 }
 
 
@@ -353,6 +352,8 @@ void MainWindow::manageToken()
 	pki_x509 *cert = NULL;
 	ImportMulti *dlgi = NULL;
 
+	enum logintype { none, userlogin, sologin } login = none;
+
 	if (!pkcs11::libraries.loaded())
 		return;
 
@@ -360,58 +361,86 @@ void MainWindow::manageToken()
 		if (!p11.selectToken(&slot, this))
 			return;
 
+		tkInfo ti(p11.tokenInfo(slot));
+
 		ImportMulti *dlgi = new ImportMulti(this);
 
-		dlgi->tokenInfo(slot);
-		QList<CK_OBJECT_HANDLE> objects;
+		while (true) {
+			dlgi->tokenInfo(slot);
+			QList<CK_OBJECT_HANDLE> objects;
 
-		QList<CK_MECHANISM_TYPE> ml = p11.mechanismList(slot);
-		if (ml.count() == 0)
-			ml << CKM_SHA1_RSA_PKCS;
-		pk11_attlist atts(pk11_attr_ulong(CKA_CLASS,
-				CKO_PUBLIC_KEY));
+			QList<CK_MECHANISM_TYPE> ml = p11.mechanismList(slot);
+			if (ml.count() == 0)
+				ml << CKM_SHA1_RSA_PKCS;
+			pk11_attlist atts(pk11_attr_ulong(CKA_CLASS,
+					CKO_PUBLIC_KEY));
 
-		p11.startSession(slot);
-		p11.getRandom();
-		objects = p11.objectList(atts);
-
-		for (int j=0; j< objects.count(); j++) {
-			card = new pki_scard("");
-			try {
-				card->load_token(p11, objects[j]);
-				card->setMech_list(ml);
-				dlgi->addItem(card);
-			} catch (errorEx &err) {
-				XCA_ERROR(err);
-				delete card;
+			p11.startSession(slot);
+			p11.getRandom();
+			if (login != none) {
+				if (p11.tokenLogin(ti.label(), login == sologin).isNull())
+					break;
 			}
-			card = NULL;
-		}
-		atts.reset();
-		atts << pk11_attr_ulong(CKA_CLASS, CKO_CERTIFICATE) <<
-			pk11_attr_ulong(CKA_CERTIFICATE_TYPE,CKC_X_509);
-		objects = p11.objectList(atts);
+			objects = p11.objectList(atts);
 
-		for (int j=0; j< objects.count(); j++) {
-			cert = new pki_x509("");
-			try {
-				cert->load_token(p11, objects[j]);
-				dlgi->addItem(cert);
-			} catch (errorEx &err) {
-				XCA_ERROR(err);
-				delete cert;
+			for (int j=0; j< objects.count(); j++) {
+				card = new pki_scard("");
+				try {
+					card->load_token(p11, objects[j]);
+					card->setMech_list(ml);
+					dlgi->addItem(card);
+				} catch (errorEx &err) {
+					XCA_ERROR(err);
+					delete card;
+				}
+				card = NULL;
 			}
-			cert = NULL;
-		}
-		if (dlgi->entries() == 0) {
-			tkInfo ti = p11.tokenInfo();
-			XCA_INFO(tr("The token '%1' did not contain any keys or certificates").arg(ti.label()));
-		} else {
-			dlgi->execute(true);
+			atts.reset();
+			atts << pk11_attr_ulong(CKA_CLASS, CKO_CERTIFICATE) <<
+				pk11_attr_ulong(CKA_CERTIFICATE_TYPE,CKC_X_509);
+			objects = p11.objectList(atts);
+
+			for (int j=0; j< objects.count(); j++) {
+				cert = new pki_x509("");
+				try {
+					cert->load_token(p11, objects[j]);
+					dlgi->addItem(cert);
+				} catch (errorEx &err) {
+					XCA_ERROR(err);
+					delete cert;
+				}
+				cert = NULL;
+			}
+			if (dlgi->entries() == 0) {
+				p11.closeSession(slot);
+				QString txt = tr("The token '%1' did not contain any keys or certificates")
+								.arg(ti.label());
+				xcaWarningBox msg(this, txt);
+				msg.addButton(QMessageBox::Ok);
+				msg.addButton(QMessageBox::Retry, tr("Retry with PIN"));
+				msg.addButton(QMessageBox::Apply, tr("Retry with SO PIN"));
+				switch (msg.exec())
+				{
+					case QMessageBox::Retry:
+						login = userlogin;
+						continue;
+					case QMessageBox::Apply:
+						login = sologin;
+						continue;
+					case QMessageBox::Ok:
+						// fall
+					default:
+						break;
+				}
+			} else {
+				p11.closeSession(slot);
+				dlgi->execute(true);
+			}
+			break;
 		}
 	} catch (errorEx &err) {
 		XCA_ERROR(err);
-        }
+	}
 	delete card;
 	delete cert;
 	delete dlgi;
@@ -423,9 +452,12 @@ MainWindow::~MainWindow()
 	EVP_cleanup();
 	OBJ_cleanup();
 	delete dbindex;
+	delete searchEdit;
 	delete helpdlg;
 
 	XcaProgress::setGui(nullptr);
+	xcaWarning::setGui(nullptr);
+	PwDialogCore::setGui(nullptr);
 }
 
 void MainWindow::closeEvent(QCloseEvent *e)
@@ -602,7 +634,26 @@ enum open_result MainWindow::setup_open_database()
 		XCA_WARN(tr("The currently used default hash '%1' is insecure. Please select at least 'SHA 224' for security reasons.").arg(defdig.name()));
 		setOptions();
 	}
-
+	encAlgo encalg = encAlgo::getDefault();
+	if (encalg.legacy() && !Settings["pkcs12_keep_legacy"]) {
+		QString text(tr("The currently used PFX / PKCS#12 algorithm '%1' is insecure.")
+				.arg(encalg.name()));
+		xcaWarningBox msg(this, text);
+		msg.addButton(QMessageBox::Ok);
+        msg.addButton(QMessageBox::Ignore);
+        msg.addButton(QMessageBox::Apply, tr("Change"));
+		switch (msg.exec())
+		{
+			case QMessageBox::Ok:
+				break;
+			case QMessageBox::Ignore:
+				Settings["pkcs12_keep_legacy"] = true;
+				break;
+			case QMessageBox::Apply:
+				setOptions();
+				break;
+		}
+	}
 	keyView->setModel(Database.model<db_key>());
 	reqView->setModel(Database.model<db_x509req>());
 	certView->setModel(Database.model<db_x509>());
@@ -732,6 +783,7 @@ void MainWindow::changeEvent(QEvent *event)
 	if (event->type() == QEvent::LanguageChange) {
 		retranslateUi(this);
 		dn_translations_setup();
+		pki_export::init_elements();
 		init_menu();
 		foreach(db_base *model, Database.getModels())
 			model->updateHeaders();

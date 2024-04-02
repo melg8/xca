@@ -5,8 +5,6 @@
  * All rights reserved.
  */
 
-
-#include "lib/main.h"
 #include "lib/pki_evp.h"
 #include "lib/pki_scard.h"
 
@@ -22,18 +20,13 @@
 #include <QPushButton>
 #include <QLineEdit>
 
-KeyDetail::KeyDetail(QWidget *w)
-	: QDialog(w ? w : mainwin) , keySqlId()
+KeyDetail::KeyDetail(QWidget *w) : XcaDetail(w)
 {
 	setupUi(this);
-	setWindowTitle(XCA_TITLE);
-	image->setPixmap(QPixmap(":keyImg"));
-	mainwin->helpdlg->register_ctxhelp_button(this, "keydetail");
 
 	keyModulus->setFont(XcaApplication::tableFont);
 	tabWidget->setCurrentIndex(0);
-
-	Database.connectToDbChangeEvt(this, SLOT(itemChanged(pki_base*)));
+	init("keydetail", ":keyImg");
 }
 
 #ifndef OPENSSL_NO_EC
@@ -77,11 +70,13 @@ void KeyDetail::setupFingerprints(pki_key *key)
 	}
 }
 
-void KeyDetail::setKey(pki_key *key)
+void KeyDetail::setKey(pki_key *key, bool import)
 {
 	keySqlId = key->getSqlItemId();
-	keyDesc->setText(key->getIntName());
+	descr->setText(key->getIntName());
 	keyLength->setText(key->length());
+	if (import)
+		connect_pki(key);
 
 	keyPrivEx->disableToolTip();
 	if (!key->isToken())
@@ -152,28 +147,19 @@ void KeyDetail::setKey(pki_key *key)
 void KeyDetail::itemChanged(pki_base *pki)
 {
 	if (pki->getSqlItemId() == keySqlId)
-		keyDesc->setText(pki->getIntName());
+		descr->setText(pki->getIntName());
 }
 
-void KeyDetail::showKey(QWidget *parent, pki_key *key, bool ro)
+void KeyDetail::showKey(QWidget *parent, pki_key *key, bool import)
 {
 	if (!key)
 		return;
 	KeyDetail *dlg = new KeyDetail(parent);
-	if (!dlg)
-		return;
-	dlg->setKey(key);
-	dlg->keyDesc->setReadOnly(ro);
+	bool ro = !key->getSqlItemId().isValid();
+	dlg->setKey(key, import);
+	dlg->descr->setReadOnly(ro);
 	dlg->comment->setReadOnly(ro);
-	if (dlg->exec()) {
-		db_base *db = Database.modelForPki(key);
-		if (!db) {
-			key->setIntName(dlg->keyDesc->text());
-			key->setComment(dlg->comment->toPlainText());
-		} else {
-			db->updateItem(key, dlg->keyDesc->text(),
-					dlg->comment->toPlainText());
-		}
-	}
-        delete dlg;
+
+	dlg->exec();
+	delete dlg;
 }

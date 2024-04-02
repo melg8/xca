@@ -27,7 +27,7 @@ namespace db {
 	uint32_t intFromData(QByteArray &ba)
 	{
 		uint32_t ret;
-		if ((unsigned)(ba.count()) < sizeof(uint32_t)) {
+		if ((unsigned)(ba.size()) < sizeof(uint32_t)) {
 			throw errorEx(QObject::tr("Out of data"));
 		}
 		memcpy(&ret, ba.constData(), sizeof(uint32_t));
@@ -37,7 +37,7 @@ namespace db {
 	bool boolFromData(QByteArray &ba)
 	{
 		unsigned char c;
-		if (ba.count() < 1)
+		if (ba.size() < 1)
 			throw errorEx(QObject::tr("Out of data"));
 
 		c = ba.constData()[0];
@@ -88,19 +88,14 @@ const QList<QString> pki_temp::tmpl_keys = {
 };
 
 pki_temp::pki_temp(const pki_temp *pk)
-	:pki_x509name(pk)
+	:pki_x509name(pk->getIntName()), xname(pk->xname),  settings(pk->settings)
 {
-	pre_defined = false;
-
-	xname = pk->xname;
-	settings = pk->settings;
 }
 
 pki_temp::pki_temp(const QString &d)
 	:pki_x509name(d)
 {
 	pkiType = tmpl;
-	pre_defined = false;
 
 	foreach(QString key, tmpl_keys) {
 		settings[key] = QString();
@@ -112,7 +107,7 @@ pki_temp::pki_temp(const QString &d)
 QString pki_temp::comboText() const
 {
 	return pre_defined ? QString("[default] ") + pki_base::comboText() :
-			 pki_base::comboText();
+			pki_base::comboText();
 }
 
 QSqlError pki_temp::insertSqlData()
@@ -307,7 +302,7 @@ static QString old_eKeyUse2QString(int old)
 {
 	QStringList sl;
 
-        for (int i = 0; i < extkeyuse_nid.count(); i++) {
+	for (int i = 0; i < extkeyuse_nid.size(); i++) {
 		if (old & (1<<i)) {
 			sl << OBJ_nid2sn(extkeyuse_nid[i]);
 		}
@@ -363,8 +358,8 @@ void pki_temp::old_fromData(const unsigned char *p, int size, int version)
 		settings["noWellDefinedExpDate"] =
 				QString::number(db::boolFromData(ba));
 
-	if (ba.count() > 0) {
-		my_error(tr("Wrong Size %1").arg(ba.count()));
+	if (ba.size() > 0) {
+		my_error(tr("Wrong Size %1").arg(ba.size()));
 	}
 }
 
@@ -417,11 +412,15 @@ void pki_temp::fromData(const unsigned char *p, int size, int version)
 QByteArray pki_temp::toExportData() const
 {
 	QByteArray data, header;
+	BioByteArray b;
+
 	data = toData();
-	header = db::intToData(data.count());
+	header = db::intToData(data.size());
 	header += db::intToData(TMPL_VERSION);
 	header += data;
-	return header;
+	PEM_write_bio(b, PEM_STRING_XCA_TEMPLATE, (char*)"",
+		(unsigned char*)(header.data()), header.size());
+	return b.byteArray();
 }
 
 void pki_temp::writeTemp(XFile &file) const
@@ -432,15 +431,14 @@ void pki_temp::writeTemp(XFile &file) const
 void pki_temp::writeDefault(const QString &dirname) const
 {
 	XFile file(get_dump_filename(dirname, ".xca"));
-        file.open_write();
+	file.open_write();
 	writeTemp(file);
 }
 
 bool pki_temp::pem(BioByteArray &b)
 {
-	QByteArray ba = toExportData();
-	return PEM_write_bio(b, PEM_STRING_XCA_TEMPLATE, (char*)"",
-		(unsigned char*)(ba.data()), ba.size());
+	b += toExportData();
+	return true;
 }
 
 void pki_temp::fromExportData(QByteArray data)
@@ -492,7 +490,7 @@ void pki_temp::fromPEM_BIO(BIO *bio, const QString &name)
 	QByteArray ba;
 	QString msg;
 	char *nm = NULL, *header = NULL;
-        unsigned char *data = NULL;
+	unsigned char *data = NULL;
 	long len;
 
 	PEM_read_bio(bio, &nm, &header, &data, &len);

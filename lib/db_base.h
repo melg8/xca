@@ -28,27 +28,28 @@ class db_base: public QAbstractItemModel
 	Q_OBJECT
 
 	protected:
-		int secondsTimer, minutesTimer, hoursTimer;
-		void _writePKI(pki_base *pki, bool overwrite);
-		QList<enum pki_type> pkitype;
-		QList<enum pki_type> pkitype_depends;
-		QString class_name;
+		a1time minuteMarker{}, hourMarker{};
+		QTimer maintenanceTimer{};
+		QList<enum pki_type> pkitype{};
+		QList<enum pki_type> pkitype_depends{};
+		QString class_name{};
 		/* Sql table containing the 'hash' of this items */
-		QString sqlHashTable;
-		dbheaderList allHeaders;
+		QString sqlHashTable{};
+		dbheaderList allHeaders{};
+		int colResizing{};
+		bool treeview{ true };
+		pki_base *rootItem{};
+		pki_base *treeItem{};
+		QVariant selected{};
+
+		void _writePKI(pki_base *pki, bool overwrite);
 		virtual dbheaderList getHeaders();
-		int colResizing;
 		QString sqlItemSelector();
 		bool isValidCol(int col) const;
-		void timerEvent(QTimerEvent *event);
-		bool treeview;
-		pki_base *rootItem;
-		pki_base *treeItem;
 
 	public:
 		void restart_timer();
-		void updateItem(pki_base *pki, const QString &name,
-				const QString &comment);
+		void updateItem(pki_base *pki);
 
 		virtual pki_base *newPKI(enum pki_type type = none);
 		db_base(const char *classname);
@@ -64,21 +65,21 @@ class db_base: public QAbstractItemModel
 		virtual void remFromCont(const QModelIndex &idx);
 		void changeView();
 		int exportFlags(const QModelIndexList &indexes) const;
-		virtual int exportFlags(const QModelIndex &index) const
+		virtual int exportFlags(const QModelIndex &) const
 		{
 			return 0;
 		}
-		virtual void exportItem(const QModelIndex &index,
-			const pki_export *xport, XFile &file) const { };
+		virtual void exportItem(const QModelIndex &,
+			const pki_export *, XFile &) const { };
 		virtual void exportItems(const QModelIndexList &indexes,
 			const pki_export *xport, XFile &file) const;
 
 		void dump(const QString &dirname) const;
 		QModelIndex index(int row, int column,
-				const QModelIndex &parent) const;
+				const QModelIndex &parent = QModelIndex()) const;
 		QModelIndex index(pki_base *pki) const;
 		QModelIndex parent(const QModelIndex &index) const;
-		int rowCount(const QModelIndex &parent) const;
+		int rowCount(const QModelIndex &parent = QModelIndex()) const;
 		int allItemsCount() const
 		{
 			return rootItem->childCount();
@@ -137,6 +138,8 @@ class db_base: public QAbstractItemModel
 		void columnResetDefaults();
 		void sectionResized(int i, int, int newSize);
 		void sortIndicatorChanged(int, Qt::SortOrder);
+		void setSelected(const QVariant &v);
+		void timerMaintenance();
 
 	signals:
 		void resetHeader() const;

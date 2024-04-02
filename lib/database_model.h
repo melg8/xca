@@ -25,11 +25,14 @@ class database_model: public QObject
 	Q_OBJECT
 
 	private:
-		QList<db_base*> models;
-		int dbTimer;
+		QList<db_base*> models{};
+		int dbTimer{};
+		QString dbName{};
+		QString db_provider{};
 		void openSqlDB();
+
 		QSqlError initSqlDB();
-		QString dbName;
+		const QString &detect_provider();
 		bool checkForOldDbFormat(const QString &dbfile) const;
 		enum open_result verifyOldDbPass(const QString &dbname) const;
 		void importOldDatabase(const QString &dbfile);
@@ -72,7 +75,7 @@ class database_model: public QObject
 				if (m)
 					return m;
 			}
-			return NULL;
+			return nullptr;
 		}
 		pki_base *insert(pki_base *pki);
 
@@ -87,10 +90,10 @@ class database_model: public QObject
 class xca_db
 {
 	private:
-		database_model *db;
+		database_model *db{};
 
 	public:
-		xca_db() : db(nullptr) { }
+		xca_db() { }
 		~xca_db()
 		{
 			close();

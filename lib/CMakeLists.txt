@@ -1,7 +1,7 @@
 
 list(APPEND xcadoc_sources arguments.cpp arguments.h xcadoc.cpp)
 
-list(APPEND xca_sources
+list(APPEND xcalib_sources
 BioByteArray.cpp	dbhistory.cpp		pki_key.cpp
 BioByteArray.h		dbhistory.h		pki_key.h
 Passwd.cpp		entropy.cpp		pki_lookup.h
@@ -13,8 +13,8 @@ asn1int.h		headerlist.h		pki_pkcs7.cpp
 asn1time.cpp		ipvalidator.h		pki_pkcs7.h
 asn1time.h		load_obj.cpp		pki_scard.cpp
 base.h			load_obj.h		pki_scard.h
-builtin_curves.cpp	main.cpp		pki_temp.cpp
-builtin_curves.h	main.h			pki_temp.h
+builtin_curves.cpp	pki_temp.cpp
+builtin_curves.h	pki_temp.h
 database_model.cpp	oid.cpp			pki_x509.cpp
 database_model.h	oid.h			pki_x509.h
 db_base.cpp		opensc-pkcs11.h		pki_x509req.cpp
@@ -36,14 +36,39 @@ db_x509super.h		pki_evp.h		xfile.h
 dhgen.cpp		dhgen.h			XcaProgress.cpp
 XcaProgress.h		XcaWarningCore.cpp	XcaWarningCore.h
 PwDialogCore.cpp	PwDialogCore.h		digest.h
-digest.cpp		pki_export.cpp
+digest.cpp		pki_export.cpp		debug_info.h
+func_base.cpp		func_base.h		debug_info.cpp
+cmdline.cpp
 )
 
-list(TRANSFORM xca_sources PREPEND ${PROJECT_SOURCE_DIR}/lib/)
-list(TRANSFORM xcadoc_sources PREPEND ${PROJECT_SOURCE_DIR}/lib/)
+macro(ExpandSources target)
+  list(TRANSFORM ${target}_sources PREPEND ${PROJECT_SOURCE_DIR}/lib/)
+  list(APPEND ${target} ${PROJECT_BINARY_DIR}/local.h)
+  target_sources(${target} PRIVATE ${${target}_sources})
+endmacro()
 
-list(APPEND xca_sources ${PROJECT_BINARY_DIR}/local.h)
-list(APPEND xcadoc_sources ${PROJECT_BINARY_DIR}/local.h)
+ExpandSources(xcalib)
+ExpandSources(xcadoc)
 
-target_sources(${CMAKE_PROJECT_NAME} PRIVATE ${xca_sources})
-target_sources(xcadoc PRIVATE ${xcadoc_sources})
+macro(Test name)
+  set(${name}_sources ${ARGN})
+  add_executable(${name} ${name}.cpp)
+  ExpandSources(${name})
+  target_link_libraries(${name} PRIVATE
+    OpenSSL::Crypto ${QT}::Core ${QT}::Test ${QT}::Sql ${ASAN_LIB}
+  )
+  add_test(NAME ${name} COMMAND ${name})
+  set_target_properties(${name} PROPERTIES MACOSX_BUNDLE FALSE)
+  add_dependencies(tests ${name})
+  set_tests_properties(${name} PROPERTIES LABELS "console;lib")
+endmacro()
+
+if(BUILD_TESTING)
+  Test(test_biobytearray BioByteArray.cpp BioByteArray.h)
+  Test(test_asn1int asn1int.cpp asn1int.h func_base.h func_base.cpp)
+  Test(test_asn1time asn1time.cpp asn1time.h func_base.h func_base.cpp)
+  Test(test_entropy entropy.cpp entropy.h func.h func_base.cpp xfile.h)
+  Test(test_x509name x509name.cpp x509name.h func_base.h func_base.cpp
+                                    BioByteArray.h BioByteArray.cpp )
+  Test(test_digest digest.cpp digest.h func_base.cpp func_base.h)
+endif()

@@ -34,6 +34,8 @@ const QList<arg_option> arguments::opts = {
 		"Save OpenSSL index in <file>."),
 	arg_option("import", NULL, no_argument, false, true,
 		"Import all provided items into the database."),
+	arg_option("import-names", NULL, required_argument, false, true,
+		"A semicolon separated list of names applied to the imported items in the order found in the PEM file and on the commandline."),
 	arg_option("issuers", NULL, no_argument, true, true,
 		"Print all known issuer certificates that have an associated private key and the CA basic constraints set to 'true'."),
 	arg_option("keygen", "type", required_argument, true, true,
@@ -47,7 +49,7 @@ const QList<arg_option> arguments::opts = {
 	arg_option("no-gui", NULL, no_argument, true, false,
 		"Do not start the GUI. Alternatively set environment variable XCA_NO_GUI=1 or call xca as 'xca-console' symlink."),
 	arg_option("password", "password", required_argument, false, false,
-		"Database password for unlocking the database."),
+		"Database password for unlocking the database. See below for password format options."),
 	arg_option("pem", NULL, no_argument, true, false,
 		"Print PEM representation of provided files. Prints only the public part of private keys."),
 	arg_option("print", NULL, no_argument, true, false,
@@ -55,11 +57,11 @@ const QList<arg_option> arguments::opts = {
 	arg_option("select", "id-list", required_argument, true, true,
 		"Selects all items in the comma separated id-list to be shown with 'print', 'text' or 'pem'."),
 	arg_option("sqlpass", "password", required_argument, false, false,
-		"Password to access the remote SQL server."),
+		"Password to access the remote SQL server. See below for password format options."),
 	arg_option("text", NULL, no_argument, true, false,
 		"Print the content of provided files as OpenSSL does."),
 	arg_option("verbose", NULL, no_argument, false, false,
-		"Print debug log on stderr. Alternatively set the environment variable XCA_DEBUG=1."),
+		"Print debug log on stderr. Same as setting XCA_DEBUG=all. See XCA_DEBUG"),
 	arg_option("version", NULL, no_argument, true, false,
 		"Print version information and exit."),
 };
@@ -84,7 +86,10 @@ arg_option::arg_option(const char *l, const char *a, int has,
 
 QCommandLineOption arg_option::getCmdOption() const
 {
-	return QCommandLineOption(long_opt, help);
+	switch (arg_type) {
+	case no_argument: return QCommandLineOption(long_opt, help);
+	default: return QCommandLineOption(long_opt, help, long_opt);
+	}
 }
 
 static QString splitQstring(int offset, int width, const QString &text)
@@ -266,7 +271,6 @@ int arguments::parse(int argc, char *argv[])
 
 arguments::arguments(int argc, char *argv[])
 {
-	need_db = false;
 	parse(argc, argv);
 }
 

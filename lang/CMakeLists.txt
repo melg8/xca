@@ -2,22 +2,19 @@
 set(S "${PROJECT_SOURCE_DIR}/lang")
 set(D "${PROJECT_BINARY_DIR}")
 
-list(APPEND XCA_LANGUAGES id hr nl pt_BR zh_CN fa)
-list(APPEND XCAQM_LANGUAGES de fr ja pl ru tr es it sk)
+list(APPEND XCA_QT_LANGUAGES de fr ja pl ru tr es it sk bg)
+list(APPEND XCA_LANGUAGES id hr nl pt_BR zh_CN fa ${XCA_QT_LANGUAGES})
+list(JOIN XCA_LANGUAGES "</string>\n		<string>" LANGUAGES_PLIST)
 
-foreach(lang ${XCA_LANGUAGES} ${XCAQM_LANGUAGES})
-  list(APPEND TS_FILES ${S}/xca_${lang}.ts)
-endforeach()
-
-foreach(lang ${XCA_LANGUAGES} ${XCAQM_LANGUAGES})
+foreach(lang ${XCA_LANGUAGES})
   guid(${lang})
+  list(APPEND TS_FILES ${S}/xca_${lang}.ts)
   list(APPEND LANG_COMPREFS "  <ComponentRef Id=\"Ci18n.${lang}\"/>\n")
   set(LANG_COMPS "  <Component Id=\"Ci18n.${lang}\" Guid=\"${GUID}\">
     <File Id=\"xca_${lang}.qm\" Source=\"${D}/xca_${lang}.qm\" KeyPath=\"yes\"/>\n")
-  if(${lang} IN_LIST XCAQM_LANGUAGES AND
-     EXISTS ${_qt_bin_dir}/../translations/qt_${lang}.qm
-  )
-    string(APPEND LANG_COMPS "    <File Id=\"qt_${lang}.qm\" Source=\"${D}/translations/qt_${lang}.qm\"/>\n")
+  if(EXISTS ${_qt_bin_dir}/../translations/qt_${lang}.qm)
+    list(APPEND QM_FILES ${_qt_bin_dir}/../translations/qt_${lang}.qm)
+    string(APPEND LANG_COMPS "    <File Id=\"qt_${lang}.qm\" Source=\"${_qt_bin_dir}/../translations/qt_${lang}.qm\"/>\n")
   endif()
   string(APPEND LANG_COMPS "  </Component>\n")
   list(APPEND LANG_ALLCOMPS ${LANG_COMPS})
@@ -29,17 +26,21 @@ string(APPEND WIX_LANG_CONTENT
 )
 
 WixFile(${D}/language.wxs ${WIX_LANG_CONTENT})
-if(NOT TRANS)
-  if (${QT_VERSION} VERSION_LESS 6.0.0)
-    qt5_add_translation(QM_FILES ${TS_FILES} OPTIONS -silent)
-  else()
-    qt_add_translation(QM_FILES ${TS_FILES} OPTIONS -silent)
-  endif()
+if (${QT_VERSION} VERSION_LESS 6.0.0 )
+  qt5_add_translation(QM_FILES ${TS_FILES} OPTIONS -silent)
+  message(STATUS "Updating translations from source with 'lupdate' only supprted with QT6")
+  target_sources(${CMAKE_PROJECT_NAME} PRIVATE ${QM_FILES})
+else()
+  get_target_property(LIBSRC xcalib SOURCES)
+  get_target_property(XCASRC xca SOURCES)
+  qt_add_translations(xca TS_FILES ${TS_FILES} ${S}/xca.ts
+			  LRELEASE_OPTIONS -silent
+			  QM_FILES_OUTPUT_VARIABLE QM_FILES
+			  SOURCES ${LIBSRC} ${XCASRC}
+  )
+  add_custom_target(trans DEPENDS xca_lupdate "${D}/xca.pot")
 endif()
 list(APPEND APP_RESOURCES ${QM_FILES})
-
-add_custom_target(translations DEPENDS ${QM_FILES})
-add_dependencies(${CMAKE_PROJECT_NAME} translations)
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE ${QM_FILES})
 
 if (UNIX AND NOT APPLE)
@@ -52,21 +53,13 @@ elseif(WIN32)
   )
 endif()
 
-find_program(LCONVERT lconvert)
-
-# cmake -DTRANS=1 ../xca && make trans
-if (LCONVERT AND TRANS)
+find_program(LCONVERT lconvert HINTS ${_qt_bin_dir})
+if (LCONVERT)
   add_custom_command(
-	OUTPUT "${S}/xca.pot"
-	COMMAND ${LCONVERT} -if ts -of po -i "${S}/xca.ts" -o "${S}/xca.pot"
+	OUTPUT "${D}/xca.pot"
+	COMMAND ${LCONVERT} -if ts -of po -i "${S}/xca.ts" -o "${D}/xca.pot"
+	COMMAND ${CMAKE_COMMAND} -E copy "${D}/xca.pot" "${S}/xca.pot"
 	DEPENDS "${S}/xca.ts"
 	COMMENT "Update POT file"
   )
-  if (${QT_VERSION} VERSION_LESS 6.0.0)
-    qt5_create_translation(CQM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
-  else()
-    qt_create_translation(CQM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
-  endif()
-
-  add_custom_target(trans DEPENDS ${CQM_FILES} "${S}/xca.pot")
 endif()

@@ -92,7 +92,7 @@ QList<nameEdit> NewX509::setupExplicitInputs(NIDlist nid_list,
 		}
 		label->setClickText(OBJ_nid2sn(nid));
 		connect(label, SIGNAL(doubleClicked(QString)),
-                        MainWindow::getResolver(), SLOT(searchOid(QString)));
+		        MainWindow::getResolver(), SLOT(searchOid(QString)));
 		edit = new QLineEdit(parent);
 		setupLineEditByNid(nid, edit);
 		edits << nameEdit(nid, edit, label);
@@ -110,9 +110,8 @@ QList<nameEdit> NewX509::setupExplicitInputs(NIDlist nid_list,
 	return edits;
 }
 
-NewX509::NewX509(QWidget *w) : QDialog(w ? w : mainwin)
+NewX509::NewX509(QWidget *w) : XcaDetail(w)
 {
-	int i;
 	QStringList keys;
 	db_key *keymodel = Database.model<db_key>();
 	db_x509req *reqmodel = Database.model<db_x509req>();
@@ -123,36 +122,36 @@ NewX509::NewX509(QWidget *w) : QDialog(w ? w : mainwin)
 	mainwin->helpdlg->register_ctxhelp_button(this, "wizard");
 
 	/* temporary storage for creating temporary X509V3_CTX */
-	ctx_cert = NULL;
-	pkiSource = generated;
 	foreach(int nid, distname_nid)
 		keys << QString(OBJ_nid2ln(nid));
 
 	tabnames = QStringList({
 		"wizard_src", "wizard_subject", "wizard_extensions",
 		"wizard_keyusage", "wizard_netscape", "wizard_advanced",
-		"comment"});
+		"wizard_comment"});
 	extDNlist->setKeys(keys);
 	extDNlist->setInfoLabel(extDNinfo);
 	connect(extDNlist->itemDelegateForColumn(1),
 		SIGNAL(setupLineEdit(const QString &, QLineEdit *)),
-		this, SLOT(setupExtDNwidget(const QString &, QLineEdit *)));
+		       this, SLOT(setupExtDNwidget(const QString &, QLineEdit *)));
 	connect(subAltName, SIGNAL(textChanged(const QString &)),
-                this, SLOT(checkSubAltName(const QString &)));
+	        this, SLOT(checkSubAltName(const QString &)));
 	connect(issAltName, SIGNAL(textChanged(const QString &)),
-                this, SLOT(checkIssAltName(const QString &)));
+	        this, SLOT(checkIssAltName(const QString &)));
 	connect(crlDist, SIGNAL(textChanged(const QString &)),
-                this, SLOT(checkCrlDist(const QString &)));
+	        this, SLOT(checkCrlDist(const QString &)));
 	connect(authInfAcc, SIGNAL(textChanged(const QString &)),
-                this, SLOT(checkAuthInfAcc(const QString &)));
-	connect(keymodel, SIGNAL(keyDone(pki_key*)),
-		this, SLOT(newKeyDone(pki_key*)));
-	connect(reqmodel, SIGNAL(pkiChanged(pki_base*)),
-		this, SLOT(itemChanged(pki_base*)));
+	        this, SLOT(checkAuthInfAcc(const QString &)));
+	if (keymodel)
+		connect(keymodel, SIGNAL(keyDone(pki_key*)),
+			this, SLOT(newKeyDone(pki_key*)));
+	if (reqmodel)
+		connect(reqmodel, SIGNAL(pkiChanged(pki_base*)),
+			this, SLOT(itemChanged(pki_base*)));
 
 	setWindowTitle(XCA_TITLE);
 
-	for (i=0; i<tabWidget->count(); i++) {
+	for (int i=0; i<tabWidget->count(); i++) {
 		tabWidget->widget(i)->setObjectName(tabnames[i]);
 		qDebug() << "TAB:" << i << tabWidget->tabText(i);
 	}
@@ -207,8 +206,8 @@ NewX509::NewX509(QWidget *w) : QDialog(w ? w : mainwin)
 	certList->setDisabled(true);
 	tabWidget->setCurrentIndex(0);
 	attrWidget->hide();
-	pt = none;
 	notAfter->setEndDate(true);
+	basicPath->setValidator(new QIntValidator(0, 1000, this));
 
 	QMap<int, QWidget*> nidWidget;
 	nidWidget[NID_subject_alt_name] = sanLbl;
@@ -238,7 +237,7 @@ NewX509::NewX509(QWidget *w) : QDialog(w ? w : mainwin)
 		QString tt = w->toolTip();
 
 		if (Settings["translate_dn"])
-                        text.swap(tooltip);
+			text.swap(tooltip);
 
 		if (!tt.isEmpty())
 			tooltip = QString("%1 (%2)").arg(tt).arg(tooltip);
@@ -377,6 +376,17 @@ void NewX509::setTemp(pki_temp *temp)
 	pt = tmpl;
 	fromTemplate(temp);
 	comment->setPlainText(temp->getComment());
+	connect_pki(temp);
+}
+
+void NewX509::disableAllButNameComment()
+{
+	tab_0->setEnabled(false);
+	tab_2->setEnabled(false);
+	tab_3->setEnabled(false);
+	tab_4->setEnabled(false);
+	distNameBox->setEnabled(false);
+	privKeyBox->setEnabled(false);
 }
 
 /* Initialize dialog for Certificate creation */
@@ -614,12 +624,12 @@ void NewX509::on_reqSubChange_clicked()
 	on_fromReqCB_clicked();
 }
 
-void NewX509::on_keyList_currentIndexChanged(const QString &)
+void NewX509::on_keyList_currentIndexChanged(int)
 {
 	switchHashAlgo();
 }
 
-void NewX509::on_reqList_currentIndexChanged(const QString &)
+void NewX509::on_reqList_currentIndexChanged(int)
 {
 	switchHashAlgo();
 }
@@ -651,28 +661,33 @@ void NewX509::on_showReqBut_clicked()
 
 QList<pki_x509req *> NewX509::getAllRequests() const
 {
-	return Database.model<db_x509req>()->getAllRequests();
+	db_x509req *db = Database.model<db_x509req>();
+	return db ? db->getAllRequests() : QList<pki_x509req *>();
 }
 
 QList<pki_x509*> NewX509::getAllIssuers() const
 {
-	return Database.model<db_x509>()->getAllIssuers();
+	db_x509 *db = Database.model<db_x509>();
+	return db ? db->getAllIssuers() : QList<pki_x509*>();
 }
 
 QList<pki_temp*> NewX509::getAllTempsAndPredefs() const
 {
-	return Database.model<db_temp>()->getPredefs() +
-			Store.getAll<pki_temp>();
+	db_temp *db = Database.model<db_temp>();
+	return db ? db->getPredefs() + Store.getAll<pki_temp>()
+				: QList<pki_temp*>();
 }
 
 QList<pki_key*> NewX509::getAllKeys() const
 {
-	return Database.model<db_key>()->getAllKeys();
+	db_key *db = Database.model<db_key>();
+	return db ? db->getAllKeys() : QList<pki_key*>();
 }
 
 QList<pki_key*> NewX509::getUnusedKeys() const
 {
-	return Database.model<db_key>()->getUnusedKeys();
+	db_key *db = Database.model<db_key>();
+	return db ? db->getUnusedKeys() : QList<pki_key*>();
 }
 
 void NewX509::itemChanged(pki_base* req)
@@ -683,6 +698,8 @@ void NewX509::itemChanged(pki_base* req)
 
 void NewX509::on_genKeyBut_clicked()
 {
+	if (!Database.isOpen())
+		return;
 	QString name = description->text();
 	if (name.isEmpty())
 		name = getX509name().getMostPopular();
@@ -938,30 +955,28 @@ void NewX509::on_adv_validate_clicked()
 
 void NewX509::checkIcon(const QString &text, int nid, QLabel *img)
 {
+	x509v3ext ext;
 	if (text.isEmpty()) {
 		img->clear();
 		return;
 	}
+	setupTmpCtx();
 	ign_openssl_error();
 	switch (nid) {
 	case NID_subject_alt_name:
-		getSubAltName();
+		ext = getSubAltName();
 		break;
 	case NID_issuer_alt_name:
-		getIssAltName();
+		ext = getIssAltName();
 		break;
 	case NID_crl_distribution_points:
-		getCrlDist();
+		ext = getCrlDist();
 		break;
 	case NID_info_access:
-		getAuthInfAcc();
+		ext = getAuthInfAcc();
 		break;
 	}
-	if (ign_openssl_error()) {
-		img->setPixmap(QPixmap(":warnIco"));
-		return;
-	}
-	img->setPixmap(QPixmap(":doneIco"));
+	img->setPixmap(ext.isValid() ? QPixmap(":doneIco") : QPixmap(":warnIco"));
 }
 
 void NewX509::checkSubAltName(const QString & text)
@@ -1057,7 +1072,7 @@ int NewX509::validateExtensions(QString nconf, QString &result)
 	el.clear();
 	if (fromReqCB->isChecked() && copyReqExtCB->isChecked()) {
 		req_el = getSelectedReq()->getV3ext();
-                for (int i=0; i<req_el.count(); i++) {
+		for (int i=0; i<req_el.count(); i++) {
 			if (ctx_cert && ctx_cert->addV3ext(req_el[i], true))
 				el += req_el[i];
 		}
@@ -1082,8 +1097,26 @@ int NewX509::validateExtensions(QString nconf, QString &result)
 		errtxt += "</ul>\n<hr>\n";
 		result = errtxt + result;
 	}
+	QString lineext;
+	if (!subAltName->text().isEmpty() && !getSubAltName().isValid())
+		lineext += "The Subject Alternative Name is invalid<br>\n";
+	if (!issAltName->text().isEmpty() && !getIssAltName().isValid())
+		lineext += "The Issuer Alternative Name is invalid<br>\n";
+	if (!crlDist->text().isEmpty() && !getCrlDist().isValid())
+		lineext += "The CRL Distribution Point is invalid<br>\n";
+	if (!authInfAcc->text().isEmpty() && !getAuthInfAcc().isValid())
+		lineext += "The Authority Information Access is invalid<br>\n";
+	if (!lineext.isEmpty()) {
+		if (!result.isEmpty())
+			result += "\n<hr>\n";
+		result += lineext;
+		ret = 3;
+	}
+	if (ret == 0 && ext_count == 0 && pt == x509)
+		ret = 2;
+
 	ign_openssl_error();
-	return ret == 1 ? 1 : ext_count == 0 && pt == x509 ? 2 : 0;
+	return ret;
 }
 
 void NewX509::on_editSubAlt_clicked()
@@ -1150,7 +1183,7 @@ QString NewX509::mandatoryDnRemain()
 void NewX509::gotoTab(int tab)
 {
 	for (int i=0; i<tabWidget->count(); i++) {
-		if (tabWidget->tabText(i) == tabnames[tab]) {
+		if (tabWidget->widget(i)->objectName() == tabnames[tab]) {
 			tabWidget->setCurrentIndex(i);
 			break;
 		}
@@ -1285,7 +1318,7 @@ void NewX509::accept()
 			reject();
 		}
 		return;
-        }
+	}
 	if (hashAlgo->count() > 0 && hashAlgo->current().isInsecure()) {
 		gotoTab(0);
 		xcaWarningBox msg(this, tr("The currently selected hash algorithm '%1' is insecure and should not be used.").arg(hashAlgo->current().name()));
@@ -1362,12 +1395,19 @@ void NewX509::accept()
 	int r = do_validateExtensions();
 	if (r) {
 		QString text;
-		if (r == 1) {
+		switch (r) {
+		case 1:
 			text = tr("The certificate contains invalid or duplicate extensions. Check the validation on the advanced tab.");
 			gotoTab(5);
-		} else {
+			break;
+		case 2:
 			text = tr("The certificate contains no extensions. You may apply the extensions of one of the templates to define the purpose of the certificate.");
 			gotoTab(0);
+			break;
+		case 3:
+			text = tr("The certificate contains invalid extensions.");
+			gotoTab(2);
+			break;
 		}
 		xcaWarningBox msg(this, text);
 		msg.addButton(QMessageBox::Ok, tr("Edit extensions"));
@@ -1405,5 +1445,16 @@ void NewX509::accept()
 				break;
 		}
 	}
-	QDialog::accept();
+	XcaDetail::accept();
+}
+
+void NewX509::showTemp(QWidget *parent, pki_temp *x)
+{
+	if (!x)
+		return;
+	NewX509 *dlg = new NewX509(parent);
+	dlg->setTemp(x);
+	dlg->disableAllButNameComment();
+	dlg->exec();
+	delete dlg;
 }

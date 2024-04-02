@@ -17,6 +17,7 @@
 
 #include <QObject>
 #include <QLocale>
+#include <QTimeZone>
 
 /* As defined in rfc-5280  4.1.2.5 */
 #define UNDEFINED_DATE "99991231235959Z"
@@ -33,7 +34,7 @@ a1time &a1time::setUndefined()
 {
 	/* This way we handle "Jan 01, 1970 00:00:00"
 	 * like RFC-5280 undefined date. I dare it */
-	setTimeSpec(Qt::UTC);
+	setTimeZone(QTimeZone::utc());
 	setSecsSinceEpoch(0);
 	return *this;
 }
@@ -56,16 +57,16 @@ int a1time::from_asn1(const ASN1_TIME *a)
 
 int a1time::fromPlain(const QString &plain)
 {
-	setTimeSpec(Qt::LocalTime);
+	setTimeZone(QTimeZone::systemTimeZone());
 	if (plain == UNDEFINED_DATE)
 		setUndefined();
 	else
 		*this = fromString(plain, GEN_FORMAT);
-	setTimeSpec(Qt::UTC);
+	setTimeZone(QTimeZone::utc());
 	return isValid() ? 0 : -1;
 }
 
-int a1time::set_asn1(const QString &str, int type)
+int a1time::set_asn1(const QString &str, int type) const
 {
 	if (!atime)
 		atime = ASN1_TIME_new();
@@ -77,42 +78,26 @@ int a1time::set_asn1(const QString &str, int type)
 	return 0;
 }
 
-a1time::a1time(const QDateTime &a)
-	: QDateTime(a)
-{
-	atime = NULL;
-}
-
-a1time::a1time(const a1time &a)
-	: QDateTime(a)
-{
-	atime = NULL;
-}
-
 a1time &a1time::operator = (const a1time &a)
 {
 	if (atime)
 		ASN1_TIME_free(atime);
-	atime = NULL;
 	QDateTime::operator=(a);
 	return *this;
 }
 
 a1time::a1time()
 {
-	atime = NULL;
 	*this = now();
 }
 
 a1time::a1time(const ASN1_TIME *a)
 {
-	atime = NULL;
 	from_asn1(a);
 }
 
 a1time::a1time(const QString &plain)
 {
-	atime = NULL;
 	fromPlain(plain);
 }
 
@@ -122,7 +107,7 @@ a1time::~a1time()
 		ASN1_TIME_free(atime);
 }
 
-ASN1_TIME *a1time::get_utc()
+const ASN1_TIME *a1time::get_utc() const
 {
 	int year = date().year();
 
@@ -133,7 +118,7 @@ ASN1_TIME *a1time::get_utc()
 	return atime;
 }
 
-ASN1_TIME *a1time::get()
+const ASN1_TIME *a1time::get() const
 {
 	if (isUndefined())
 		set_asn1(UNDEFINED_DATE, V_ASN1_GENERALIZEDTIME);
@@ -243,8 +228,7 @@ void a1time::d2i(QByteArray &ba)
 	}
 }
 
-QByteArray a1time::i2d()
+QByteArray a1time::i2d() const
 {
-	get();
-	return i2d_bytearray(I2D_VOID(i2d_ASN1_TIME), atime);
+	return i2d_bytearray(I2D_VOID(i2d_ASN1_TIME), get());
 }

@@ -41,20 +41,30 @@ void waitcursor(int start, int line)
 }
 
 pkcs11_lib_list pkcs11::libraries;
+int pkcs11::pctr;
 
 pkcs11::pkcs11()
 {
 	session = CK_INVALID_HANDLE;
 	p11obj = CK_INVALID_HANDLE;
+	qDebug() << "PKCS11 Counter"<< ++pctr;
 }
 
 pkcs11::~pkcs11()
 {
-	if (session != CK_INVALID_HANDLE && p11slot.p11()) {
+	try { closeSession(p11slot); } catch ( ... ) { }
+	qDebug() << "PKCS11 Counter"<< --pctr;
+}
+
+void pkcs11::closeSession(const slotid &slot)
+{
+	if (session != CK_INVALID_HANDLE && slot.p11()) {
 		CK_RV rv;
 		CALL_P11_C(p11slot.lib, C_CloseSession, session);
-		(void)rv;
+		if (rv != CKR_OK)
+			pk11error(slot, "C_CloseSession", rv);
 	}
+	session = CK_INVALID_HANDLE;
 }
 
 void pkcs11::startSession(const slotid &slot, bool rw)
@@ -62,12 +72,8 @@ void pkcs11::startSession(const slotid &slot, bool rw)
 	CK_RV rv;
 	unsigned long flags = CKF_SERIAL_SESSION | (rw ? CKF_RW_SESSION : 0);
 
-	if (session != CK_INVALID_HANDLE) {
-		CALL_P11_C(slot.lib, C_CloseSession, session);
-		session = CK_INVALID_HANDLE;
-		if (rv != CKR_OK)
-			pk11error(slot, "C_CloseSession", rv);
-	}
+	closeSession(slot);
+
 	CALL_P11_C(slot.lib, C_OpenSession,
 			slot.id, flags, NULL, NULL, &session);
 	if (rv != CKR_OK)
@@ -215,7 +221,13 @@ static QDialog *newPinPadBox()
 	return box;
 }
 
-QString pkcs11::tokenLogin(QString name, bool so, bool force)
+bool pkcs11::tokenLoginForModification()
+{
+	 tkInfo ti = tokenInfo();
+	 return !tokenLogin(ti.label(), ti.need_SO_for_object_mod()).isNull();
+}
+
+QString pkcs11::tokenLogin(const QString &name, bool so, bool force)
 {
 	Passwd pin;
 	bool need_login;
@@ -348,13 +360,11 @@ void pkcs11::initPin(const slotid &slot)
 {
 	Passwd newPin, pinp;
 	int ret = 1;
-	QString pin;
 
 	startSession(slot, true);
 	tkInfo ti = tokenInfo();
 
-	pin = tokenLogin(ti.label(), true, false);
-	if (pin.isNull())
+	if (tokenLogin(ti.label(), true, false).isNull())
 		return;
 
 	pass_info p(XCA_TITLE, newPinTxt.arg(ti.label()) + "\n" + ti.pinInfo());
@@ -389,7 +399,7 @@ void pkcs11::initToken(const slotid &slot, unsigned char *pin, int pinlen,
 		pk11error(slot, "C_InitToken", rv);
 }
 
-tkInfo pkcs11::tokenInfo(const slotid &slot)
+tkInfo pkcs11::tokenInfo(const slotid &slot) const
 {
 	tkInfo ti;
 	CK_RV rv = tokenInfo(slot, &ti);
@@ -400,7 +410,7 @@ tkInfo pkcs11::tokenInfo(const slotid &slot)
 	return ti;
 }
 
-CK_RV pkcs11::tokenInfo(const slotid &slot, tkInfo *tkinfo)
+CK_RV pkcs11::tokenInfo(const slotid &slot, tkInfo *tkinfo) const
 {
 	CK_TOKEN_INFO token_info;
 	CK_RV rv;
@@ -452,7 +462,7 @@ int pkcs11::deleteObjects(QList<CK_OBJECT_HANDLE> objects)
 }
 
 #define ID_LEN 8
-pk11_attr_data pkcs11::findUniqueID(unsigned long oclass)
+pk11_attr_data pkcs11::findUniqueID(unsigned long oclass) const
 {
 	pk11_attr_data id(CKA_ID);
 	pk11_attr_ulong class_att(CKA_CLASS, oclass);
@@ -470,20 +480,19 @@ pk11_attr_data pkcs11::findUniqueID(unsigned long oclass)
 }
 
 pk11_attr_data pkcs11::generateKey(QString name, unsigned long mech,
-				unsigned long bits, int nid)
+				unsigned long bits, int nid, const pk11_attr_data &id)
 {
 #ifdef OPENSSL_NO_EC
 	(void)nid;
 #endif
+	tkInfo ti = tokenInfo();
 	CK_RV rv;
 	CK_OBJECT_HANDLE pubkey, privkey, dsa_param_obj;
 	pk11_attlist priv_atts, pub_atts, dsa_param;
 	CK_MECHANISM mechanism = {mech, NULL_PTR, 0};
 	pk11_attr_data label(CKA_LABEL, name.toUtf8());
 
-	pk11_attr_data new_id = findUniqueID(CKO_PUBLIC_KEY);
-
-	pub_atts << label << new_id <<
+	pub_atts << label << id <<
 		pk11_attr_ulong(CKA_CLASS, CKO_PUBLIC_KEY) <<
 		pk11_attr_bool(CKA_TOKEN, true) <<
 		pk11_attr_bool(CKA_PRIVATE, false) <<
@@ -491,7 +500,7 @@ pk11_attr_data pkcs11::generateKey(QString name, unsigned long mech,
 		pk11_attr_bool(CKA_VERIFY, true) <<
 		pk11_attr_bool(CKA_WRAP, true);
 
-	priv_atts << label << new_id <<
+	priv_atts << label << id <<
 		pk11_attr_ulong(CKA_CLASS, CKO_PRIVATE_KEY) <<
 		pk11_attr_bool(CKA_TOKEN, true) <<
 		pk11_attr_bool(CKA_PRIVATE, true) <<
@@ -499,8 +508,6 @@ pk11_attr_data pkcs11::generateKey(QString name, unsigned long mech,
 		pk11_attr_bool(CKA_DECRYPT, true) <<
 		pk11_attr_bool(CKA_SIGN, true) <<
 		pk11_attr_bool(CKA_UNWRAP, true);
-
-	QString mID = tokenInfo().manufacturerID();
 
 	switch (mech) {
 	case CKM_RSA_PKCS_KEY_PAIR_GEN:
@@ -512,17 +519,10 @@ pk11_attr_data pkcs11::generateKey(QString name, unsigned long mech,
 		//DSA: Spec Page 191 (175) C_GenerateKey
 		CK_MECHANISM mechanism = {CKM_DSA_PARAMETER_GEN, NULL_PTR, 0};
 
-		// nCipher Attributes
-		// as on 10/26/2015 - Thales' PKCS11 provider has
-		// issue to generate Domain Parameters
-		bool token = true;
-		if (mID == "nCipher Corp. Ltd")
-			token = false;
-
 		dsa_param << label <<
 			pk11_attr_ulong(CKA_CLASS, CKO_DOMAIN_PARAMETERS) <<
 			pk11_attr_ulong(CKA_KEY_TYPE, CKK_DSA) <<
-			pk11_attr_bool(CKA_TOKEN, token) <<
+			pk11_attr_bool(CKA_TOKEN, !ti.set_token_attr_false_dsa_param()) <<
 			pk11_attr_bool(CKA_PRIVATE, false) <<
 			pk11_attr_ulong(CKA_PRIME_BITS, bits);
 		p11slot.isValid();
@@ -547,13 +547,9 @@ pk11_attr_data pkcs11::generateKey(QString name, unsigned long mech,
 
 		EC_GROUP *group = EC_GROUP_new_by_curve_name(nid);
 
-		EC_GROUP_set_asn1_flag(group, info.flags & CKF_EC_NAMEDCURVE ?
-			OPENSSL_EC_NAMED_CURVE : 0);
-
-		// Workaround for "www.CardContact.de" bug
-		if (mID == "www.CardContact.de") {
-			EC_GROUP_set_asn1_flag(group, OPENSSL_EC_NAMED_CURVE);
-		}
+		EC_GROUP_set_asn1_flag(group,
+			((info.flags & CKF_EC_NAMEDCURVE) || ti.force_keygen_named_curve()) ?
+				OPENSSL_EC_NAMED_CURVE : 0);
 
 		priv_atts << pk11_attr_bool(CKA_DERIVE, false);
 		pub_atts << pk11_attr_data(CKA_EC_PARAMS,
@@ -573,10 +569,10 @@ pk11_attr_data pkcs11::generateKey(QString name, unsigned long mech,
 	if (rv != CKR_OK) {
 		pk11error("C_GenerateKeyPair", rv);
 	}
-	return new_id;
+	return id;
 }
 
-QList<CK_OBJECT_HANDLE> pkcs11::objectList(pk11_attlist &atts)
+QList<CK_OBJECT_HANDLE> pkcs11::objectList(pk11_attlist &atts) const
 {
 	CK_RV rv;
 	CK_OBJECT_HANDLE objects[256];
@@ -654,6 +650,7 @@ int pkcs11::encrypt(int flen, const unsigned char *from,
 	return size;
 }
 
+#if not defined OPENSSL_NO_EC and defined EVP_PKEY_ED25519
 // Shared between libressl and openssl
 static int eng_idx = -1;
 static int eng_finish(ENGINE *e)
@@ -674,8 +671,8 @@ static int eng_pmeth_copy(EVP_PKEY_CTX *dst, EVP_PKEY_CTX *src)
 	EVP_PKEY_CTX_set_app_data(dst,  p);
 	return 1;
 }
+#endif
 
-#ifndef LIBRESSL_VERSION_NUMBER
 static int rsa_privdata_free(RSA *rsa)
 {
 	pkcs11 *priv = (pkcs11*)RSA_get_app_data(rsa);
@@ -833,8 +830,6 @@ static EC_KEY_METHOD *setup_ec_key_meth()
 				ec_set_private_proc, ec_set_public_proc);
 	return ec_key_meth;
 }
-#endif
-
 #ifdef EVP_PKEY_ED25519
 
 static EVP_PKEY_METHOD *p11_eddsa_method;
@@ -864,13 +859,19 @@ static int eng_pmeth_sign_eddsa(EVP_MD_CTX *ctx,
 			const unsigned char *tbs, size_t tbslen)
 {
 	int len, ret = -1;
-	unsigned char rs_buf[512];
+	unsigned char rs_buf[64];
 	EVP_PKEY *pkey = EVP_PKEY_CTX_get0_pkey(EVP_MD_CTX_pkey_ctx(ctx));
 	pkcs11 *p11 = (pkcs11 *)ENGINE_get_ex_data(EVP_PKEY_get0_engine(pkey), eng_idx);
+	*siglen = EVP_PKEY_size(pkey);
+	if (sig == NULL) {
+	    // caller needs only size
+	    ret = 1;
+	    goto out;
+	}
 
 	// siglen is unsigned and can' cope with -1 as return value
 	len = p11->encrypt(tbslen, tbs, rs_buf, sizeof rs_buf, CKM_EDDSA);
-	if (len & 0x01) // Must be even
+	if ((len & 0x01) || (*siglen != (size_t)len)) // Must be even
 		goto out;
 	memcpy(sig, rs_buf, len);
 	*siglen = len;
@@ -880,7 +881,7 @@ static int eng_pmeth_sign_eddsa(EVP_MD_CTX *ctx,
 	return ret;
 }
 
-static int eng_pmeth_ctrl_eddsa(EVP_PKEY_CTX *ctx, int type, int p1, void *p2)
+static int eng_pmeth_ctrl_eddsa(EVP_PKEY_CTX *, int type, int p1, void *p2)
 {
 	(void)p1;
 	switch (type) {
@@ -894,6 +895,7 @@ static int eng_pmeth_ctrl_eddsa(EVP_PKEY_CTX *ctx, int type, int p1, void *p2)
 	return -2;
 }
 #endif
+#endif
 
 EVP_PKEY *pkcs11::getPrivateKey(EVP_PKEY *pub, CK_OBJECT_HANDLE obj)
 {
@@ -902,7 +904,6 @@ EVP_PKEY *pkcs11::getPrivateKey(EVP_PKEY *pub, CK_OBJECT_HANDLE obj)
 #ifndef OPENSSL_NO_EC
 	static EC_KEY_METHOD *ec_key_meth = NULL;
 	EC_KEY *ec;
-#endif
 #ifdef EVP_PKEY_ED25519
 	static ENGINE *e = NULL;
 
@@ -930,6 +931,7 @@ EVP_PKEY *pkcs11::getPrivateKey(EVP_PKEY *pub, CK_OBJECT_HANDLE obj)
 			EVP_PKEY_meth_set_copy(p11_eddsa_method, eng_pmeth_copy);
 		}
 	}
+#endif
 #endif
 	RSA *rsa;
 	DSA *dsa;
@@ -986,7 +988,6 @@ EVP_PKEY *pkcs11::getPrivateKey(EVP_PKEY *pub, CK_OBJECT_HANDLE obj)
 		openssl_error();
 		EVP_PKEY_assign_EC_KEY(evp, ec);
 		break;
-#endif
 #ifdef EVP_PKEY_ED25519
 	case EVP_PKEY_ED25519:
 		size_t len;
@@ -1004,322 +1005,7 @@ EVP_PKEY *pkcs11::getPrivateKey(EVP_PKEY *pub, CK_OBJECT_HANDLE obj)
 		//EVP_PKEY_set1_engine(evp, e);
 		break;
 #endif
+#endif
 	}
 	return evp;
 }
-#else
-
-static EVP_PKEY_METHOD *p11_rsa_method;
-static EVP_PKEY_METHOD *p11_dsa_method;
-#ifndef OPENSSL_NO_EC
-static EVP_PKEY_METHOD *p11_ec_method;
-#endif
-
-static int eng_pmeth_ctrl_rsa(EVP_PKEY_CTX *ctx, int type, int p1, void *p2)
-{
-	switch (type) {
-	case EVP_PKEY_CTRL_RSA_PADDING:
-		return p1 == RSA_PKCS1_PADDING ? 1 : -2;
-#ifndef OPENSSL_NO_EC
-	case EVP_PKEY_CTRL_GET_RSA_PADDING:
-		*(int *)p2 = RSA_PKCS1_PADDING;
-		return 1;
-#endif
-	case EVP_PKEY_CTRL_MD:
-		EVP_PKEY_CTX_set_data(ctx, p2);
-		return 1;
-	case EVP_PKEY_CTRL_DIGESTINIT:
-		return 1;
-	}
-	return -2;
-}
-
-static int eng_pmeth_ctrl_dsa(EVP_PKEY_CTX *ctx, int type, int p1, void *p2)
-{
-	(void)p1;
-	switch (type) {
-	case EVP_PKEY_CTRL_MD:
-		EVP_PKEY_CTX_set_data(ctx, NULL);
-		switch (EVP_MD_type((const EVP_MD *)p2)) {
-		case NID_sha1:
-		case NID_sha256:
-			EVP_PKEY_CTX_set_data(ctx, p2);
-			return 1;
-		}
-		EVP_PKEY_CTX_set_data(ctx, p2);
-		return 0;
-	case EVP_PKEY_CTRL_DIGESTINIT:
-		return 1;
-	}
-	return -2;
-}
-
-#ifndef OPENSSL_NO_EC
-static int eng_pmeth_ctrl_ec(EVP_PKEY_CTX *ctx, int type, int p1, void *p2)
-{
-	(void)p1;
-	switch (type) {
-	case EVP_PKEY_CTRL_MD:
-		EVP_PKEY_CTX_set_data(ctx, NULL);
-		switch (EVP_MD_type((const EVP_MD *)p2)) {
-		case NID_ecdsa_with_SHA1:
-			qDebug() << __func__
-				<< "NID_ecdsa_with_SHA1 unexpected";
-			/* fallthrough */
-		case NID_sha1:
-		case NID_sha224:
-		case NID_sha256:
-		case NID_sha384:
-		case NID_sha512:
-			EVP_PKEY_CTX_set_data(ctx, p2);
-			return 1;
-		}
-		return 0;
-	case EVP_PKEY_CTRL_DIGESTINIT:
-		return 1;
-	}
-	qWarning() << "EC Don't call me" << type;
-	return -2;
-}
-#endif
-
-static unsigned char *create_x509_sig(EVP_PKEY_CTX *ctx, const unsigned char *m,
-		size_t m_len, unsigned int *x509_siglen)
-{
-	X509_SIG sig;
-	ASN1_TYPE parameter;
-	X509_ALGOR algor;
-	ASN1_OCTET_STRING digest;
-	EVP_MD *md = (EVP_MD *)EVP_PKEY_CTX_get_data(ctx);
-	int i;
-	unsigned char *p, *tmps;
-
-	*x509_siglen = 0;
-
-	sig.algor = &algor;
-	sig.algor->algorithm = OBJ_nid2obj(EVP_MD_type(md));
-	if (!sig.algor->algorithm)
-		return NULL;
-	if (sig.algor->algorithm->length == 0)
-		return NULL;
-
-	parameter.type=V_ASN1_NULL;
-	parameter.value.ptr = NULL;
-	sig.algor->parameter= &parameter;
-
-	sig.digest = &digest;
-	sig.digest->data = (unsigned char *)m;
-	sig.digest->length = (unsigned int)m_len;
-
-	i = i2d_X509_SIG(&sig, NULL);
-	if (i <= 0)
-		return NULL;
-	p = tmps = (unsigned char *)malloc(i);
-	Q_CHECK_PTR(tmps);
-	if (i2d_X509_SIG(&sig, &p) <= 0) {
-		free(tmps);
-		return NULL;
-	}
-	*x509_siglen = i;
-	return tmps;
-}
-
-static int eng_pmeth_sign_rsa(EVP_PKEY_CTX *ctx,
-			unsigned char *sig, size_t *siglen,
-			const unsigned char *tbs, size_t tbslen)
-{
-	EVP_PKEY *pkey;
-	unsigned int x509_len;
-	unsigned char *sigbuf;
-	int len;
-
-	sigbuf = create_x509_sig(ctx, tbs, tbslen, &x509_len);
-	pkey = EVP_PKEY_CTX_get0_pkey(ctx);
-
-	if (EVP_PKEY_type(pkey->type) != EVP_PKEY_RSA)
-		return -1;
-
-	if ((int)x509_len > (RSA_size(pkey->pkey.rsa) - RSA_PKCS1_PADDING_SIZE))
-		return -1;
-
-	pkcs11 *p11 = (pkcs11 *)ENGINE_get_ex_data(pkey->engine, eng_idx);
-
-	// siglen is unsigned and can't cope with -1 as return value
-	len = p11->encrypt(x509_len, sigbuf, sig, *siglen, CKM_RSA_PKCS);
-	*siglen = len;
-	free(sigbuf);
-	return (len < 0) ? -1 : 1;
-}
-
-static int eng_pmeth_sign_dsa(EVP_PKEY_CTX *ctx,
-			unsigned char *sig, size_t *siglen,
-			const unsigned char *tbs, size_t tbslen)
-{
-	EVP_PKEY *pkey;
-	int len, rs_len, ret = -1;
-	unsigned char rs_buf[128];
-	DSA_SIG *dsa_sig = DSA_SIG_new();
-
-	pkey = EVP_PKEY_CTX_get0_pkey(ctx);
-
-	if (EVP_PKEY_type(pkey->type) != EVP_PKEY_DSA)
-		return -1;
-
-	pkcs11 *p11 = (pkcs11 *)ENGINE_get_ex_data(pkey->engine, eng_idx);
-
-	// siglen is unsigned and can't cope with -1 as return value
-	len = p11->encrypt(tbslen, tbs, rs_buf, sizeof rs_buf, CKM_DSA);
-	if (len & 0x01) // Must be even
-		goto out;
-
-	rs_len = len/2;
-	dsa_sig->r = BN_bin2bn(rs_buf, rs_len, NULL);
-	dsa_sig->s = BN_bin2bn(rs_buf + rs_len, rs_len, NULL);
-	if (!dsa_sig->s || !dsa_sig->r)
-		goto out;
-
-	len = i2d_DSA_SIG(dsa_sig, &sig);
-	openssl_error();
-	if (len <= 0)
-		goto out;
-	*siglen = len;
-	ret = 1;
-out:
-	DSA_SIG_free(dsa_sig);
-	ign_openssl_error();
-	return ret;
-}
-
-#ifndef OPENSSL_NO_EC
-static int eng_pmeth_sign_ec(EVP_PKEY_CTX *ctx,
-			unsigned char *sig, size_t *siglen,
-			const unsigned char *tbs, size_t tbslen)
-{
-	int len, rs_len, ret = -1;
-	unsigned char rs_buf[512];
-	ECDSA_SIG *ec_sig = ECDSA_SIG_new();
-
-	EVP_PKEY *pkey = EVP_PKEY_CTX_get0_pkey(ctx);
-	pkcs11 *p11 = (pkcs11 *)ENGINE_get_ex_data(pkey->engine, eng_idx);
-
-	// siglen is unsigned and can' cope with -1 as return value
-	len = p11->encrypt(tbslen, tbs, rs_buf, sizeof rs_buf, CKM_ECDSA);
-	if (len & 0x01) // Must be even
-		goto out;
-	/* The buffer contains r and s concatenated
-	 * Both of equal size
-	 * pkcs-11v2-20.pdf chapter 12.13.1, page 232
-	 */
-	rs_len = len/2;
-	if (!BN_bin2bn(rs_buf, rs_len, ec_sig->r))
-		goto out;
-	if (!BN_bin2bn(rs_buf + rs_len, rs_len, ec_sig->s))
-		goto out;
-	len = i2d_ECDSA_SIG(ec_sig, &sig);
-	if (len <= 0)
-		goto out;
-	*siglen = len;
-	ret = 1;
-out:
-	ECDSA_SIG_free(ec_sig);
-	ign_openssl_error();
-	return ret;
-}
-#endif
-
-static int eng_meths(ENGINE *e, EVP_PKEY_METHOD **m, const int **nids, int nid)
-{
-	static const int my_nids[] = { EVP_PKEY_EC, EVP_PKEY_RSA };
-	(void)e;
-	if (m) {
-		switch (nid) {
-#ifndef OPENSSL_NO_EC
-		case EVP_PKEY_EC:
-			*m = p11_ec_method;
-			return 1;
-#endif
-		case EVP_PKEY_RSA:
-			*m = p11_rsa_method;
-			return 1;
-		case EVP_PKEY_DSA:
-			*m = p11_dsa_method;
-			return 1;
-		}
-		return 0;
-	}
-	if (nids) {
-		*nids = my_nids;
-		return ARRAY_SIZE(my_nids);
-	}
-	return -1;
-}
-
-EVP_PKEY *pkcs11::getPrivateKey(EVP_PKEY *pub, CK_OBJECT_HANDLE obj)
-{
-	static ENGINE *e = NULL;
-
-	if (!e) {
-		e = ENGINE_new();
-		Q_CHECK_PTR(e);
-
-		ENGINE_set_pkey_meths(e, eng_meths);
-		ENGINE_set_finish_function(e, eng_finish);
-		if (eng_idx == -1)
-			eng_idx = ENGINE_get_ex_new_index(0, NULL, NULL, NULL, 0);
-		ENGINE_set_ex_data(e, eng_idx, NULL);
-
-		CRYPTO_add(&pub->references, 1, CRYPTO_LOCK_EVP_PKEY);
-		pub->engine = e;
-
-		if (!p11_rsa_method) {
-			p11_rsa_method = EVP_PKEY_meth_new(EVP_PKEY_RSA, 0);
-			EVP_PKEY_meth_set_sign(p11_rsa_method,
-					NULL, eng_pmeth_sign_rsa);
-			EVP_PKEY_meth_set_ctrl(p11_rsa_method,
-					eng_pmeth_ctrl_rsa, NULL);
-			EVP_PKEY_meth_set_copy(p11_rsa_method, eng_pmeth_copy);
-		}
-		if (!p11_dsa_method) {
-			p11_dsa_method = EVP_PKEY_meth_new(EVP_PKEY_RSA, 0);
-			EVP_PKEY_meth_set_sign(p11_dsa_method,
-					NULL, eng_pmeth_sign_dsa);
-			EVP_PKEY_meth_set_ctrl(p11_dsa_method,
-					eng_pmeth_ctrl_dsa, NULL);
-			EVP_PKEY_meth_set_copy(p11_dsa_method, eng_pmeth_copy);
-		}
-#ifndef OPENSSL_NO_EC
-		if (!p11_ec_method) {
-			p11_ec_method = EVP_PKEY_meth_new(EVP_PKEY_EC, 0);
-			EVP_PKEY_meth_set_sign(p11_ec_method,
-					 NULL, eng_pmeth_sign_ec);
-			EVP_PKEY_meth_set_ctrl(p11_ec_method,
-					eng_pmeth_ctrl_ec, NULL);
-			EVP_PKEY_meth_set_copy(p11_ec_method, eng_pmeth_copy);
-		}
-#endif
-	}
-	if (ENGINE_get_ex_data(e, eng_idx))
-		qWarning() << "Christian forgot to free the previous Card key. Blame him";
-
-	ENGINE_set_ex_data(e, eng_idx, this);
-	p11obj = obj;
-
-	switch (EVP_PKEY_type(pub->type)) {
-	case EVP_PKEY_RSA:
-	case EVP_PKEY_DSA:
-#ifndef OPENSSL_NO_EC
-	case EVP_PKEY_EC:
-#endif
-		/* The private key is a copy of the public
-		 * key with an engine attached
-		 */
-		QByteArray ba = i2d_bytearray(I2D_VOID(i2d_PUBKEY), pub);
-		EVP_PKEY *priv = (EVP_PKEY*)d2i_bytearray(D2I_VOID(d2i_PUBKEY), ba);
-		ENGINE_init(e);
-		priv->engine = e;
-		return priv;
-	}
-	return NULL;
-}
-
-#endif

@@ -64,7 +64,8 @@ void db_x509::loadContainer()
 			qDebug() << "MOVE" << cert->getIntName()
 				<< "from" << cert->getParent()->getIntName()
 				<< "to" << root->getIntName();
-			insertChild(cert, root);
+			treeItem->takeChild(cert);
+			root->insert(cert);
 		}
 	}
 	emit columnsContentChanged();
@@ -111,6 +112,8 @@ QList<pki_x509 *> db_x509::getAllIssuers()
 
 void db_x509::remFromCont(const QModelIndex &idx)
 {
+	if (!idx.isValid())
+		return;
 	db_crl *crls = Database.model<db_crl>();
 	db_x509super::remFromCont(idx);
 	pki_base *pki = fromIndex(idx);
@@ -118,11 +121,15 @@ void db_x509::remFromCont(const QModelIndex &idx)
 	pki_base *new_parent;
 	QList<pki_x509 *> childs;
 
+	Transaction;
+	if (!TransBegin())
+		return;
+
 	while (pki->childCount()) {
 		child = dynamic_cast<pki_x509*>(pki->takeFirst());
 		child->delSigner(dynamic_cast<pki_x509*>(pki));
 		new_parent = child->findIssuer();
-		insertChild(child);
+		insertChild(child, new_parent);
 		if (new_parent)
 			childs << child;
 	}
@@ -135,6 +142,7 @@ void db_x509::remFromCont(const QModelIndex &idx)
 		q.exec();
 	}
 	crls->removeSigner(pki);
+	TransCommit();
 }
 
 static bool recursiveSigning(pki_x509 *cert, pki_x509 *client)
@@ -156,7 +164,7 @@ static bool recursiveSigning(pki_x509 *cert, pki_x509 *client)
 void db_x509::inToCont(pki_base *pki)
 {
 	pki_x509 *cert = dynamic_cast<pki_x509*>(pki);
-	cert->setParent(NULL);
+	cert->setParent(nullptr);
 	pki_base *root = cert->getSigner();
 
 	insertChild(cert, root);
@@ -192,7 +200,7 @@ void db_x509::inToCont(pki_base *pki)
 		revList.merge(other->getRevList());
 	}
 	/* Search rootItem childs, whether they are ours */
-	foreach(pki_base *b, rootItem->getChildItems()) {
+	foreach(pki_base *b, treeItem->getChildItems()) {
 		pki_x509 *child = dynamic_cast<pki_x509*>(b);
 		if (!child || child == cert || child->getSigner() == child)
 			continue;
@@ -333,15 +341,6 @@ pki_base *db_x509::insert(pki_base *item)
 	return insertPKI(cert);
 }
 
-pki_x509 *db_x509::get1SelectedCert()
-{
-	QModelIndexList indexes = mainwin->certView->getSelectedIndexes();
-	QModelIndex index;
-	if (indexes.count())
-		index = indexes[0];
-	return fromIndex<pki_x509>(index);
-}
-
 void db_x509::markRequestSigned(pki_x509req *req, pki_x509 *cert)
 {
 	if (!req || !cert)
@@ -375,8 +374,9 @@ void db_x509::newItem()
 {
 	NewX509 *dlg = new NewX509();
 	dlg->setCert();
-	pki_x509 *sigcert = get1SelectedCert();
-	dlg->defineSigner((pki_x509*)sigcert, true);
+	pki_x509 *sigcert = Store.lookupPki<pki_x509>(selected);
+	qDebug() << "SIGCERT" << (sigcert ? sigcert->getIntName() : "NULLL");
+	dlg->defineSigner(sigcert, true);
 	if (dlg->exec()) {
 		newCert(dlg);
 	}
@@ -386,7 +386,8 @@ void db_x509::newItem()
 void db_x509::newCert(pki_x509req *req)
 {
 	NewX509 *dlg = new NewX509();
-	pki_x509 *sigcert = get1SelectedCert();
+	pki_x509 *sigcert = Store.lookupPki<pki_x509>(selected);
+	qDebug() << "SIGCERT" << (sigcert ? sigcert->getIntName() : "NULLL");
 	dlg->setCert();
 	dlg->defineRequest(req);
 	dlg->defineSigner(sigcert, true);
@@ -565,6 +566,15 @@ int db_x509::exportFlags(const QModelIndex &idx) const
 	return disable_flags;
 }
 
+void db_x509::writeTaggedPEM(const BioByteArray &b, const QString &tag, XFile &file)
+{
+	if (b.size() > 0) {
+		file.write(QString("<%1>\n").arg(tag).toLatin1());
+		file.write(b.byteArray());
+		file.write(QString("</%1>\n").arg(tag).toLatin1());
+	}
+}
+
 void db_x509::exportItems(const QModelIndexList &list,
 			const pki_export *xport, XFile &file) const
 {
@@ -580,39 +590,55 @@ void db_x509::exportItems(const QModelIndexList &list,
 			certs << x;
 	}
 
-	if (xport->match_all(F_PEM | F_CHAIN)) {
-		while (crt && crt != oldcrt) {
-			crt->writeCert(file, true);
-			oldcrt = crt;
-			crt = crt->getSigner();
-		}
-	} else if (xport->match_all(F_PEM)) {
-		foreach(crt, certs)
-			crt->writeCert(file, true);
-	} else if (xport->match_all(F_PEM | F_UNREVOKED)) {
-		foreach(pki_x509 *pki, Store.getAll<pki_x509>())
-			if (!pki->isRevoked())
+	if (xport->match_all(F_PEM)) {
+		if (xport->match_all(F_OVPN)) {
+			BioByteArray key, cert, extra, ca;
+			pki_evp *pkey = (pki_evp *)crt->getRefKey();
+			if (pkey)
+				pkey->pem(key, pki_export::by_id(20)); // PEM unencrypted
+			for (; crt && crt != oldcrt; oldcrt = crt, crt = crt->getSigner())
+			{
+				if (crt == crt->getSigner())
+					crt->pem(ca);
+				else if (cert.size() == 0)
+					crt->pem(cert);
+				else
+					crt->pem(extra);
+			}
+			writeTaggedPEM(ca, "ca", file);
+			writeTaggedPEM(extra, "extra-certs", file);
+			writeTaggedPEM(cert, "cert", file);
+			writeTaggedPEM(key, "key", file);
+			writeTaggedPEM(crt->getTaKey().toLatin1(), "tls-auth", file);
+		} else if (xport->match_all(F_CHAIN)) {
+			for (; crt && crt != oldcrt; oldcrt = crt, crt = crt->getSigner())
+				crt->writeCert(file, true);
+		} else if (xport->match_all(F_UNREVOKED)) {
+			foreach(pki_x509 *pki, Store.getAll<pki_x509>())
+				if (!pki->isRevoked())
+					pki->writeCert(file, true);
+		} else if (xport->match_all(F_ALL)) {
+			foreach(pki_x509 *pki, Store.getAll<pki_x509>())
 				pki->writeCert(file, true);
-	} else if (xport->match_all(F_PEM | F_ALL)) {
-		foreach(pki_x509 *pki, Store.getAll<pki_x509>())
-			pki->writeCert(file, true);
-	} else if (xport->match_all(F_PEM | F_PRIVATE)) {
-		pki_evp *pkey = (pki_evp *)crt->getRefKey();
-		if (!pkey || pkey->isPubKey())
-			throw errorEx(tr("There was no key found for the Certificate: '%1'").
-				arg(crt->getIntName()));
-		if (pkey->isToken())
-			throw errorEx(tr("Not possible for a token key: '%1'").
-				arg(crt->getIntName()));
-		if (xport->match_all(F_PKCS8)) {
-			pkey->writePKCS8(file, EVP_des_ede3_cbc(),
-				PwDialogCore::pwCallback, true);
 		} else {
-			pkey->writeKey(file, NULL, NULL, true);
+			if (xport->match_all(F_PRIVATE)) {
+				pki_evp *pkey = (pki_evp *)crt->getRefKey();
+				if (!pkey || pkey->isPubKey())
+					throw errorEx(tr("There was no key found for the Certificate: '%1'").
+							arg(crt->getIntName()));
+				if (pkey->isToken())
+					throw errorEx(tr("Not possible for a token key: '%1'").
+							arg(crt->getIntName()));
+				if (xport->match_all(F_PKCS8)) {
+					pkey->writePKCS8(file, EVP_des_ede3_cbc(),
+						PwDialogCore::pwCallback, true);
+				} else {
+					pkey->writeKey(file, NULL, NULL, true);
+				}
+			}
+			foreach(crt, certs)
+				crt->writeCert(file, true);
 		}
-		crt->writeCert(file, true);
-	} else if (xport->match_all(F_PEM)) {
-		crt->writeCert(file, true);
 	} else if (xport->match_all(F_DER)) {
 		crt->writeCert(file, false);
 	} else if (xport->match_all(F_PKCS7)) {
@@ -628,6 +654,10 @@ void db_x509::exportItems(const QModelIndexList &list,
 				crt->icsVEVENT_ca() : crt->icsVEVENT();
 		}
 		writeVcalendar(file, vcal);
+	} else if (xport->match_all(F_CONFIG)) {
+		crt->opensslConf(file);
+	} else if (xport->match_all(F_TAKEY)) {
+		file.write(crt->getTaKey().toLatin1());
 	}
 }
 
@@ -662,7 +692,8 @@ void db_x509::writePKCS12(pki_x509 *cert, XFile &file, bool chain) const
 			cert = signer;
 			signer = signer->getSigner();
 		}
-		p12->writePKCS12(file);
+		encAlgo encAlgo((QString) Settings["pkcs12_enc_algo"]);
+		p12->writePKCS12(file, encAlgo);
 	}
 	catch (errorEx &err) {
 		XCA_ERROR(err);
@@ -727,8 +758,7 @@ void db_x509::certRenewal(QModelIndexList indexes)
 				signkey->isPubKey())
 			return;
 		bool renew_myself = signer == oldcert;
-		CertExtend *dlg = new CertExtend(NULL,
-					renew_myself ? NULL : signer);
+		dlg = new CertExtend(NULL, renew_myself ? NULL : signer);
 		dlg->revoke->setEnabled(!renew_myself);
 		if (!dlg->exec()) {
 			delete dlg;
@@ -766,13 +796,17 @@ void db_x509::certRenewal(QModelIndexList indexes)
 			newcert->sign(signkey, oldcert->getDigest());
 			newcert = dynamic_cast<pki_x509 *>(insert(newcert));
 			createSuccess(newcert);
-
-			// delete old certificate if requested
-			if (doReplace)
-				deletePKI(idx);
 		}
 		if (doRevoke)
 			do_revoke(indexes, r);
+
+		// delete old certificates if requested
+		if (doReplace) {
+			foreach(idx, indexes) {
+				if (fromIndex<pki_x509>(idx))
+					deletePKI(idx);
+			}
+		}
 	}
 	catch (errorEx &err) {
 		XCA_ERROR(err);
@@ -791,6 +825,7 @@ void db_x509::revoke(QModelIndexList indexes)
 	if (revoke->exec()) {
 		do_revoke(indexes, revoke->getRevocation());
 	}
+	delete revoke;
 	emit columnsContentChanged();
 }
 

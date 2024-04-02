@@ -20,17 +20,18 @@ class pkcs11_lib : public QLibrary
 {
 	Q_OBJECT
 
-    private:
-	CK_FUNCTION_LIST *p11;
-	QString file, load_error;
-	bool enabled;
+  private:
+	CK_FUNCTION_LIST *p11{};
+	QString file, load_error{};
+	bool enabled{};
 
-    public:
-	static QString name2File(const QString &name, bool *enabled = NULL);
+  public:
+	static QString name2File(const QString &name, bool *enabled = nullptr);
 	pkcs11_lib(const QString &file);
+	pkcs11_lib() = delete;
 	~pkcs11_lib();
 
-	QList<unsigned long> getSlotList();
+	QList<CK_SLOT_ID> getSlotList();
 	QString driverInfo() const;
 	QString filename() const
 	{
@@ -70,15 +71,11 @@ class pkcs11_lib : public QLibrary
 
 class slotid
 {
-    public:
-	CK_ULONG id;
+  public:
 	pkcs11_lib *lib;
+	CK_SLOT_ID id;
 	slotid() = default;
-	slotid(pkcs11_lib *l, CK_ULONG i)
-	{
-		lib = l;
-		id = i;
-	}
+	slotid(pkcs11_lib *l, CK_SLOT_ID i) : lib(l), id(i) { }
 	void isValid() const
 	{
 		if (!lib)
@@ -98,6 +95,7 @@ class pkcs11_lib_list: public QAbstractListModel
 	QList<int> model_data;
 
     public:
+	~pkcs11_lib_list();
 	pkcs11_lib *add_lib(const QString &fname);
 	void load(const QString &list);
 	slotidList getSlotList() const;

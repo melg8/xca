@@ -9,7 +9,6 @@
 #define __XCAPROGRESSGUI_H
 
 #include "lib/base.h"
-#include "lib/main.h"
 #include "lib/XcaProgress.h"
 
 #include <QProgressBar>
@@ -18,13 +17,13 @@
 
 class XcaProgressGui : public XcaProgress_i
 {
-    private:
-	QMainWindow *mwin;
-	QProgressBar *bar;
+  private:
+	QMainWindow *mwin{};
+	QProgressBar *bar{};
 
-    public:
+  public:
 	XcaProgressGui() = delete;
-	XcaProgressGui(QMainWindow *m) : XcaProgress_i(), mwin(m), bar()
+	XcaProgressGui(QMainWindow *m) : XcaProgress_i(), mwin(m)
 	{
 		bar = new QProgressBar();
 		bar->setMinimum(0);

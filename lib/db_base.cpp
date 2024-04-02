@@ -19,13 +19,11 @@ void db_base::restart_timer()
 {
 	if (!IS_GUI_APP)
 		return;
-	killTimer(secondsTimer);
-	killTimer(minutesTimer);
-	killTimer(hoursTimer);
 
-	secondsTimer = startTimer(1000);
-	minutesTimer = startTimer(MSECS_PER_MINUTE);
-	hoursTimer = startTimer(MSECS_PER_HOUR);
+	maintenanceTimer.setSingleShot(true);
+
+	maintenanceTimer.setInterval(1000);
+	maintenanceTimer.start();
 }
 
 db_base::db_base(const char *classname)
@@ -33,23 +31,22 @@ db_base::db_base(const char *classname)
 {
 	rootItem = new pki_base(QString("ROOTitem(%1)").arg(classname));
 	treeItem = new pki_base(QString("TREEitem(%1)").arg(classname));
-	colResizing = 0;
 	class_name = classname;
-	secondsTimer = minutesTimer = hoursTimer = 0;
-	treeview = true;
+	connect(&maintenanceTimer, SIGNAL(timeout()),
+		this, SLOT(timerMaintenance()));
 	restart_timer();
 }
 
 db_base::~db_base()
 {
 	saveHeaderState();
+	qDeleteAll(allHeaders);
 	delete rootItem;
 	delete treeItem;
 }
 
-pki_base *db_base::newPKI(enum pki_type type)
+pki_base *db_base::newPKI(enum pki_type)
 {
-	(void)type;
 	return new pki_base();
 }
 
@@ -107,7 +104,8 @@ void db_base::loadContainer()
 		t = (enum pki_type)q.value(VIEW_item_type).toInt();
 		pki_base *pki = newPKI(t);
 		pki->restoreSql(rec);
-		insertChild(pki);
+		rootItem->insert(pki);
+		treeItem->insert(pki);
 		Store.add(q.value(VIEW_item_id), pki);
 	} catch (errorEx &ex) {
 		XCA_ERROR(ex);
@@ -149,8 +147,8 @@ void db_base::reloadContainer(const QList<enum pki_type> &typelist)
 void db_base::updateHeaders()
 {
 	QString s = allHeaders.toData();
-	foreach(dbheader *h, allHeaders)
-		delete h;
+
+	qDeleteAll(allHeaders);
 	allHeaders = getHeaders();
 	allHeaders.fromData(s);
 }
@@ -285,6 +283,8 @@ void db_base::deletePKI(QModelIndex idx)
 				remFromCont(idx);
 			AffectedItems(pki->getSqlItemId());
 			XCA_SQLERROR(e);
+			Store.remove(pki->getSqlItemId());
+			delete pki;
 		}
 	} catch (errorEx &err) {
 		XCA_ERROR(err);
@@ -299,24 +299,23 @@ void db_base::insertChild(pki_base *child, pki_base *parent)
 	if (!parent || parent == child)
 		parent = treeItem;
 
-	if (curr_parent) {
-		/* Need to take it */
-		if (curr_parent != treeItem && treeview)
-			idx = index(curr_parent);
-		int row = rownumber(child);
-		beginRemoveRows(idx, row, row);
-		curr_parent->takeChild(child);
-		endRemoveRows();
-	}
-
 	if (parent != treeItem && treeview)
 		idx = index(parent);
 
-	beginInsertRows(idx, 0, 0);
-	parent->insert(child);
-	child->setParent(parent);
+	if (curr_parent) {
+		int row = curr_parent->indexOf(child);
+		beginMoveRows(index(curr_parent), row, row, idx, 0);
+		curr_parent->takeChild(child);
+	} else {
+		beginInsertRows(idx, 0, 0);
+	}
 	rootItem->insert(child);
-	endInsertRows();
+	parent->insert(child);
+
+	if (curr_parent)
+		endMoveRows();
+	else
+		endInsertRows();
 
 	qDebug() << "insertChild" << *child << "To parent" << *parent
 		 << "From" << (curr_parent ? QString(*curr_parent) : "NEW")
@@ -401,7 +400,7 @@ QModelIndex db_base::index(int row, int column,
 
 QModelIndex db_base::index(pki_base *pki) const
 {
-	if (!pki)
+	if (!pki || pki == treeItem || rootItem->indexOf(pki) == -1)
 		return QModelIndex();
 	return createIndex(rownumber(pki), 0, pki);
 }
@@ -450,7 +449,7 @@ QVariant db_base::data(const QModelIndex &index, int role) const
 		case Qt::DecorationRole:
 			return item->getIcon(hd);
 		case Qt::TextAlignmentRole:
-			return hd->isNumeric() ? Qt::AlignRight : Qt::AlignLeft;
+			return int((hd->isNumeric() ? Qt::AlignRight : Qt::AlignLeft) | Qt::AlignVCenter);
 		case Qt::BackgroundRole:
 			return item->bg_color(hd);
 		case Qt::UserRole:
@@ -515,35 +514,34 @@ Qt::ItemFlags db_base::flags(const QModelIndex &index) const
 
 bool db_base::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-	QString on, nn;
+	QString newname;
 	pki_base *item;
 	if (index.isValid() && role == Qt::EditRole) {
-		nn = value.toString();
+		newname = value.toString();
 		item = fromIndex(index);
-		on = item->getIntName();
-		if (nn == on)
+		if (newname == item->getIntName())
 			return true;
-		updateItem(item, nn, item->getComment());
+		item->setIntName(newname);
+		updateItem(item);
 		return true;
 	}
 	return false;
 }
 
-void db_base::updateItem(pki_base *pki, const QString &name,
-			 const QString &comment)
+void db_base::updateItem(pki_base *pki)
 {
 	XSqlQuery q;
 	QSqlError e;
 
-	if (name == pki->getIntName() && comment == pki->getComment())
+	if (!pki->getSqlItemId().isValid())
 		return;
 
 	Transaction;
 	TransThrow();
 
 	SQL_PREPARE(q, "UPDATE items SET name=?, comment=? WHERE id=?");
-	q.bindValue(0, name);
-	q.bindValue(1, comment);
+	q.bindValue(0, pki->getIntName());
+	q.bindValue(1, pki->getComment());
 	q.bindValue(2, pki->getSqlItemId());
 	q.exec();
 	e = q.lastError();
@@ -551,8 +549,6 @@ void db_base::updateItem(pki_base *pki, const QString &name,
 
 	XCA_SQLERROR(e);
 	TransDone(e);
-	pki->setIntName(name);
-	pki->setComment(comment);
 	pki->recheckVisibility();
 
 	QModelIndex i, j;
@@ -563,12 +559,27 @@ void db_base::updateItem(pki_base *pki, const QString &name,
 	restart_timer();
 }
 
-void db_base::timerEvent(QTimerEvent *event)
+void db_base::timerMaintenance()
 {
 	int youngest = SECS_PER_DAY;
-	int id = event->timerId();
+	bool minuteElapsed = false, hourElapsed = false;
 
-	foreach(pki_base *pki, Store.getAll<pki_base>()) {
+	if (!rootItem)
+		return;
+
+	if (minuteMarker.age() > SECS_PER_MINUTE) {
+		minuteElapsed = true;
+		minuteMarker = a1time::now();
+	}
+	if (hourMarker.age() > SECS_PER_HOUR) {
+		hourElapsed = true;
+		hourMarker = a1time::now();
+	}
+
+	qDebug() << "Maintenance start" << class_name << minuteElapsed
+			<< hourElapsed << rootItem->getChildItems().count();
+
+	foreach(pki_base *pki, rootItem->getChildItems()) {
 		for (int idx=0; idx < allHeaders.count(); idx++) {
 			dbheader *hd = allHeaders[idx];
 			if (hd->type != dbheader::hd_asn1time)
@@ -584,14 +595,14 @@ void db_base::timerEvent(QTimerEvent *event)
 				youngest = age;
 			if (!hd->show)
 				continue;
-			if (id == secondsTimer && (age < SECS_PER_MINUTE *2 ||
-						   age % SECS_PER_MINUTE < 2))
+
+			if ((age < SECS_PER_MINUTE *2 || age % SECS_PER_MINUTE < 2))
 				do_emit = true;
-			if (id == minutesTimer && (age % SECS_PER_HOUR < 60))
+			if (minuteElapsed && (age % SECS_PER_HOUR < SECS_PER_MINUTE *2))
 				do_emit = true;
-			if (id == hoursTimer &&
-					 (age % SECS_PER_DAY < SECS_PER_HOUR))
+			if (hourElapsed && (age % SECS_PER_DAY < SECS_PER_HOUR *2))
 				do_emit = true;
+
 			if (do_emit) {
 				qDebug() << "Date changed for" << pki->getIntName() << ":" << hd->getName() << "Col:" << idx << t.toSortable();
 				QModelIndex i;
@@ -605,14 +616,15 @@ void db_base::timerEvent(QTimerEvent *event)
 			}
 		}
 	}
-	if (secondsTimer && youngest > SECS_PER_HOUR *2) {
-		killTimer(secondsTimer);
-		secondsTimer = 0;
-	}
-	if (minutesTimer && youngest > SECS_PER_DAY *2) {
-		killTimer(minutesTimer);
-		minutesTimer = 0;
-	}
+	int delay = youngest * 100;
+	if (delay < 1000)
+		delay = 1000;
+	if (delay > SECS_PER_HOUR *1000)
+		delay = SECS_PER_HOUR *1000;
+
+	maintenanceTimer.setInterval(delay);
+	maintenanceTimer.start();
+	qDebug() << "Maintenance end" << class_name << delay << youngest;
 }
 
 bool db_base::columnHidden(int col) const
@@ -680,4 +692,9 @@ int db_base::exportFlags(const QModelIndexList &indexes) const
 	else
 		disabled_flags |= F_MULTI;
 	return disabled_flags;
+}
+
+void db_base::setSelected(const QVariant &v)
+{
+	selected = v;
 }

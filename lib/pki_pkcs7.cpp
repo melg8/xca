@@ -17,7 +17,6 @@
 pki_pkcs7::pki_pkcs7(const QString &name)
 	:pki_multi(name)
 {
-	p7 = NULL;
 }
 
 pki_pkcs7::~pki_pkcs7()
@@ -64,7 +63,7 @@ void pki_pkcs7::signBio(pki_x509 *crt, BIO *bio)
 		signer = NULL;
 	while (signer != NULL ) {
 		sk_X509_push(certstack, signer->getCert());
-	        openssl_error();
+		openssl_error();
 		if (signer == signer->getSigner() )
 			signer = NULL;
 		else
@@ -92,7 +91,7 @@ void pki_pkcs7::signCert(pki_x509 *crt, pki_x509 *contCert)
 	BioByteArray bba;
 	i2d_X509_bio(bba, contCert->getCert());
 	signBio(crt, bba);
-        openssl_error();
+	openssl_error();
 }
 
 void pki_pkcs7::writeP7(XFile &file, bool PEM)
@@ -123,7 +122,7 @@ void pki_pkcs7::append_certs(PKCS7 *myp7, const QString &name)
 
 	pki_openssl_error();
 
-        if (myp7 == NULL)
+	if (myp7 == NULL)
 		return;
 
 	setFilename(name);
